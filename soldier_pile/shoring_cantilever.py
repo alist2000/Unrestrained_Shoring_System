@@ -11,9 +11,10 @@ calculate S required.
 now for continue and solve example 3 I should pass deflection stuff."""
 import copy
 import sys
-
 from sympy import symbols
 from sympy.solvers import solve
+
+from shear_moment_diagram import diagram
 
 sys.path.append(r"D:/git/Shoring/Lateral-pressure-")
 
@@ -38,19 +39,29 @@ def calculate_force_and_arm(soil_pressure, water_pressure, state):
 D = symbols("D")
 h_active = [10, D]
 main_active = active_passive([10, D], ["No", "No"])
-soil_active, water_active = main_active.pressure_calculator(number_of_layer=2, gama=[120, 125], phi=[34, 36],
-                                                            theory="Coulomb",
-                                                            state="active",
-                                                            unit_system="us", beta=[0, 0], omega=[0, 0], delta=[0, 24])
+soil_active, water_active, depth_list_active, h_water_active = main_active.pressure_calculator(number_of_layer=2,
+                                                                                               gama=[120, 125],
+                                                                                               phi=[34, 36],
+                                                                                               theory="Coulomb",
+                                                                                               state="active",
+                                                                                               unit_system="us",
+                                                                                               beta=[0, 0],
+                                                                                               omega=[0, 0],
+                                                                                               delta=[0, 24])
 
 force_soil_active, arm_soil_active = calculate_force_and_arm(soil_active, water_active, "active")
 
 h_passive = [D]
 main_passive = active_passive([D], ["No"])
-soil_passive, water_passive = main_passive.pressure_calculator(number_of_layer=1, gama=[125], phi=[36],
-                                                               theory="Coulomb",
-                                                               state="passive",
-                                                               unit_system="us", beta=[-32], omega=[0], delta=[24])
+soil_passive, water_passive, depth_list_passive, h_water_passive = main_passive.pressure_calculator(number_of_layer=1,
+                                                                                                    gama=[125],
+                                                                                                    phi=[36],
+                                                                                                    theory="Coulomb",
+                                                                                                    state="passive",
+                                                                                                    unit_system="us",
+                                                                                                    beta=[-32],
+                                                                                                    omega=[0],
+                                                                                                    delta=[24])
 
 force_soil_passive, arm_soil_passive = calculate_force_and_arm(soil_passive, water_passive, "passive")
 
@@ -85,13 +96,20 @@ def cantilever_soldier_pile(unit_system, active_force, passive_force, active_arm
     Md = moment_calculator(active_force, active_arm, pile_spacing)  # driving moment
     Ms = moment_calculator(passive_force, passive_arm, pile_spacing)  # resisting moment
     equation = Ms - FS * Md
+    equation2 = Ms - Md
 
     # finding D0
     D_zero = solve(equation, D)
+    second_D_zero = solve(equation2, D)
     D_zero = control_solution(D_zero)
     if D_zero != "There is no answer!":
         D_final = 1.2 * D_zero
     else:
+        D_final = "There is no answer!"
+        return "There is no answer for D0!"
+
+    second_D_zero = control_solution(second_D_zero)
+    if second_D_zero == "There is no answer!":
         D_final = "There is no answer!"
         return "There is no answer for D0!"
 
@@ -105,8 +123,8 @@ def cantilever_soldier_pile(unit_system, active_force, passive_force, active_arm
     for layer in passive_force:
         for force in layer:
             passive_force_sum += force
-    equation2 = passive_force_sum - active_force_sum
-    Y = solve(equation2, D)
+    equation_shear = passive_force_sum - active_force_sum
+    Y = solve(equation_shear, D)
     Y = control_solution(Y)
     if Y == "There is no answer!":
         return "There is no answer for Y! ( where shear equal to zero )"
@@ -141,9 +159,13 @@ def cantilever_soldier_pile(unit_system, active_force, passive_force, active_arm
         else:
             s_required = M_max * 10 ** 6 / fb  # s unit --> mm^3
 
-    return "No Error!", D_zero, D_final, Y, M_max, s_required
+    return "No Error!", D_zero, D_final, Y, M_max, s_required, second_D_zero
 
 
-value = cantilever_soldier_pile("us", force_soil_active, force_soil_passive, arm_soil_active, arm_soil_passive, 1.3, 6,
-                                36)
-print(value)
+error, d0, dfinal, y0, M_max, s_required, second_D_zero = cantilever_soldier_pile("us", force_soil_active,
+                                                                                  force_soil_passive, arm_soil_active,
+                                                                                  arm_soil_passive, 1.3, 6,
+                                                                                  36)
+depth_list_active[-1][-1] = depth_list_active[-1][-1].subs(D, second_D_zero)
+main_diagram = diagram(depth_list_active, soil_active, soil_passive, water_active, water_passive, 0)
+final_pressure = main_diagram.base_calculate()
