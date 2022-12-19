@@ -167,5 +167,25 @@ error, d0, dfinal, y0, M_max, s_required, second_D_zero = cantilever_soldier_pil
                                                                                   arm_soil_passive, 1.3, 6,
                                                                                   36)
 depth_list_active[-1][-1] = depth_list_active[-1][-1].subs(D, second_D_zero)
-main_diagram = diagram(depth_list_active, soil_active, soil_passive, water_active, water_passive, 0)
-final_pressure = main_diagram.base_calculate()
+depth_list_passive[-1][-1] = depth_list_passive[-1][-1].subs(D, second_D_zero)
+
+
+def put_D_in_list(my_list, d):
+    for i in range(len(my_list)):
+        for j in range(len(my_list[i])):
+            try:
+                my_list[i][j] = my_list[i][j].subs(D, d)
+            except:
+                pass
+    return my_list
+
+
+soil_active = put_D_in_list(soil_active, second_D_zero)
+soil_passive = put_D_in_list(soil_passive, second_D_zero)
+water_active = put_D_in_list(water_active, second_D_zero)
+water_passive = put_D_in_list(water_passive, second_D_zero)
+
+main_diagram = diagram("us", depth_list_active, depth_list_passive, soil_active, soil_passive, water_active,
+                       water_passive, 0)
+# final_pressure = main_diagram.base_calculate()
+load_diagram = main_diagram.load_diagram()
