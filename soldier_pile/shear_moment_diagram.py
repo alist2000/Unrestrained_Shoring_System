@@ -130,10 +130,10 @@ class diagram:
                 sigma_water_p[z] = copy_list
                 for i in range(len(sigma_water_a[z])):
                     sigma_water_p[z][i] = 0
-        sigma_active = np.array(sigma_active)
-        sigma_passive = np.array(sigma_passive)
-        sigma_water_a = np.array(sigma_water_a)
-        sigma_water_p = np.array(sigma_water_p)
+        sigma_active = np.array(sigma_active, dtype="object")
+        sigma_passive = np.array(sigma_passive, dtype="object")
+        sigma_water_a = np.array(sigma_water_a, dtype="object")
+        sigma_water_p = np.array(sigma_water_p, dtype="object")
         sigma_final = sigma_active + sigma_water_a - sigma_passive - sigma_water_p
         return depth_active, sigma_final
 
