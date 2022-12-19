@@ -20,6 +20,7 @@ sys.path.append(r"D:/git/Shoring/Lateral-pressure-")
 
 from Passive_Active.active_passive import active_passive
 from Force.force import moment_calculator
+from Surcharge.surchargeLoad import surcharge
 
 
 def calculate_force_and_arm(soil_pressure, water_pressure, state):
@@ -36,6 +37,7 @@ def calculate_force_and_arm(soil_pressure, water_pressure, state):
     return force_soil, arm_soil
 
 
+# inputs for active passive.
 D = symbols("D")
 h_active = [10, D]
 main_active = active_passive([10, D], ["No", "No"])
@@ -65,6 +67,11 @@ soil_passive, water_passive, depth_list_passive, h_water_passive = main_passive.
 
 force_soil_passive, arm_soil_passive = calculate_force_and_arm(soil_passive, water_passive, "passive")
 
+# inputs for surcharge.
+surcharge_depth = 10
+main_surcharge = surcharge("us", surcharge_depth, 0.1)
+surcharge_force, surcharge_arm, surcharge_pressure, plot_surcharge, error_surcharge = main_surcharge.uniform(72)
+
 
 def control_solution(item):
     final = []
@@ -81,7 +88,9 @@ def control_solution(item):
 
 
 # function is ready when we have no surcharge loads.
-def cantilever_soldier_pile(unit_system, active_force, passive_force, active_arm, passive_arm, FS, pile_spacing, fy):
+def cantilever_soldier_pile(unit_system, Surcharge_force, Surcharge_arm, active_force, passive_force, active_arm,
+                            passive_arm,
+                            FS, pile_spacing, fy):
     """units :
     if unit system = us -->
     forces -> lb
@@ -92,11 +101,15 @@ def cantilever_soldier_pile(unit_system, active_force, passive_force, active_arm
     forces -> N
     arm and pile spacing -> m
     fy -> MPa"""
+
     D = symbols("D")
+
+    # calculating moment of surcharge
+    Md_surcharge = (sum(h_active) - Surcharge_arm) * Surcharge_force * pile_spacing  # surcharge arm is from top layer.
     Md = moment_calculator(active_force, active_arm, pile_spacing)  # driving moment
     Ms = moment_calculator(passive_force, passive_arm, pile_spacing)  # resisting moment
-    equation = Ms - FS * Md
-    equation2 = Ms - Md
+    equation = Ms - FS * (Md + Md_surcharge)
+    equation2 = Ms - (Md + Md_surcharge)
 
     # finding D0
     D_zero = solve(equation, D)
@@ -162,10 +175,11 @@ def cantilever_soldier_pile(unit_system, active_force, passive_force, active_arm
     return "No Error!", D_zero, D_final, Y, M_max, s_required, second_D_zero
 
 
-error, d0, dfinal, y0, M_max, s_required, second_D_zero = cantilever_soldier_pile("us", force_soil_active,
-                                                                                  force_soil_passive, arm_soil_active,
-                                                                                  arm_soil_passive, 1.3, 6,
-                                                                                  36)
+error, d0, d_final, y0, M_max, s_required, second_D_zero = cantilever_soldier_pile("us", surcharge_force, surcharge_arm,
+                                                                                   force_soil_active,
+                                                                                   force_soil_passive, arm_soil_active,
+                                                                                   arm_soil_passive, 1.3, 6,
+                                                                                   36)
 depth_list_active[-1][-1] = depth_list_active[-1][-1].subs(D, second_D_zero)
 depth_list_passive[-1][-1] = depth_list_passive[-1][-1].subs(D, second_D_zero)
 
@@ -185,7 +199,8 @@ soil_passive = put_D_in_list(soil_passive, second_D_zero)
 water_active = put_D_in_list(water_active, second_D_zero)
 water_passive = put_D_in_list(water_passive, second_D_zero)
 
-main_diagram = diagram("us", depth_list_active, depth_list_passive, soil_active, soil_passive, water_active,
-                       water_passive, 0)
+main_diagram = diagram("us", surcharge_pressure, surcharge_depth, depth_list_active, depth_list_passive, soil_active,
+                       soil_passive, water_active,
+                       water_passive)
 # final_pressure = main_diagram.base_calculate()
 load_diagram = main_diagram.load_diagram()
