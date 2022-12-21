@@ -10,8 +10,6 @@ import scipy.integrate as spi
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.graph_objs import Layout
-import plotly
-import json2html
 
 
 def calculator_depth(depth, delta_h, delta_h_decimal, soil_pressure, water_pressure):
@@ -67,8 +65,8 @@ def plotter(depth_final, sigma_final, x_title, y_title, x_unit, y_unit):
         xaxis={"side": "top",
                "zeroline": True,
                "mirror": "ticks",
-               "zerolinecolor": "#969696",
-               "zerolinewidth": 4, },
+               "zerolinecolor": "#000000",
+               "zerolinewidth": 7},
         yaxis={"zeroline": True,
                "mirror": "ticks",
                "zerolinecolor": "#969696",
@@ -84,7 +82,7 @@ def plotter(depth_final, sigma_final, x_title, y_title, x_unit, y_unit):
     # plot.write_html("output.html",
     #                 full_html=False,
     #                 include_plotlyjs='cdn')
-    plot.show()
+    # plot.show()
     return plot
 
 
@@ -191,22 +189,22 @@ class diagram:
         unit_system = self.unit_system
         if unit_system == "us":
             load_unit = "lb/m"
-            lenght_unit = "ft"
+            length_unit = "ft"
         else:
             load_unit = "N/m"
-            lenght_unit = "m"
+            length_unit = "m"
 
-        plot = plotter(depth, sigma_final, "q", "Z", load_unit, lenght_unit)
+        plot = plotter(depth, sigma_final, "q", "Z", load_unit, length_unit)
         return plot
 
     def shear_diagram(self, depth, sigma_final):
         unit_system = self.unit_system
         if unit_system == "us":
             load_unit = "lb"
-            lenght_unit = "ft"
+            length_unit = "ft"
         else:
             load_unit = "N"
-            lenght_unit = "m"
+            length_unit = "m"
         shear_values = []
         for i in range(len(depth)):
             try:
@@ -216,6 +214,27 @@ class diagram:
             shear_values.append(shear)
         shear_values = np.array(shear_values)
 
-        plot = plotter(depth, shear_values, "τ", "Z", load_unit, lenght_unit)
+        plot = plotter(depth, shear_values, "V", "Z", load_unit, length_unit)
 
-        return plot
+        return plot, shear_values
+
+    def moment_diagram(self, depth, shear_values):
+        unit_system = self.unit_system
+        if unit_system == "us":
+            load_unit = "lb-ft"
+            length_unit = "ft"
+        else:
+            load_unit = "N-m"
+            length_unit = "m"
+        moment_values = []
+        for i in range(len(depth)):
+            try:
+                moment = spi.simpson(shear_values[:i], depth[:i])
+            except:
+                moment = 0
+            moment_values.append(moment)
+        moment_values = np.array(moment_values)
+
+        plot = plotter(depth, moment_values, "M", "Z", load_unit, length_unit)
+
+        return plot, moment_values
