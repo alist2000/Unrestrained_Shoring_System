@@ -23,20 +23,10 @@ sys.path.append(r"D:/git/Shoring/Lateral-pressure-")
 from Passive_Active.active_passive import active_passive
 from Force.force import moment_calculator
 
-# some inputs 
-Fs = 1.3
-Pile_spacing = 6  # ft
-Fy = 36  # ksi
-surcharge_type = "uniform"
-q = 68
-q_min = 72
+D = symbols("D")
 
 
-def calculate_force_and_arm(soil_pressure, water_pressure, state):
-    if state == "active":
-        main = main_active
-    else:
-        main = main_passive
+def calculate_force_and_arm(soil_pressure, water_pressure, main):
     force_soil, arm_soil = main.force_final(soil_pressure)
     force_water, arm_water = main.force_final(water_pressure, "water")
     for i in force_water:
@@ -44,45 +34,6 @@ def calculate_force_and_arm(soil_pressure, water_pressure, state):
     for i in arm_water:
         arm_soil.append(i)
     return force_soil, arm_soil
-
-
-# inputs for active passive.
-D = symbols("D")
-h_active = [10, D]
-main_active = active_passive([10, D], ["No", "No"])
-soil_active, water_active, depth_list_active, h_water_active = main_active.pressure_calculator(number_of_layer=2,
-                                                                                               gama=[120, 125],
-                                                                                               phi=[34, 36],
-                                                                                               theory="Coulomb",
-                                                                                               state="active",
-                                                                                               unit_system="us",
-                                                                                               beta=[0, 0],
-                                                                                               omega=[0, 0],
-                                                                                               delta=[0, 24])
-
-force_soil_active, arm_soil_active = calculate_force_and_arm(soil_active, water_active, "active")
-
-h_passive = [D]
-main_passive = active_passive([D], ["No"])
-soil_passive, water_passive, depth_list_passive, h_water_passive = main_passive.pressure_calculator(number_of_layer=1,
-                                                                                                    gama=[125],
-                                                                                                    phi=[36],
-                                                                                                    theory="Coulomb",
-                                                                                                    state="passive",
-                                                                                                    unit_system="us",
-                                                                                                    beta=[-32],
-                                                                                                    omega=[0],
-                                                                                                    delta=[24])
-
-force_soil_passive, arm_soil_passive = calculate_force_and_arm(soil_passive, water_passive, "passive")
-
-# inputs for surcharge.
-surcharge_depth = 10
-main_surcharge = surcharge("us", surcharge_depth, delta_h=0.01)
-if q < q_min:
-    q = q_min
-if surcharge_type == "uniform":
-    surcharge_force, surcharge_arm, surcharge_pressure, error_surcharge = main_surcharge.uniform(q)
 
 
 def control_solution(item):
@@ -100,7 +51,9 @@ def control_solution(item):
 
 
 # function is ready when we have no surcharge loads.
-def cantilever_soldier_pile(unit_system, Surcharge_force, Surcharge_arm, active_force, passive_force, active_arm,
+def cantilever_soldier_pile(unit_system, h_active, Surcharge_force, Surcharge_arm, Surcharge_depth, active_force,
+                            passive_force,
+                            active_arm,
                             passive_arm,
                             FS, pile_spacing, fy):
     """units :
@@ -129,6 +82,7 @@ def cantilever_soldier_pile(unit_system, Surcharge_force, Surcharge_arm, active_
     D_zero = control_solution(D_zero)
     if D_zero != "There is no answer!":
         D_final = 1.2 * D_zero
+        h_active[-1] = h_active[-1].subs(D, D_final)
     else:
         D_final = "There is no answer!"
         return "There is no answer for D0!"
@@ -148,11 +102,13 @@ def cantilever_soldier_pile(unit_system, Surcharge_force, Surcharge_arm, active_
     for layer in passive_force:
         for force in layer:
             passive_force_sum += force
-    equation_shear = passive_force_sum - active_force_sum
+    equation_shear = passive_force_sum - active_force_sum - Surcharge_force
     Y = solve(equation_shear, D)
     Y = control_solution(Y)
     if Y == "There is no answer!":
         return "There is no answer for Y! ( where shear equal to zero )"
+    elif Surcharge_depth > sum(h_active) + Y:
+        return "Surcharge depth couldn't be larger than H + Y0"
     else:
         # active passive
         active_force_zero_shear = copy.deepcopy(active_force)
@@ -175,9 +131,11 @@ def cantilever_soldier_pile(unit_system, Surcharge_force, Surcharge_arm, active_
                 except:
                     pass
 
+        # surcharge arm is from top layer.
+        M_max_surcharge = (sum(h_active[:-1]) + Y - Surcharge_arm) * Surcharge_force * pile_spacing
         M_max_active = moment_calculator(active_force_zero_shear, active_arm_zero_shear, pile_spacing)
         M_max_passive = moment_calculator(passive_force_zero_shear, passive_arm_zero_shear, pile_spacing)
-        M_max = abs(M_max_passive - M_max_active)
+        M_max = abs(M_max_passive - M_max_active - M_max_surcharge)
         M_max = M_max.subs(D, Y)
         fb = 0.66 * fy
         if unit_system == "us":
@@ -186,15 +144,6 @@ def cantilever_soldier_pile(unit_system, Surcharge_force, Surcharge_arm, active_
             s_required = M_max * 10 ** 6 / fb  # s unit --> mm^3
 
     return "No Error!", D_zero, D_final, Y, M_max, s_required, second_D_zero
-
-
-error, d0, d_final, y0, M_max, s_required, second_D_zero = cantilever_soldier_pile("us", surcharge_force, surcharge_arm,
-                                                                                   force_soil_active,
-                                                                                   force_soil_passive, arm_soil_active,
-                                                                                   arm_soil_passive, Fs, Pile_spacing,
-                                                                                   Fy)
-depth_list_active[-1][-1] = depth_list_active[-1][-1].subs(D, second_D_zero)
-depth_list_passive[-1][-1] = depth_list_passive[-1][-1].subs(D, second_D_zero)
 
 
 def put_D_in_list(my_list, d):
@@ -207,29 +156,8 @@ def put_D_in_list(my_list, d):
     return my_list
 
 
-soil_active = put_D_in_list(soil_active, second_D_zero)
-soil_passive = put_D_in_list(soil_passive, second_D_zero)
-water_active = put_D_in_list(water_active, second_D_zero)
-water_passive = put_D_in_list(water_passive, second_D_zero)
-
-
 def multiple_pressure_pile_spacing(pressure, spacing):
     for i in range(len(pressure)):
         for j in range(len(pressure[i])):
             pressure[i][j] *= spacing
     return pressure
-
-
-surcharge_pressure = multiple_pressure_pile_spacing(np.array([surcharge_pressure]), Pile_spacing)
-soil_active = multiple_pressure_pile_spacing(soil_active, Pile_spacing)
-soil_passive = multiple_pressure_pile_spacing(soil_passive, Pile_spacing)
-water_active = multiple_pressure_pile_spacing(water_active, Pile_spacing)
-water_passive = multiple_pressure_pile_spacing(water_passive, Pile_spacing)
-
-main_diagram = diagram("us", surcharge_pressure[0], surcharge_depth, depth_list_active, depth_list_passive, soil_active,
-                       soil_passive, water_active,
-                       water_passive)
-
-depth, sigma = main_diagram.base_calculate(delta_h=0.01)
-load_diagram = main_diagram.load_diagram(depth, sigma)
-shear_diagram = main_diagram.shear_diagram(depth, sigma)
