@@ -5,6 +5,7 @@ import json
 from sympy import symbols
 from sympy.solvers import solve
 import numpy as np
+import scipy.integrate as spi
 
 import plotly.express as px
 import plotly.graph_objects as go
@@ -59,6 +60,34 @@ def calculate_pressure(depth, pressure):
     return pressure_list
 
 
+def plotter(depth_final, sigma_final, x_title, y_title, x_unit, y_unit):
+    plot = px.line(y=depth_final, x=sigma_final, color_discrete_sequence=["#595959"]).update_layout(
+        xaxis_title=f"{x_title} ({x_unit})",
+        yaxis_title=f"{y_title} ({y_unit})",
+        xaxis={"side": "top",
+               "zeroline": True,
+               "mirror": "ticks",
+               "zerolinecolor": "#969696",
+               "zerolinewidth": 4, },
+        yaxis={"zeroline": True,
+               "mirror": "ticks",
+               "zerolinecolor": "#969696",
+               "zerolinewidth": 4}
+    )
+    plot['layout']['yaxis']['autorange'] = "reversed"
+    layout = Layout(
+        paper_bgcolor='#ffffff',
+        plot_bgcolor='#ffffff'
+    )
+    plot.update_layout(layout)
+
+    # plot.write_html("output.html",
+    #                 full_html=False,
+    #                 include_plotlyjs='cdn')
+    plot.show()
+    return plot
+
+
 class diagram:
     def __init__(self, unit_system, surcharge_pressure, surcharge_depth, depth_active, depth_passive, active_pressure,
                  passive_pressure,
@@ -94,7 +123,7 @@ class diagram:
         self.surcharge_pressure = surcharge_pressure
         self.surcharge_depth = surcharge_depth
 
-    def base_calculate(self, delta_h=0.1):
+    def base_calculate(self, delta_h=0.01):
         depth_active = self.depth_active
         depth_passive = self.depth_passive
         active_pressure = self.active_pressure
@@ -135,22 +164,14 @@ class diagram:
         sigma_water_a = np.array(sigma_water_a, dtype="object")
         sigma_water_p = np.array(sigma_water_p, dtype="object")
         sigma_final = sigma_active + sigma_water_a - sigma_passive - sigma_water_p
-        return depth_active, sigma_final
 
-    def load_diagram(self):
-        unit_system = self.unit_system
-        if unit_system == "us":
-            load_unit = "lb/m"
-            lenght_unit = "ft"
-        else:
-            load_unit = "N/m"
-            lenght_unit = "m"
         surcharge_pressure = self.surcharge_pressure
         surcharge_depth = self.surcharge_depth
-        depth, sigma_final = self.base_calculate()
-        edited_depth = depth[0]
+
+        # edit depth and sigma to be used in plotter functions.
+        edited_depth = depth_active[0]
         edited_sigma = list(sigma_final[0])
-        for i in depth[1:]:
+        for i in depth_active[1:]:
             edited_depth += i
         edited_depth[0] = 0.0
         edited_depth = np.array(edited_depth)
@@ -164,24 +185,37 @@ class diagram:
         for i in range(len(surcharge_pressure)):
             edited_sigma[i] += surcharge_pressure[i]
         edited_sigma = np.array(edited_sigma)
+        return edited_depth, edited_sigma
 
-        plot = px.line(y=edited_depth, x=edited_sigma, color_discrete_sequence=["#595959"]).update_layout(
-            xaxis_title=f"Ϭh ({load_unit})",
-            yaxis_title=f"Z ({lenght_unit})",
-            xaxis={"side": "top",
-                   "zeroline": True,
-                   "mirror": "ticks",
-                   "zerolinecolor": "#969696",
-                   "zerolinewidth": 4, },
-            yaxis={"zeroline": True,
-                   "mirror": "ticks",
-                   "zerolinecolor": "#969696",
-                   "zerolinewidth": 4}
-        )
-        plot['layout']['yaxis']['autorange'] = "reversed"
+    def load_diagram(self, depth, sigma_final):
+        unit_system = self.unit_system
+        if unit_system == "us":
+            load_unit = "lb/m"
+            lenght_unit = "ft"
+        else:
+            load_unit = "N/m"
+            lenght_unit = "m"
 
-        # plot.write_html("output.html",
-        #                 full_html=False,
-        #                 include_plotlyjs='cdn')
-        plot.show()
+        plot = plotter(depth, sigma_final, "q", "Z", load_unit, lenght_unit)
+        return plot
+
+    def shear_diagram(self, depth, sigma_final):
+        unit_system = self.unit_system
+        if unit_system == "us":
+            load_unit = "lb"
+            lenght_unit = "ft"
+        else:
+            load_unit = "N"
+            lenght_unit = "m"
+        shear_values = []
+        for i in range(len(depth)):
+            try:
+                shear = spi.simpson(sigma_final[:i], depth[:i])
+            except:
+                shear = 0
+            shear_values.append(shear)
+        shear_values = np.array(shear_values)
+
+        plot = plotter(depth, shear_values, "τ", "Z", load_unit, lenght_unit)
+
         return plot
