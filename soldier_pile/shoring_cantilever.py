@@ -51,7 +51,8 @@ def control_solution(item):
 
 
 # function is ready when we have no surcharge loads.
-def cantilever_soldier_pile(unit_system, h_active, Surcharge_force, Surcharge_arm, Surcharge_depth, active_force,
+def cantilever_soldier_pile(unit_system, retaining_h, h_active, Surcharge_force, Surcharge_arm, Surcharge_depth,
+                            active_force,
                             passive_force,
                             active_arm,
                             passive_arm,
@@ -80,17 +81,17 @@ def cantilever_soldier_pile(unit_system, h_active, Surcharge_force, Surcharge_ar
     D_zero = solve(equation, D)
     second_D_zero = solve(equation2, D)
     D_zero = control_solution(D_zero)
-    if D_zero != "There is no answer!":
+    if D_zero != "There is no answer!" and D_zero >= 0:
         D_final = 1.2 * D_zero
         h_active[-1] = h_active[-1].subs(D, D_final)
     else:
         D_final = "There is no answer!"
-        return "There is no answer for D0!"
+        return "There is no answer for D0!", "", "", "", "", "", ""
 
     second_D_zero = control_solution(second_D_zero)
-    if second_D_zero == "There is no answer!":
+    if second_D_zero == "There is no answer!" or second_D_zero < 0:
         D_final = "There is no answer!"
-        return "There is no answer for D0!"
+        return "There is no answer for D0!", "", "", "", "", "", ""
 
     # finding Y. where shear equal zero
     active_force_sum = 0
@@ -106,9 +107,9 @@ def cantilever_soldier_pile(unit_system, h_active, Surcharge_force, Surcharge_ar
     Y = solve(equation_shear, D)
     Y = control_solution(Y)
     if Y == "There is no answer!":
-        return "There is no answer for Y! ( where shear equal to zero )"
+        return "There is no answer for Y! ( where shear equal to zero )", "", "", "", "", "", ""
     elif Surcharge_depth > sum(h_active) + Y:
-        return "Surcharge depth couldn't be larger than H + Y0"
+        return "Surcharge depth couldn't be larger than H + Y0", "", "", "", "", "", ""
     else:
         # active passive
         active_force_zero_shear = copy.deepcopy(active_force)
@@ -161,3 +162,114 @@ def multiple_pressure_pile_spacing(pressure, spacing):
         for j in range(len(pressure[i])):
             pressure[i][j] *= spacing
     return pressure
+
+
+def edit_parameters(retaining_height, height,
+                    number_of_layer,
+                    gama,
+                    phi,
+                    beta,
+                    omega,
+                    delta,
+                    water):
+    hr_list = []
+    hd_list = []
+    i = 0
+    for h in height[:-1]:  # last index is parametric ( D )
+        if h > retaining_height:
+            hr = retaining_height
+            hd = h - retaining_height
+            hr_list.append(hr)
+            hd_list.append(hd)
+            number_of_layer += 1
+            gama.insert(i + 1, gama[i])
+            phi.insert(i + 1, phi[i])
+            beta.insert(i + 1, beta[i])
+            omega.insert(i + 1, omega[i])
+            delta.insert(i + 1, delta[i])
+            water.insert(i + 1, water[i])
+            i += 1
+            for j in height[i:]:
+                hd_list.append(j)
+            return hr_list, hd_list, number_of_layer, gama, phi, beta, omega, delta, water
+
+        else:
+            hr_list.append(h)
+            retaining_height = retaining_height - h
+            i += 1
+        if retaining_height != 0:
+            hr_list.append(retaining_height)
+            number_of_layer += 1
+            gama.insert(-1, gama[-1])
+            phi.insert(-1, phi[-1])
+            beta.insert(-1, beta[-1])
+            omega.insert(-1, omega[-1])
+            delta.insert(-1, delta[-1])
+            water.insert(-1, water[-1])
+
+    hd_list.append(height[-1])  # final excavation depth : D
+    return hr_list, hd_list, number_of_layer, gama, phi, beta, omega, delta, water
+
+
+def calculate_D_and_control(hr, hd, retaining_h, unit_system, h_active,
+                            surcharge_force,
+                            surcharge_arm,
+                            surcharge_depth,
+                            force_soil_active,
+                            force_soil_passive,
+                            arm_soil_active,
+                            arm_soil_passive, FS,
+                            Pile_spacing,
+                            Fy):
+    D = symbols("D")
+    hr.append(D)
+    hd_copy = copy.deepcopy(hd)
+    number_of_hr = len(hr)
+    i = 1
+    j = 0
+    d_final = sum(hd[:-1]) + 1
+    control = False
+    while control is False:
+        active_force = force_soil_active[
+                       :number_of_hr] + [force_soil_active[-1]]
+        passive_force = force_soil_passive[:i] + [force_soil_passive[-1]]
+        for i in range(len(active_force[-2])):
+            active_force[-2][i] = (active_force[-2][i] * D) / hd[0]
+        # for i in range(len(arm_soil_active[-2])):
+        #     arm_soil_active[-2][i] = (arm_soil_active[-2][i] * D) / hd[0]
+
+        error, d0, d_final, y0, M_max, s_required, second_D_zero = cantilever_soldier_pile(unit_system, retaining_h, hr,
+                                                                                           surcharge_force,
+                                                                                           surcharge_arm,
+                                                                                           surcharge_depth,
+                                                                                           active_force,
+                                                                                           passive_force,
+                                                                                           arm_soil_active[:
+                                                                                                           number_of_hr] +
+                                                                                           [arm_soil_active[-1]],
+                                                                                           arm_soil_passive[:i] +
+                                                                                           [arm_soil_passive[-1]], FS,
+                                                                                           Pile_spacing,
+                                                                                           Fy)
+        if error == "No Error!":
+            if hd_copy[j] == D:
+                control = True
+            else:
+                if d_final > hd_copy[j]:
+                    control = False
+                    hr.insert(-1, hd_copy[j])
+                    del hd[hd.index(hd_copy[j])]
+                    j += 1
+                else:
+                    control = True
+                    # delete extra layers that are underground.
+                    for k in hd[j:-1]:
+                        del hd[hd.index(k)]
+        else:
+            return error, "", "", "", "", "", "", ""
+
+    # delete D in hr
+    del hr[-1]
+    h_active = hr + hd
+
+    return error, h_active, d0, d_final, y0, M_max, s_required, second_D_zero

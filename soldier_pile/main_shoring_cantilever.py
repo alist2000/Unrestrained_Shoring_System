@@ -2,7 +2,7 @@ from inputs import input_values
 
 from surchargeLoad import surcharge
 from shoring_cantilever import calculate_force_and_arm, control_solution, cantilever_soldier_pile, put_D_in_list, \
-    multiple_pressure_pile_spacing
+    multiple_pressure_pile_spacing, edit_parameters, calculate_D_and_control
 from shear_moment_diagram import diagram
 
 import sys
@@ -36,6 +36,7 @@ def main_unrestrained_shoring(inputs):
         delta_h = delta_h_list[project]
         h_active = h_active_list[project]
         h_passive = h_passive_list[project]
+        retaining_height = retaining_height_list[project]
         surcharge_depth = surcharge_depth_list[project]
         water_active = water_active_list[project]
         water_passive = water_passive_list[project]
@@ -51,7 +52,10 @@ def main_unrestrained_shoring(inputs):
             [gama_active, phi_active, state_active, beta_active, omega_active,
              delta_active
              ] = soil_properties_active_list[project]
-
+            hr, hd, number_of_layer_active, gama_active, phi_active, beta_active, omega_active, delta_active, water_active = edit_parameters(
+                retaining_height, h_active, number_of_layer_active, gama_active, phi_active, beta_active, omega_active,
+                delta_active, water_active)
+            h_active = hr + hd
             main_active = active_passive(h_active, water_active)
             soil_active, water_active, depth_list_active, h_water_active = main_active.pressure_calculator(
                 number_of_layer=number_of_layer_active,
@@ -66,6 +70,7 @@ def main_unrestrained_shoring(inputs):
 
             force_soil_active, arm_soil_active = calculate_force_and_arm(soil_active, water_active, main_active)
         else:
+            # must be developed here!
             EFPa = soil_properties_active_list[project]
 
         if formula_passive != "User Defined":
@@ -86,6 +91,7 @@ def main_unrestrained_shoring(inputs):
 
             force_soil_passive, arm_soil_passive = calculate_force_and_arm(soil_passive, water_passive, main_passive)
         else:
+            # must be developed here!
             EFPp = soil_properties_passive_list[project]
 
         main_surcharge = surcharge(unit_system, surcharge_depth, delta_h)
@@ -104,16 +110,32 @@ def main_unrestrained_shoring(inputs):
             [q, l1, l2] = surcharge_inputs_list[project]
             surcharge_force, surcharge_arm, surcharge_pressure, error_surcharge = main_surcharge.strip_load(q, l1, l2)
 
-        error, d0, d_final, y0, M_max, s_required, second_D_zero = cantilever_soldier_pile(unit_system, h_active,
-                                                                                           surcharge_force,
-                                                                                           surcharge_arm,
-                                                                                           surcharge_depth,
-                                                                                           force_soil_active,
-                                                                                           force_soil_passive,
-                                                                                           arm_soil_active,
-                                                                                           arm_soil_passive, FS,
-                                                                                           Pile_spacing,
-                                                                                           Fy)
+        error, h_active, d0, d_final, y0, M_max, s_required, second_D_zero = calculate_D_and_control(hr, hd,
+                                                                                                     retaining_height,
+                                                                                                     unit_system,
+                                                                                                     h_active,
+                                                                                                     surcharge_force,
+                                                                                                     surcharge_arm,
+                                                                                                     surcharge_depth,
+                                                                                                     force_soil_active,
+                                                                                                     force_soil_passive,
+                                                                                                     arm_soil_active,
+                                                                                                     arm_soil_passive,
+                                                                                                     FS,
+                                                                                                     Pile_spacing,
+                                                                                                     Fy)
+        if error != "No Error!":
+            return error
+        # error, d0, d_final, y0, M_max, s_required, second_D_zero = cantilever_soldier_pile(unit_system, h_active,
+        #                                                                                    surcharge_force,
+        #                                                                                    surcharge_arm,
+        #                                                                                    surcharge_depth,
+        #                                                                                    force_soil_active,
+        #                                                                                    force_soil_passive,
+        #                                                                                    arm_soil_active,
+        #                                                                                    arm_soil_passive, FS,
+        #                                                                                    Pile_spacing,
+        #                                                                                    Fy)
         depth_list_active[-1][-1] = depth_list_active[-1][-1].subs(D, second_D_zero)
         depth_list_passive[-1][-1] = depth_list_passive[-1][-1].subs(D, second_D_zero)
 
@@ -145,7 +167,7 @@ def main_unrestrained_shoring(inputs):
         else:
             A_required = V_max * 1000 / (0.44 * Fy)  # in^2
 
-    return load_diagram, shear_diagram, moment_diagram, M_max, V_max, s_required, A_required
+    return "No Error!", load_diagram, shear_diagram, moment_diagram, M_max, V_max, s_required, A_required
 
 
 output = main_unrestrained_shoring(input_values)
