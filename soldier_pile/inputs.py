@@ -50,17 +50,20 @@ elif surcharge_type == "Strip Load":
     l2 = ...
     surcharge_inputs = [q, l1, l2]
 
-if calculation_type == "Auto":
+Formula_active = "Coulomb"
+if Formula_active != "User Defined":
     gama_active = [120, 125]
     phi_active = [34, 36]
-    theory_active = "Coulomb"
     state_active = "active"
     beta_active = [0, 0]
     omega_active = [0, 0]
     delta_active = [0, 24]
-    soil_properties_active = [gama_active, phi_active, theory_active, state_active, beta_active, omega_active,
+    soil_properties_active = [gama_active, phi_active, state_active, beta_active, omega_active,
                               delta_active
                               ]
+
+Formula_passive = "Coulomb"
+if Formula_passive != "User Defined":
     gama_passive = [125]
     phi_passive = [36]
     theory_passive = "Coulomb"
@@ -68,7 +71,7 @@ if calculation_type == "Auto":
     beta_passive = [-32]
     omega_passive = [0]
     delta_passive = [24]
-    soil_properties_passive = [gama_passive, phi_passive, theory_passive, state_passive, beta_passive, omega_passive,
+    soil_properties_passive = [gama_passive, phi_passive, state_passive, beta_passive, omega_passive,
                                delta_passive
                                ]
 else:
@@ -89,7 +92,6 @@ selected_design_sections = ["W18", "W21", "W24", "W27"]
 
 input_values = {"number_of_project": number_of_project,
                 "unit_system": unit_system,
-                "calculation type": [calculation_type],
                 "delta_h": [delta_h],
                 "h_active": [h_active],
                 "h_passive": [h_passive],
@@ -101,6 +103,8 @@ input_values = {"number_of_project": number_of_project,
                 "number_of_layer_passive": [number_of_layer_passive],
                 "surcharge_type": [surcharge_type],
                 "surcharge_inputs": [surcharge_inputs],
+                "formula_active": [Formula_active],
+                "formula_passive": [Formula_passive],
                 "soil_properties_active": [soil_properties_active],
                 "soil_properties_passive": [soil_properties_passive],
                 "FS": [FS],

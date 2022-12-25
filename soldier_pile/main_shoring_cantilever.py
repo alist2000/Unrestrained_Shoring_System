@@ -22,40 +22,42 @@ import numpy as np
 def main_unrestrained_shoring(inputs):
     D = symbols("D")
 
-    [number_of_project, unit_system, calculation_type, delta_h, h_active, h_passive, retaining_height, surcharge_depth,
-     water_active,
-     water_passive,
-     number_of_layer_active,
-     number_of_layer_passive, surcharge_type, surcharge_inputs, soil_properties_active, soil_properties_passive, FS,
+    [number_of_project, unit_system, delta_h_list, h_active_list, h_passive_list, retaining_height_list,
+     surcharge_depth_list,
+     water_active_list,
+     water_passive_list,
+     number_of_layer_active_list,
+     number_of_layer_passive_list, surcharge_type_list, surcharge_inputs_list, formula_active_list,
+     formula_passive_list, soil_properties_active_list,
+     soil_properties_passive_list, FS,
      Pile_spacing, allowable_deflection, Fy, E, selected_design_sections] = inputs.values()
 
     for project in range(number_of_project):
-        calculation_type = calculation_type[project]
-        delta_h = delta_h[project]
-        h_active = h_active[project]
-        h_passive = h_passive[project]
-        surcharge_depth = surcharge_depth[project]
-        water_active = water_active[project]
-        water_passive = water_passive[project]
-        number_of_layer_active = number_of_layer_active[project]
-        number_of_layer_passive = number_of_layer_passive[project]
-        surcharge_type = surcharge_type[project]
+        delta_h = delta_h_list[project]
+        h_active = h_active_list[project]
+        h_passive = h_passive_list[project]
+        surcharge_depth = surcharge_depth_list[project]
+        water_active = water_active_list[project]
+        water_passive = water_passive_list[project]
+        number_of_layer_active = number_of_layer_active_list[project]
+        number_of_layer_passive = number_of_layer_passive_list[project]
+        surcharge_type = surcharge_type_list[project]
+        formula_active = formula_active_list[project]
+        formula_passive = formula_passive_list[project]
         FS = FS[project]
         Pile_spacing = Pile_spacing[project]
         Fy = Fy[project]
-        if calculation_type == "Auto":
-            [gama_active, phi_active, theory_active, state_active, beta_active, omega_active,
+        if formula_active != "User Defined":
+            [gama_active, phi_active, state_active, beta_active, omega_active,
              delta_active
-             ] = soil_properties_active[project]
-            [gama_passive, phi_passive, theory_passive, state_passive, beta_passive, omega_passive,
-             delta_passive
-             ] = soil_properties_passive[project]
+             ] = soil_properties_active_list[project]
+
             main_active = active_passive(h_active, water_active)
             soil_active, water_active, depth_list_active, h_water_active = main_active.pressure_calculator(
                 number_of_layer=number_of_layer_active,
                 gama=gama_active,
                 phi=phi_active,
-                theory=theory_active,
+                theory=formula_active,
                 state="active",
                 unit_system=unit_system,
                 beta=beta_active,
@@ -63,13 +65,19 @@ def main_unrestrained_shoring(inputs):
                 delta=delta_active)
 
             force_soil_active, arm_soil_active = calculate_force_and_arm(soil_active, water_active, main_active)
+        else:
+            EFPa = soil_properties_active_list[project]
 
+        if formula_passive != "User Defined":
+            [gama_passive, phi_passive, state_passive, beta_passive, omega_passive,
+             delta_passive
+             ] = soil_properties_passive_list[project]
             main_passive = active_passive(h_passive, water_passive)
             soil_passive, water_passive, depth_list_passive, h_water_passive = main_passive.pressure_calculator(
                 number_of_layer=number_of_layer_passive,
                 gama=gama_passive,
                 phi=phi_passive,
-                theory=theory_passive,
+                theory=formula_passive,
                 state="passive",
                 unit_system=unit_system,
                 beta=beta_passive,
@@ -77,26 +85,23 @@ def main_unrestrained_shoring(inputs):
                 delta=delta_passive)
 
             force_soil_passive, arm_soil_passive = calculate_force_and_arm(soil_passive, water_passive, main_passive)
-
-
         else:
-            EFPa = soil_properties_active[project]
-            EFPp = soil_properties_passive[project]
+            EFPp = soil_properties_passive_list[project]
 
         main_surcharge = surcharge(unit_system, surcharge_depth, delta_h)
 
         if surcharge_type == "uniform":
-            [q] = surcharge_inputs[project]
+            [q] = surcharge_inputs_list[project]
             surcharge_force, surcharge_arm, surcharge_pressure, error_surcharge = main_surcharge.uniform(q)
         elif surcharge_type == "Point Load":
-            [q, l1, teta] = surcharge_inputs[project]
+            [q, l1, teta] = surcharge_inputs_list[project]
             surcharge_force, surcharge_arm, surcharge_pressure, error_surcharge = main_surcharge.point_load(q, l1, teta)
 
         elif surcharge_type == "Line Load":
-            [q, l1] = surcharge_inputs[project]
+            [q, l1] = surcharge_inputs_list[project]
             surcharge_force, surcharge_arm, surcharge_pressure, error_surcharge = main_surcharge.line_load(q, l1)
         else:  # strip load
-            [q, l1, l2] = surcharge_inputs[project]
+            [q, l1, l2] = surcharge_inputs_list[project]
             surcharge_force, surcharge_arm, surcharge_pressure, error_surcharge = main_surcharge.strip_load(q, l1, l2)
 
         error, d0, d_final, y0, M_max, s_required, second_D_zero = cantilever_soldier_pile(unit_system, h_active,
