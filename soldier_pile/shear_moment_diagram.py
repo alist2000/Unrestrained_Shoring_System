@@ -20,11 +20,14 @@ def calculator_depth(depth, delta_h, delta_h_decimal, soil_pressure, water_press
         depth[j] = [
             i / pow(10, delta_h_decimal) if i / pow(10, delta_h_decimal) <=
                                             depth[j][
-                                                1] else depth[j][
-                1]
+                                                1] else depth_list[
+                -1]
             for i in
             range(0, int((depth_list[1] + delta_h - depth_list[0]) * pow(10, delta_h_decimal)),
                   int(delta_h * pow(10, delta_h_decimal)))]
+        # print(depth_list[-1])
+        # print(depth[j][-1])
+        # depth[j][-1] = depth_list[-1]
 
         soil = calculate_pressure(depth[j], soil_pressure[j])
         soil_copy = np.array(copy.deepcopy(soil))
@@ -233,6 +236,7 @@ class diagram:
             except:
                 moment = 0
             moment_values.append(moment)
+        moment_values[-1] = 0
         moment_values = np.array(moment_values)
 
         plot = plotter(depth, moment_values, "M", "Z", load_unit, length_unit)
