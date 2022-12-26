@@ -51,7 +51,7 @@ def control_solution(item):
 
 
 # function is ready when we have no surcharge loads.
-def cantilever_soldier_pile(unit_system, retaining_h, h_active, Surcharge_force, Surcharge_arm, Surcharge_depth,
+def cantilever_soldier_pile(unit_system, h_active, h_passive, Surcharge_force, Surcharge_arm, Surcharge_depth,
                             active_force,
                             passive_force,
                             active_arm,
@@ -70,6 +70,9 @@ def cantilever_soldier_pile(unit_system, retaining_h, h_active, Surcharge_force,
 
     D = symbols("D")
 
+    h_passive_copy = copy.deepcopy(h_passive)
+    h_passive_copy_2 = copy.deepcopy(h_passive)
+
     # calculating moment of surcharge
     Md_surcharge = (sum(h_active) - Surcharge_arm) * Surcharge_force * pile_spacing  # surcharge arm is from top layer.
     Md = moment_calculator(active_force, active_arm, pile_spacing)  # driving moment
@@ -81,15 +84,28 @@ def cantilever_soldier_pile(unit_system, retaining_h, h_active, Surcharge_force,
     D_zero = solve(equation, D)
     second_D_zero = solve(equation2, D)
     D_zero = control_solution(D_zero)
-    if D_zero != "There is no answer!" and D_zero >= 0:
-        D_final = 1.2 * D_zero
-        h_active[-1] = h_active[-1].subs(D, D_final)
+    h_passive_copy[-1] = h_passive_copy[-1].subs(D, D_zero)
+    D_zero_final = sum(h_passive_copy)
+    if D_zero != "There is no answer!" and D_zero_final >= 0:
+        D_final_final = 1.2 * D_zero_final
+        if len(h_passive_copy) > 1:
+            D_final = D_final_final - h_passive_copy[-2]
+        else:
+            D_final = D_final_final
+
     else:
         D_final = "There is no answer!"
         return "There is no answer for D0!", "", "", "", "", "", ""
 
     second_D_zero = control_solution(second_D_zero)
-    if second_D_zero == "There is no answer!" or second_D_zero < 0:
+    h_passive_copy[-1] = h_passive_copy_2[-1].subs(D, second_D_zero)
+    second_D_zero_final = sum(h_passive_copy)
+    if len(h_passive_copy) > 1:
+        second_D_zero = second_D_zero_final - h_passive_copy[-2]
+    else:
+        second_D_zero = second_D_zero_final
+    h_active[-1] = second_D_zero
+    if second_D_zero == "There is no answer!" or second_D_zero_final < 0:
         D_final = "There is no answer!"
         return "There is no answer for D0!", "", "", "", "", "", ""
 
@@ -107,9 +123,9 @@ def cantilever_soldier_pile(unit_system, retaining_h, h_active, Surcharge_force,
     Y = solve(equation_shear, D)
     Y = control_solution(Y)
     if Y == "There is no answer!":
-        return "There is no answer for Y! ( where shear equal to zero )", "", "", "", "", "", ""
+        return "There is no answer for Y! ( where shear equal to zero )", D_zero, D_final, "", "", "", second_D_zero
     elif Surcharge_depth > sum(h_active) + Y:
-        return "Surcharge depth couldn't be larger than H + Y0", "", "", "", "", "", ""
+        return "Surcharge depth couldn't be larger than H + Y0", D_zero, D_final, "", "", "", second_D_zero
     else:
         # active passive
         active_force_zero_shear = copy.deepcopy(active_force)
@@ -162,53 +178,6 @@ def multiple_pressure_pile_spacing(pressure, spacing):
         for j in range(len(pressure[i])):
             pressure[i][j] *= spacing
     return pressure
-
-
-def edit_parameters(retaining_height, height,
-                    number_of_layer,
-                    gama,
-                    phi,
-                    beta,
-                    omega,
-                    delta,
-                    water):
-    hr_list = []
-    hd_list = []
-    i = 0
-    for h in height[:-1]:  # last index is parametric ( D )
-        if h > retaining_height:
-            hr = retaining_height
-            hd = h - retaining_height
-            hr_list.append(hr)
-            hd_list.append(hd)
-            number_of_layer += 1
-            gama.insert(i + 1, gama[i])
-            phi.insert(i + 1, phi[i])
-            beta.insert(i + 1, beta[i])
-            omega.insert(i + 1, omega[i])
-            delta.insert(i + 1, delta[i])
-            water.insert(i + 1, water[i])
-            i += 1
-            for j in height[i:]:
-                hd_list.append(j)
-            return hr_list, hd_list, number_of_layer, gama, phi, beta, omega, delta, water
-
-        else:
-            hr_list.append(h)
-            retaining_height = retaining_height - h
-            i += 1
-        if retaining_height != 0:
-            hr_list.append(retaining_height)
-            number_of_layer += 1
-            gama.insert(-1, gama[-1])
-            phi.insert(-1, phi[-1])
-            beta.insert(-1, beta[-1])
-            omega.insert(-1, omega[-1])
-            delta.insert(-1, delta[-1])
-            water.insert(-1, water[-1])
-
-    hd_list.append(height[-1])  # final excavation depth : D
-    return hr_list, hd_list, number_of_layer, gama, phi, beta, omega, delta, water
 
 
 def calculate_D_and_control(hr, hd, retaining_h, unit_system, h_active,
