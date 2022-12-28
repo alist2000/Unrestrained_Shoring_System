@@ -183,12 +183,11 @@ def main_unrestrained_shoring(inputs):
             # if error != "No Error!":
             #     return error
 
-            # control D final with height of layer.
-            if y0 >= 0:
+            if hd_use == h_passive:
+                controller = True
                 Y_zero_shear = y0
                 s_required_final = s_required
                 M_max_final = M_max
-            if second_D_zero >= 0:
                 second_D_zero_final = second_D_zero
                 depth_list_active_final = depth_list_active
                 depth_list_passive_final = depth_list_passive
@@ -196,9 +195,21 @@ def main_unrestrained_shoring(inputs):
                 soil_passive_final = soil_passive
                 water_active_pressure_final = water_active_pressure
                 water_passive_pressure_final = water_passive_pressure
-            if hd_use == h_passive:
-                controller = True
             else:
+                # control D final with height of layer.
+                if 0 <= y0 < h_passive[i]:
+                    Y_zero_shear = y0
+                    s_required_final = s_required
+                    M_max_final = M_max
+                if 0 <= second_D_zero < h_passive[i]:
+                    second_D_zero_final = second_D_zero
+                    depth_list_active_final = depth_list_active
+                    depth_list_passive_final = depth_list_passive
+                    soil_active_final = soil_active
+                    soil_passive_final = soil_passive
+                    water_active_pressure_final = water_active_pressure
+                    water_passive_pressure_final = water_passive_pressure
+
                 if d_final > h_passive[i]:
                     controller = False
                     hd_use.insert(i, h_passive[i])
