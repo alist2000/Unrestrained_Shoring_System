@@ -160,7 +160,7 @@ def cantilever_soldier_pile(unit_system, h_active, h_passive, Surcharge_force, S
         else:
             s_required = M_max * 10 ** 6 / fb  # s unit --> mm^3
 
-    return "No Error!", D_zero, D_final, Y, M_max, s_required, second_D_zero
+    return "No Error!", float(D_zero), float(D_final), float(Y), float(M_max), float(s_required), float(second_D_zero)
 
 
 def put_D_in_list(my_list, d):
