@@ -107,7 +107,7 @@ h_passive = [20, D]
 retaining_height = 10
 surcharge_depth = retaining_height
 water_active = ["No", "Yes", "No"]
-water_passive = ["No", "Yes"]
+water_passive = ["Yes", "No"]
 number_of_layer_active = len(h_active)
 number_of_layer_passive = len(h_passive)
 
