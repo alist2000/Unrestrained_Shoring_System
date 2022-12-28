@@ -111,32 +111,26 @@ water_passive = ["Yes", "No"]
 number_of_layer_active = len(h_active)
 number_of_layer_passive = len(h_passive)
 
-q_min = 72
+# q_min = 72
 surcharge_type = "uniform"
 if surcharge_type == "uniform":
-    q = 68
-    if q < q_min:
-        q = q_min
+    q = 72
+    # if q < q_min:
+    #     q = q_min
     surcharge_inputs = [q]
 elif surcharge_type == "Point Load":
     q = ...
-    if q < q_min:
-        q = q_min
     l1 = ...
     teta = ...
     surcharge_inputs = [q, l1, teta]
 
 elif surcharge_type == "Line Load":
     q = ...
-    if q < q_min:
-        q = q_min
     l1 = ...
     surcharge_inputs = [q, l1]
 
 elif surcharge_type == "Strip Load":
     q = ...
-    if q < q_min:
-        q = q_min
     l1 = ...
     l2 = ...
     surcharge_inputs = [q, l1, l2]
