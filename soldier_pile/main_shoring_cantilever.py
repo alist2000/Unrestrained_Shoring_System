@@ -4,6 +4,7 @@ from surchargeLoad import surcharge
 from shoring_cantilever import calculate_force_and_arm, control_solution, cantilever_soldier_pile, put_D_in_list, \
     multiple_pressure_pile_spacing, calculate_D_and_control
 from shear_moment_diagram import diagram
+from database import SQL_reader
 
 import sys
 
@@ -30,8 +31,8 @@ def main_unrestrained_shoring(inputs):
      number_of_layer_active_list,
      number_of_layer_passive_list, surcharge_type_list, surcharge_inputs_list, formula_active_list,
      formula_passive_list, soil_properties_active_list,
-     soil_properties_passive_list, FS,
-     Pile_spacing, allowable_deflection, Fy, E, selected_design_sections] = inputs.values()
+     soil_properties_passive_list, FS_list,
+     Pile_spacing_list, allowable_deflection_list, Fy_list, E_list, selected_design_sections_list] = inputs.values()
 
     for project in range(number_of_project):
         delta_h = delta_h_list[project]
@@ -48,9 +49,12 @@ def main_unrestrained_shoring(inputs):
         surcharge_type = surcharge_type_list[project]
         formula_active = formula_active_list[project]
         formula_passive = formula_passive_list[project]
-        FS = FS[project]
-        Pile_spacing = Pile_spacing[project]
-        Fy = Fy[project]
+        FS = FS_list[project]
+        Pile_spacing = Pile_spacing_list[project]
+        allowable_deflection = allowable_deflection_list[project]
+        Fy = Fy_list[project]
+        E = E_list[project]
+        selected_design_sections = selected_design_sections_list[project]
 
         # *** calculate surcharge ***
         main_surcharge = surcharge(unit_system, surcharge_depth, delta_h)
@@ -259,7 +263,13 @@ def main_unrestrained_shoring(inputs):
         else:
             A_required = V_max * 1000 / (0.44 * Fy)  # in^2
 
-    return "No Error!", load_diagram, shear_diagram, moment_diagram, M_max_final, V_max, s_required_final, A_required
+        output_section_list = []
+        for w in selected_design_sections:
+            w = w[1:]
+            output_section = SQL_reader(w, A_required, s_required_final, unit_system)
+            output_section_list.append(output_section)
+
+    return "No Error!", load_diagram, shear_diagram, moment_diagram, M_max_final, V_max, s_required_final, A_required, output_section_list
 
 
 output = main_unrestrained_shoring(input_values)
