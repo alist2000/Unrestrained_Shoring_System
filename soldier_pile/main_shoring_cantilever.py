@@ -5,6 +5,7 @@ from shoring_cantilever import calculate_force_and_arm, control_solution, cantil
     multiple_pressure_pile_spacing, calculate_D_and_control
 from shear_moment_diagram import diagram
 from database import SQL_reader
+from deflection import deflection_calculator
 
 import sys
 
@@ -229,7 +230,6 @@ def main_unrestrained_shoring(inputs):
                 water_active_pressure_final = water_active_pressure
                 water_passive_pressure_final = water_passive_pressure
 
-
         # if second_D_zero > 0:
         depth_list_active_final[-1][-1] = depth_list_active_final[-1][-1].subs(D, second_D_zero_final)
         depth_list_passive_final[-1][-1] = depth_list_passive_final[-1][-1].subs(D, second_D_zero_final)
@@ -263,6 +263,7 @@ def main_unrestrained_shoring(inputs):
         shear_diagram, shear_values = main_diagram.shear_diagram(depth, sigma)
         moment_diagram, moment_values = main_diagram.moment_diagram(depth, shear_values)
 
+
         # calculate deflection
         delta_h_decimal = str(delta_h)[::-1].find('.')
         if delta_h_decimal == -1:
@@ -271,6 +272,7 @@ def main_unrestrained_shoring(inputs):
         PoF = round(0.25 * excavation_depth, delta_h_decimal)  # point of fixity --> B
         c = round((excavation_depth - PoF) / 2, delta_h_decimal)  # point c --> center of OB
 
+        delta_c = deflection_calculator(depth, moment_values, PoF, c)
 
         # shear control
         V_max = max(abs(shear_values))
