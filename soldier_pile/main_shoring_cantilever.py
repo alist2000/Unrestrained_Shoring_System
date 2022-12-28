@@ -189,31 +189,7 @@ def main_unrestrained_shoring(inputs):
 
             if hd_use == h_passive:
                 controller = True
-                Y_zero_shear = y0
-                s_required_final = s_required
-                M_max_final = M_max
-                second_D_zero_final = second_D_zero
-                depth_list_active_final = depth_list_active
-                depth_list_passive_final = depth_list_passive
-                soil_active_final = soil_active
-                soil_passive_final = soil_passive
-                water_active_pressure_final = water_active_pressure
-                water_passive_pressure_final = water_passive_pressure
             else:
-                # control D final with height of layer.
-                if 0 <= y0 < h_passive[i]:
-                    Y_zero_shear = y0
-                    s_required_final = s_required
-                    M_max_final = M_max
-                if 0 <= second_D_zero < h_passive[i]:
-                    second_D_zero_final = second_D_zero
-                    depth_list_active_final = depth_list_active
-                    depth_list_passive_final = depth_list_passive
-                    soil_active_final = soil_active
-                    soil_passive_final = soil_passive
-                    water_active_pressure_final = water_active_pressure
-                    water_passive_pressure_final = water_passive_pressure
-
                 if d_final > h_passive[i]:
                     controller = False
                     hd_use.insert(i, h_passive[i])
@@ -226,9 +202,40 @@ def main_unrestrained_shoring(inputs):
                     soil_passive_final = soil_passive_final[:len(h_passive)]
                     water_active_pressure_final = water_active_pressure_final[:len(h_active)]
                     water_passive_pressure_final = water_passive_pressure_final[:len(h_passive)]
+                # Y_zero_shear = y0
+                # s_required_final = s_required
+                # M_max_final = M_max
+                # second_D_zero_final = second_D_zero
+                # depth_list_active_final = depth_list_active
+                # depth_list_passive_final = depth_list_passive
+                # soil_active_final = soil_active
+                # soil_passive_final = soil_passive
+                # water_active_pressure_final = water_active_pressure
+                # water_passive_pressure_final = water_passive_pressure
+            # else:
+            # control D final with height of layer.
+            h_passive_copy = copy.deepcopy(h_passive)
+            h_passive_copy[-1] = h_passive_copy[-1].subs(D, second_D_zero)
+            if 0 <= y0 <= h_passive_copy[i]:
+                Y_zero_shear = y0
+                s_required_final = s_required
+                M_max_final = M_max
+            if 0 <= second_D_zero <= h_passive_copy[i]:
+                second_D_zero_final = second_D_zero
+                depth_list_active_final = depth_list_active
+                depth_list_passive_final = depth_list_passive
+                soil_active_final = soil_active
+                soil_passive_final = soil_passive
+                water_active_pressure_final = water_active_pressure
+                water_passive_pressure_final = water_passive_pressure
+
+
         # if second_D_zero > 0:
         depth_list_active_final[-1][-1] = depth_list_active_final[-1][-1].subs(D, second_D_zero_final)
         depth_list_passive_final[-1][-1] = depth_list_passive_final[-1][-1].subs(D, second_D_zero_final)
+        excavation_depth = 0
+        for i in depth_list_passive_final:
+            excavation_depth += float(sum(i))
         # else:
         #     del depth_list_active[-1]
         #     del depth_list_passive[-1]
@@ -255,6 +262,15 @@ def main_unrestrained_shoring(inputs):
         load_diagram = main_diagram.load_diagram(depth, sigma)
         shear_diagram, shear_values = main_diagram.shear_diagram(depth, sigma)
         moment_diagram, moment_values = main_diagram.moment_diagram(depth, shear_values)
+
+        # calculate deflection
+        delta_h_decimal = str(delta_h)[::-1].find('.')
+        if delta_h_decimal == -1:
+            delta_h_decimal = 0
+
+        PoF = round(0.25 * excavation_depth, delta_h_decimal)  # point of fixity --> B
+        c = round((excavation_depth - PoF) / 2, delta_h_decimal)  # point c --> center of OB
+
 
         # shear control
         V_max = max(abs(shear_values))
