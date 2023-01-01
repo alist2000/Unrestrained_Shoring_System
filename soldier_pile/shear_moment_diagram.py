@@ -18,9 +18,9 @@ def calculator_depth(depth, delta_h, delta_h_decimal, soil_pressure, water_press
     sigma_water = []
     for depth_list in depth:
         depth[j] = [
-            i / pow(10, delta_h_decimal) if i / pow(10, delta_h_decimal) <=
-                                            depth[j][
-                                                1] else depth_list[
+            round(i / pow(10, delta_h_decimal), delta_h_decimal) if i / pow(10, delta_h_decimal) <=
+                                                                    depth[j][
+                                                                        1] else depth_list[
                 -1]
             for i in
             range(0, int((depth_list[1] + delta_h - depth_list[0]) * pow(10, delta_h_decimal)),
