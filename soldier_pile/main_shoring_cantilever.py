@@ -259,20 +259,25 @@ def main_unrestrained_shoring(inputs):
                                water_passive_pressure_final)
 
         depth, sigma = main_diagram.base_calculate(delta_h)
+
         load_diagram = main_diagram.load_diagram(depth, sigma)
         shear_diagram, shear_values = main_diagram.shear_diagram(depth, sigma)
         moment_diagram, moment_values = main_diagram.moment_diagram(depth, shear_values)
-
 
         # calculate deflection
         delta_h_decimal = str(delta_h)[::-1].find('.')
         if delta_h_decimal == -1:
             delta_h_decimal = 0
 
-        PoF = round(0.25 * excavation_depth, delta_h_decimal)  # point of fixity --> B
-        c = round((excavation_depth - PoF) / 2, delta_h_decimal)  # point c --> center of OB
+        j = 0
+        for i in depth:
+            depth[j] = round(i, delta_h_decimal)
+            j += 1
 
-        delta_c = deflection_calculator(depth, moment_values, PoF, c)
+        PoF = round(0.25 * excavation_depth, delta_h_decimal)  # point of fixity --> B
+        c = round((excavation_depth - PoF) / 2, delta_h_decimal) + PoF  # point c --> center of OB
+        sum_hr = round(sum(hr), delta_h_decimal)
+        deflection = deflection_calculator(delta_h, delta_h_decimal, depth, moment_values, PoF, c, sum_hr)
 
         # shear control
         V_max = max(abs(shear_values))
@@ -287,7 +292,32 @@ def main_unrestrained_shoring(inputs):
             output_section = SQL_reader(w, A_required, s_required_final, unit_system)
             output_section_list.append(output_section)
 
-    return "No Error!", load_diagram, shear_diagram, moment_diagram, M_max_final, V_max, s_required_final, A_required, output_section_list
+        final_deflection = []
+        for item in output_section_list:
+            section, Ix = item.values()
+            if section == "" or Ix == "":
+                error = "No answer! No section is appropriate for your situation!"
+                return error
+            else:
+                if unit_system == "us":
+                    EI = E * 1000 * float(Ix) / (12 ** 3)
+                else:
+                    EI = E * float(Ix) * (10 ** 9)
+                deflection_copy = copy.deepcopy(deflection)
+                for i in range(len(deflection)):
+                    deflection_copy[i] = deflection_copy[i] / EI
+                final_deflection.append(deflection_copy)
+                DCR_deflection = []
+                max_delta_list = []
+                for delta in final_deflection:
+                    max_delta = max(delta)
+                    min_delta = abs(min(delta))
+                    max_delta = max(min_delta, max_delta)
+                    max_delta_list.append(max_delta)
+                    DCR = allowable_deflection / max_delta
+                    DCR_deflection.append(DCR)
+
+    return "No Error!", load_diagram, shear_diagram, moment_diagram, M_max_final, V_max, s_required_final, A_required, output_section_list, final_deflection, DCR_deflection, max_delta_list
 
 
 output = main_unrestrained_shoring(input_values)
