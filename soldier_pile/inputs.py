@@ -106,8 +106,8 @@ h_active = [10, 20, D]
 h_passive = [20, D]
 retaining_height = 10
 surcharge_depth = retaining_height
-water_active = ["No", "Yes", "No"]
-water_passive = ["Yes", "No"]
+water_active = ["No", "No", "No"]
+water_passive = ["No", "No"]
 number_of_layer_active = len(h_active)
 number_of_layer_passive = len(h_passive)
 
@@ -176,8 +176,8 @@ else:
 FS = 1.3
 Pile_spacing = 6  # ft
 allowable_deflection = 0.5  # in
-Fy = 36  # ksi
-E = 29000  # ksi
+Fy = 36  # ksi or MpaNo
+E = 29000  # ksi or MPa
 
 selected_design_sections = ["W18", "W21", "W24", "W27"]
 
