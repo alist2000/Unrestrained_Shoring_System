@@ -286,19 +286,19 @@ def main_unrestrained_shoring(inputs):
         else:
             A_required = V_max * 1000 / (0.44 * Fy)  # in^2
 
+        # export appropriate section
         output_section_list = []
         for w in selected_design_sections:
             w = w[1:]
             output_section = SQL_reader(w, A_required, s_required_final, unit_system)
             output_section_list.append(output_section)
 
+        #  divide deflections by EI of every section
         final_deflection = []
         for item in output_section_list:
             section, Ix = item.values()
-            if section == "" or Ix == "":
-                error = "No answer! No section is appropriate for your situation!"
-                return error
-            else:
+            #  control available sections
+            if section != "" and Ix != "":
                 if unit_system == "us":
                     EI = E * 1000 * float(Ix) / (12 ** 3)
                 else:
@@ -316,6 +316,12 @@ def main_unrestrained_shoring(inputs):
                     max_delta_list.append(max_delta)
                     DCR = allowable_deflection / max_delta
                     DCR_deflection.append(DCR)
+
+        #  check error for available sections according to S and A.
+        #  deflection ratio don't be checked when export sections.(Ix not control)
+        if final_deflection is []:
+            section_error = "No answer! No section is appropriate for your situation!"
+            return section_error
 
     return "No Error!", load_diagram, shear_diagram, moment_diagram, M_max_final, V_max, s_required_final, A_required, output_section_list, final_deflection, DCR_deflection, max_delta_list
 
