@@ -13,8 +13,9 @@ from plotly.graph_objs import Layout
 from shear_moment_diagram import plotter
 
 
-def deflection_calculator(delta_h, delta_h_decimal, depth, moment, PoF, c, hr):
+def deflection_calculator(delta_h, delta_h_decimal, depth, moment, PoF, c, hr, final_depth):
     """
+    :param final_depth:
     :param delta_h: for separation
     :param delta_h_decimal: number of decimal
     :param depth: unit -> ft or m
@@ -73,52 +74,54 @@ def deflection_calculator(delta_h, delta_h_decimal, depth, moment, PoF, c, hr):
         x_point_moment_last -= 1
         deflection3.append(delta_xb)
 
-    # range 2 and 3 --> BC and CO ==> BO
-    x_point_moment_start = copy.deepcopy(PoF_point)
-    end_point = copy.deepcopy(x_point_moment_start)
-    O_point = -1  # last index
-    O = depth[O_point]
-    OB = round(O - B, delta_h_decimal)
-    OC = OB - BC
-    OC_list = [i / pow(10, delta_h_decimal) if i / pow(10, delta_h_decimal) <=
-
-                                               OC else OC for i in
-               range(0, int((OC + delta_h) * pow(10, delta_h_decimal)),
-                     int(delta_h * pow(10, delta_h_decimal)))]
-    OB_list = [
-        i / pow(10, delta_h_decimal) if i / pow(10, delta_h_decimal) <=
-
-                                        OB else OB for i in
-        range(0, int((OB + delta_h) * pow(10, delta_h_decimal)),
-              int(delta_h * pow(10, delta_h_decimal)))]
-    BO = np.array(OB_list)
-    BO_copy = copy.deepcopy(BO)
-    for x in BO:
-        x_point = list(BO_copy).index(x)
-        if x != 0.0:
-            delta_xb = abs(spi.simpson(moment[end_point:x_point_moment_start] * BO[:x_point],
-                                       depth[end_point:x_point_moment_start]))
-        else:
-            delta_xb = 0.
-
-        x_point_moment_start += 1
-        if round(x, delta_h_decimal) <= BC:
-            deflection2.append(delta_xb)
-        else:
-            delta_copy = copy.deepcopy(delta_xb)
-            deflection1.append(delta_copy)
+    # # range 2 and 3 --> BC and CO ==> BO
+    # x_point_moment_start = copy.deepcopy(PoF_point)
+    # end_point = copy.deepcopy(x_point_moment_start)
+    # O_point = -1  # last index
+    # O = depth[O_point]
+    # OB = round(O - B, delta_h_decimal)
+    # OC = OB - BC
+    # OC_list = [i / pow(10, delta_h_decimal) if i / pow(10, delta_h_decimal) <=
+    #
+    #                                            OC else OC for i in
+    #            range(0, int((OC + delta_h) * pow(10, delta_h_decimal)),
+    #                  int(delta_h * pow(10, delta_h_decimal)))]
+    # OB_list = [
+    #     i / pow(10, delta_h_decimal) if i / pow(10, delta_h_decimal) <=
+    #
+    #                                     OB else OB for i in
+    #     range(0, int((OB + delta_h) * pow(10, delta_h_decimal)),
+    #           int(delta_h * pow(10, delta_h_decimal)))]
+    # BO = np.array(OB_list)
+    # BO_copy = copy.deepcopy(BO)
+    # for x in BO:
+    #     x_point = list(BO_copy).index(x)
+    #     if x != 0.0:
+    #         delta_xb = abs(spi.simpson(moment[end_point:x_point_moment_start] * BO[:x_point],
+    #                                    depth[end_point:x_point_moment_start]))
+    #     else:
+    #         delta_xb = 0.
+    #
+    #     x_point_moment_start += 1
+    #     if round(x, delta_h_decimal) <= BC:
+    #         deflection2.append(delta_xb)
+    #     else:
+    #         delta_copy = copy.deepcopy(delta_xb)
+    #         deflection1.append(delta_copy)
 
     for i in range(len(deflection3)):
         deflection3[i] = -(deflection3[i] + delta_cb * AB_list[i] / BC)
-    del deflection3[0]
+    # del deflection3[0]
 
-    for i in range(len(deflection2)):
-        deflection2[i] = - deflection2[i] + delta_cb * BC_list[i] / BC
-
-    for i in range(len(deflection1)):
-        deflection1[i] = -(deflection1[i] - delta_cb * (OC_list[i] + BC) / BC)
-    deflection = [np.array(deflection1), np.array(deflection2), np.array(deflection3)]
+    # for i in range(len(deflection2)):
+    #     deflection2[i] = - deflection2[i] + delta_cb * BC_list[i] / BC
+    #
+    # for i in range(len(deflection1)):
+    #     deflection1[i] = -(deflection1[i] - delta_cb * (OC_list[i] + BC) / BC)
+    deflection = [np.array(deflection1), 0]
     deflection = np.array(deflection, dtype="object")
-    deflection_total = deflection3[::-1] + deflection2 + deflection1
-    plot = plotter(depth, deflection_total, "deflection", "Z", "in", "ft")
+    # deflection_total = deflection3[::-1] + deflection2 + deflection1
+    deflection_total = deflection3[::-1] + [0]
+    deflection_depth = AB_list + [final_depth]
+    plot = plotter(deflection_depth, deflection_total, "deflection", "Z", "in", "ft")
     return deflection_total
