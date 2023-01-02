@@ -30,7 +30,7 @@ def deflection_calculator(delta_h, delta_h_decimal, depth, moment, PoF, c, hr):
     PoF_point = list(depth_copy).index(round(PoF + hr, delta_h_decimal))
     B = depth[PoF_point]
     C = depth[c_point]
-    BC = C - B
+    BC = round(C - B, delta_h_decimal)
 
     BC_list = [
         i / pow(10, delta_h_decimal) if i / pow(10, delta_h_decimal) <=
@@ -110,6 +110,7 @@ def deflection_calculator(delta_h, delta_h_decimal, depth, moment, PoF, c, hr):
 
     for i in range(len(deflection3)):
         deflection3[i] = -(deflection3[i] + delta_cb * AB_list[i] / BC)
+    del deflection3[0]
 
     for i in range(len(deflection2)):
         deflection2[i] = - deflection2[i] + delta_cb * BC_list[i] / BC
@@ -117,7 +118,7 @@ def deflection_calculator(delta_h, delta_h_decimal, depth, moment, PoF, c, hr):
     for i in range(len(deflection1)):
         deflection1[i] = -(deflection1[i] - delta_cb * (OC_list[i] + BC) / BC)
     deflection = [np.array(deflection1), np.array(deflection2), np.array(deflection3)]
-    deflection = np.array(deflection)
+    deflection = np.array(deflection, dtype="object")
     deflection_total = deflection3[::-1] + deflection2 + deflection1
     plot = plotter(depth, deflection_total, "deflection", "Z", "in", "ft")
     return deflection_total
