@@ -87,7 +87,7 @@ def main_unrestrained_shoring(inputs):
 
         else:
             # must be developed here!
-            EFPa = soil_properties_active_list[project]
+            [EFPa, Ka] = soil_properties_active_list[project]
             # hr, hd, EFPa, water_active = edit_parameters_user_defined(retaining_height, h_active,
             #                                                           number_of_layer_active, EFPa,
             #                                                           water_active)
@@ -98,7 +98,7 @@ def main_unrestrained_shoring(inputs):
              ] = soil_properties_passive_list[project]
         else:
             # must be developed here!
-            EFPp = soil_properties_passive_list[project]
+            [EFPp] = soil_properties_passive_list[project]
 
         h_active_main = hr + hd
         h_passive_main = hd
@@ -113,8 +113,8 @@ def main_unrestrained_shoring(inputs):
             layer_number_active = len(h_active_use)
             layer_number_passive = len(h_passive_use)
 
+            main_active = active_passive(h_active_use, water_active[:layer_number_active])
             if formula_active != "User Defined":
-                main_active = active_passive(h_active_use, water_active[:layer_number_active])
                 soil_active, water_active_pressure, depth_list_active, h_water_active = main_active.pressure_calculator(
                     number_of_layer=layer_number_active,
                     gama=gama_active[:layer_number_active],
@@ -128,18 +128,25 @@ def main_unrestrained_shoring(inputs):
                 force_soil_active, arm_soil_active = calculate_force_and_arm(soil_active, water_active_pressure,
                                                                              main_active)
             else:
-                soil_active = []
-                for i in range(layer_number_active):
-                    soil_active_pressure = EFPa[i] * h_active_use[i]
-                    soil_active.append(soil_active_pressure)
-                    # water must be calculated
-                    # forces and arms also!
+                # we have EFP = gama * K. assume K = 1 and gama = EFP. other values is not necessary.
+                soil_active, water_active_pressure, depth_list_active, h_water_active = main_active.pressure_calculator(
+                    number_of_layer=layer_number_active,
+                    gama=EFPa[:layer_number_active],
+                    phi=None,  # this value is not necessary.
+                    theory=formula_active,
+                    state="active",
+                    unit_system=unit_system,
+                    beta=None,  # this value is not necessary.
+                    omega=None,  # this value is not necessary.
+                    delta=None)  # this value is not necessary.
+                force_soil_active, arm_soil_active = calculate_force_and_arm(soil_active, water_active_pressure,
+                                                                             main_active)
 
+            main_passive = active_passive(h_passive_use, water_passive[:layer_number_passive])
             if formula_passive != "User Defined":
-                main_passive = active_passive(h_passive_use, water_passive[:layer_number_passive])
                 soil_passive, water_passive_pressure, depth_list_passive, h_water_passive = main_passive.pressure_calculator(
-                    number_of_layer=layer_number_passive,
                     gama=gama_passive[:layer_number_passive],
+                    number_of_layer=layer_number_passive,
                     phi=phi_passive[:layer_number_passive],
                     theory=formula_passive,
                     state="passive",
@@ -147,16 +154,22 @@ def main_unrestrained_shoring(inputs):
                     beta=beta_passive[:layer_number_passive],
                     omega=omega_passive[:layer_number_passive],
                     delta=delta_passive[:layer_number_passive])
-
                 force_soil_passive, arm_soil_passive = calculate_force_and_arm(soil_passive, water_passive_pressure,
                                                                                main_passive)
             else:
-                soil_passive = []
-                for i in range(layer_number_passive):
-                    soil_passive_pressure = EFPp[i] * h_passive_use[i]
-                    soil_passive.append(soil_passive_pressure)
-                    # water must be calculated
-                    # forces and arms also!
+                soil_passive, water_passive_pressure, depth_list_passive, h_water_passive = main_passive.pressure_calculator(
+                    number_of_layer=layer_number_passive,
+                    gama=EFPp[:layer_number_passive],
+                    phi=None,  # this value is not necessary.
+                    theory=formula_passive,
+                    state="passive",
+                    unit_system=unit_system,
+                    beta=None,  # this value is not necessary.
+                    omega=None,  # this value is not necessary.
+                    delta=None)  # this value is not necessary.
+
+                force_soil_passive, arm_soil_passive = calculate_force_and_arm(soil_passive, water_passive_pressure,
+                                                                               main_passive)
 
             error, d0, d_final, y0, M_max, s_required, second_D_zero = cantilever_soldier_pile(unit_system,
                                                                                                h_active_use, hd_use,
@@ -171,49 +184,7 @@ def main_unrestrained_shoring(inputs):
                                                                                                Fy)
             if error != "No Error!":
                 return error
-            # error, h_active, d0, d_final, y0, M_max, s_required, second_D_zero = calculate_D_and_control(hr, hd,
-            #                                                                                              retaining_height,
-            #                                                                                              unit_system,
-            #                                                                                              h_active,
-            #                                                                                              surcharge_force,
-            #                                                                                              surcharge_arm,
-            #                                                                                              surcharge_depth,
-            #                                                                                              force_soil_active,
-            #                                                                                              force_soil_passive,
-            #                                                                                              arm_soil_active,
-            #                                                                                              arm_soil_passive,
-            #                                                                                              FS,
-            #                                                                                              Pile_spacing,
-            #                                                                                              Fy)
-            # if error != "No Error!":
-            #     return error
 
-            if hd_use == h_passive:
-                controller = True
-            else:
-                if d_final > h_passive[i]:
-                    controller = False
-                    hd_use.insert(i, h_passive[i])
-                    i += 1
-                else:
-                    controller = True
-                    h_active = hr + hd_use
-                    h_passive = hd_use
-                    soil_active_final = soil_active_final[:len(h_active)]
-                    soil_passive_final = soil_passive_final[:len(h_passive)]
-                    water_active_pressure_final = water_active_pressure_final[:len(h_active)]
-                    water_passive_pressure_final = water_passive_pressure_final[:len(h_passive)]
-                # Y_zero_shear = y0
-                # s_required_final = s_required
-                # M_max_final = M_max
-                # second_D_zero_final = second_D_zero
-                # depth_list_active_final = depth_list_active
-                # depth_list_passive_final = depth_list_passive
-                # soil_active_final = soil_active
-                # soil_passive_final = soil_passive
-                # water_active_pressure_final = water_active_pressure
-                # water_passive_pressure_final = water_passive_pressure
-            # else:
             # control D final with height of layer.
             h_passive_copy = copy.deepcopy(h_passive)
             h_passive_copy[-1] = h_passive_copy[-1].subs(D, second_D_zero)
@@ -230,17 +201,51 @@ def main_unrestrained_shoring(inputs):
                 water_active_pressure_final = water_active_pressure
                 water_passive_pressure_final = water_passive_pressure
 
-        # if second_D_zero > 0:
+            if hd_use == h_passive:
+                controller = True
+            else:
+                if d_final > h_passive[i]:
+                    controller = False
+                    hd_use.insert(i, h_passive[i])
+                    i += 1
+                else:
+                    controller = True
+                    h_active = hr + hd_use
+                    h_passive = hd_use
+                    soil_active_final = soil_active_final[:len(h_active)]
+                    soil_passive_final = soil_passive_final[:len(h_passive)]
+                    water_active_pressure_final = water_active_pressure_final[:len(h_active)]
+                    water_passive_pressure_final = water_passive_pressure_final[:len(h_passive)]
+
+        #  Control R: summation of horizontal forces.
+        controller2 = True
+        passive_force_result = 0
+        active_force_result = 0
+        while controller2:
+            force_soil_active_final = put_D_in_list(force_soil_active, d_final)
+            force_soil_passive_final = put_D_in_list(force_soil_passive, d_final)
+            for layer in force_soil_passive_final:
+                for force in layer:
+                    passive_force_result += force
+            for layer in force_soil_active_final:
+                for force in layer:
+                    active_force_result += force
+            active_force_result += surcharge_force
+            R = active_force_result - passive_force_result
+            # passive force must be greater than active.
+            if R > 0:
+                controller2 = True
+                # fail! --> increase D
+                d_final += delta_h
+            else:
+                controller2 = False
+
         depth_list_active_final[-1][-1] = depth_list_active_final[-1][-1].subs(D, second_D_zero_final)
         depth_list_passive_final[-1][-1] = depth_list_passive_final[-1][-1].subs(D, second_D_zero_final)
         excavation_depth = 0
         for i in depth_list_passive_final:
             excavation_depth += float(sum(i))
-        # else:
-        #     del depth_list_active[-1]
-        #     del depth_list_passive[-1]
-        #     depth_list_active[-1][-1] += second_D_zero
-        #     depth_list_passive[-1][-1] += second_D_zero
+
         soil_active_final = put_D_in_list(soil_active_final, second_D_zero_final)
         soil_passive_final = put_D_in_list(soil_passive_final, second_D_zero_final)
         water_active_pressure_final = put_D_in_list(water_active_pressure_final, second_D_zero_final)
@@ -259,7 +264,6 @@ def main_unrestrained_shoring(inputs):
                                water_passive_pressure_final)
 
         depth, sigma = main_diagram.base_calculate(delta_h)
-
         load_diagram = main_diagram.load_diagram(depth, sigma)
         shear_diagram, shear_values = main_diagram.shear_diagram(depth, sigma)
         moment_diagram, moment_values = main_diagram.moment_diagram(depth, shear_values)
@@ -296,13 +300,13 @@ def main_unrestrained_shoring(inputs):
         #  divide deflections by EI of every section
         final_deflection = []
         for item in output_section_list:
-            section, Ix = item.values()
+            section, Ix, section_area, Sx = item.values()
             #  control available sections
             if section != "" and Ix != "":
                 if unit_system == "us":
-                    EI = E * 1000 * float(Ix) / (12 ** 3)
+                    EI = E * 1000 * float(Ix) / (12 ** 3)  # E: Ksi , M: lb.ft
                 else:
-                    EI = E * float(Ix) * (10 ** 9)
+                    EI = E * float(Ix) * (10 ** 9)  # E: Mpa , M: N.m
                 deflection_copy = copy.deepcopy(deflection)
                 for i in range(len(deflection)):
                     deflection_copy[i] = deflection_copy[i] / EI
@@ -319,7 +323,7 @@ def main_unrestrained_shoring(inputs):
 
         #  check error for available sections according to S and A.
         #  deflection ratio don't be checked when export sections.(Ix not control)
-        if final_deflection is []:
+        if not final_deflection:
             section_error = "No answer! No section is appropriate for your situation!"
             return section_error
 
