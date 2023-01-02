@@ -25,6 +25,11 @@ def calculator_depth(depth, delta_h, delta_h_decimal, soil_pressure, water_press
             for i in
             range(0, int((depth_list[1] + delta_h - depth_list[0]) * pow(10, delta_h_decimal)),
                   int(delta_h * pow(10, delta_h_decimal)))]
+        # if j != 0:
+        #     del depth[j][0]
+        #     del soil_pressure[j][0]
+        #     del water_pressure[j][0]
+
         # print(depth_list[-1])
         # print(depth[j][-1])
         # depth[j][-1] = depth_list[-1]
@@ -185,8 +190,18 @@ class diagram:
 
         for i in range(len(surcharge_pressure)):
             edited_sigma[i] += surcharge_pressure[i]
+
+        unique_depth = []
+        for i in range(len(edited_depth)):
+            if edited_depth[i] not in unique_depth:
+                unique_depth.append(edited_depth[i])
+            else:
+                del edited_sigma[i]
+
+        unique_depth = np.array(unique_depth)
         edited_sigma = np.array(edited_sigma)
-        return edited_depth, edited_sigma
+
+        return unique_depth, edited_sigma
 
     def load_diagram(self, depth, sigma_final):
         unit_system = self.unit_system
