@@ -240,6 +240,10 @@ def main_unrestrained_shoring(inputs):
             else:
                 controller2 = False
 
+        h_active_for_def = copy.deepcopy(h_active)
+        h_active_for_def[-1] = h_active_for_def[-1].subs(D, d_final)
+        final_h_active_for_def = float(sum(h_active_for_def))
+
         depth_list_active_final[-1][-1] = depth_list_active_final[-1][-1].subs(D, second_D_zero_final)
         depth_list_passive_final[-1][-1] = depth_list_passive_final[-1][-1].subs(D, second_D_zero_final)
         excavation_depth = 0
@@ -281,7 +285,8 @@ def main_unrestrained_shoring(inputs):
         PoF = round(0.25 * excavation_depth, delta_h_decimal)  # point of fixity --> B
         c = round((excavation_depth - PoF) / 2, delta_h_decimal) + PoF  # point c --> center of OB
         sum_hr = round(sum(hr), delta_h_decimal)
-        deflection = deflection_calculator(delta_h, delta_h_decimal, depth, moment_values, PoF, c, sum_hr)
+        deflection = deflection_calculator(delta_h, delta_h_decimal, depth, moment_values, PoF, c, sum_hr,
+                                           final_h_active_for_def)
 
         # shear control
         V_max = max(abs(shear_values))
@@ -307,6 +312,7 @@ def main_unrestrained_shoring(inputs):
                     EI = E * 1000 * float(Ix) / (12 ** 3)  # E: Ksi , M: lb.ft
                 else:
                     EI = E * float(Ix) * (10 ** 9)  # E: Mpa , M: N.m
+
                 deflection_copy = copy.deepcopy(deflection)
                 for i in range(len(deflection)):
                     deflection_copy[i] = deflection_copy[i] / EI
