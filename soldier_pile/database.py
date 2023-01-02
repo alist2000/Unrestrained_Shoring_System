@@ -26,6 +26,7 @@ except:
 
 
 def SQL_reader(w, A_min, S_min, unit_system):
+    w = str(w)
     # dbase = sqlite3.connect('/app/app/bfp/database/stahl.db')  # Open a database File in host
     dbase = sqlite3.connect('../../database/stahl_' + unit_system + '.db')  # Open a database File in local
     cursor = dbase.cursor()
@@ -36,31 +37,22 @@ def SQL_reader(w, A_min, S_min, unit_system):
     for item in parameters:
         if float(item[2]) >= A_min and float(item[3]) >= S_min:
             solution.append(item)
-
-    # # all section that is ok
-    # section_list = []
-    # Ix_list = []
-    # weight_list = []
-    # for i in solution:
-    #     section = i[0]
-    #     Ix = i[1]
-    #     weight = i[4]
-    #     section_list.append(section)
-    #     Ix_list.append(Ix)
-    #     weight_list.append(weight)
-    weight = 9999999999999999 # just a big number.
+    weight = 9999999999999999  # just a big number.
     # choose section with less weight
     for i in solution:
         if float(i[4]) <= weight:
             final = i
     try:
         section = final[0]
-        Ix = final[1]
+        Ix = float(final[1])
+        area = float(final[2])
+        Sx = float(final[3])
     except:
         section = ""
         Ix = ""
+        area = ""
+        Sx = ""
     dbase.close()
-    return {"section": section, "Ix": Ix}
+    return {"section": section, "Ix": Ix, "area": area, "Sx": Sx}
 
-
-output = SQL_reader('40', 150, 1900, 'us')
+# output = SQL_reader('40', 150, 1900, 'us')
