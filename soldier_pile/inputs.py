@@ -150,11 +150,12 @@ if Formula_active != "User Defined":
                               delta_active
                               ]
 else:
-    EFPa = ...  # gama * Ka
-    hr, hd, EFPa, number_of_layer_passive, water_active = edit_parameters_user_defined(retaining_height, h_active,
+    EFPa = [65, 70, 70]  # gama * Ka
+    Ka_surcharge = 0.8
+    hr, hd, number_of_layer_passive, EFPa, water_active = edit_parameters_user_defined(retaining_height, h_active,
                                                                                        number_of_layer_active, EFPa,
                                                                                        water_active)
-    soil_properties_active = [EFPa]
+    soil_properties_active = [EFPa, Ka_surcharge]
 
 Formula_passive = "Coulomb"
 if Formula_passive != "User Defined":
@@ -170,7 +171,7 @@ if Formula_passive != "User Defined":
                                ]
 else:
 
-    EFPp = ...  # gama * Kp
+    EFPp = [154, 154]  # gama * Kp
     soil_properties_passive = [EFPp]
 
 FS = 1.3
