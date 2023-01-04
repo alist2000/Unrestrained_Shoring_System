@@ -112,28 +112,49 @@ number_of_layer_active = len(h_active)
 number_of_layer_passive = len(h_passive)
 
 # q_min = 72
-surcharge_type = "uniform"
-if surcharge_type == "uniform":
-    q = 72
-    # if q < q_min:
-    #     q = q_min
-    surcharge_inputs = [q]
-elif surcharge_type == "Point Load":
-    q = ...
-    l1 = ...
-    teta = ...
-    surcharge_inputs = [q, l1, teta]
+surcharge_type = ["Uniform"]
+q_all = []
+l1_all = []
+l2_all = []
+teta_all = []
+for i in range(len(surcharge_type)):
+    if surcharge_type[i] == "Uniform":
+        q = 72 / 0.283
+        q_all.append(q)
+        l1_all.append("")
+        l2_all.append("")
+        teta_all.append("")
 
-elif surcharge_type == "Line Load":
-    q = ...
-    l1 = ...
-    surcharge_inputs = [q, l1]
+        # if q < q_min:
+        #     q = q_min
+    elif surcharge_type[i] == "Point Load":
+        q = 100000
+        l1 = 1
+        teta = 0
+        q_all.append(q)
+        l1_all.append(l1)
+        l2_all.append("")
+        teta_all.append(teta)
 
-elif surcharge_type == "Strip Load":
-    q = ...
-    l1 = ...
-    l2 = ...
-    surcharge_inputs = [q, l1, l2]
+    elif surcharge_type[i] == "Line Load":
+        q = ...
+        l1 = ...
+        q_all.append(q)
+        l1_all.append(l1)
+        l2_all.append("")
+        teta_all.append("")
+
+    elif surcharge_type[i] == "Strip Load":
+        q = ...
+        l1 = ...
+        l2 = ...
+        q_all.append(q)
+        l1_all.append(l1)
+        l2_all.append(l2)
+        teta_all.append("")
+
+
+surcharge_inputs = [q_all, l1_all, l2_all, teta_all]
 
 Formula_active = "Coulomb"
 if Formula_active != "User Defined":
@@ -150,8 +171,8 @@ if Formula_active != "User Defined":
                               delta_active
                               ]
 else:
-    EFPa = [65, 70, 70]  # gama * Ka
-    Ka_surcharge = 0.8
+    EFPa = [33.96, 26.875, 26.875]  # gama * Ka
+    Ka_surcharge = 0.283
     hr, hd, number_of_layer_passive, EFPa, water_active = edit_parameters_user_defined(retaining_height, h_active,
                                                                                        number_of_layer_active, EFPa,
                                                                                        water_active)
@@ -171,7 +192,7 @@ if Formula_passive != "User Defined":
                                ]
 else:
 
-    EFPp = [154, 154]  # gama * Kp
+    EFPp = [150, 150]  # gama * Kp
     soil_properties_passive = [EFPp]
 
 FS = 1.3
