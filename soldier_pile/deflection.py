@@ -123,5 +123,5 @@ def deflection_calculator(delta_h, delta_h_decimal, depth, moment, PoF, c, hr, f
     # deflection_total = deflection3[::-1] + deflection2 + deflection1
     deflection_total = deflection3[::-1] + [0]
     deflection_depth = AB_list + [final_depth]
-    plot = plotter(deflection_depth, deflection_total, "deflection", "Z", "in", "ft")
-    return deflection_total
+    # plot = plotter(deflection_depth, deflection_total, "deflection", "Z", "in", "ft")
+    return deflection_depth, deflection_total
