@@ -25,7 +25,7 @@ except:
     pass
 
 
-def SQL_reader(w, A_min, S_min, unit_system):
+def SQL_reader(w, A_min, S_min, Ix_min, unit_system):
     w = str(w)
     # dbase = sqlite3.connect('/app/app/bfp/database/stahl.db')  # Open a database File in host
     dbase = sqlite3.connect('../../database/stahl_' + unit_system + '.db')  # Open a database File in local
@@ -33,9 +33,10 @@ def SQL_reader(w, A_min, S_min, unit_system):
     sql_select_Query = "SELECT EDI_Std_Nomenclature,Ix ,ag , Sx, wc FROM stahl WHERE title = ?"
     cursor.execute(sql_select_Query, [w])
     parameters = cursor.fetchall()
+
     solution = []
     for item in parameters:
-        if float(item[2]) >= A_min and float(item[3]) >= S_min:
+        if float(item[1]) >= Ix_min and float(item[2]) >= A_min and float(item[3]) >= S_min:
             solution.append(item)
     weight = 9999999999999999  # just a big number.
     # choose section with less weight
