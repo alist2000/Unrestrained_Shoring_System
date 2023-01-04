@@ -287,6 +287,14 @@ def main_unrestrained_shoring(inputs):
         sum_hr = round(sum(hr), delta_h_decimal)
         deflection = deflection_calculator(delta_h, delta_h_decimal, depth, moment_values, PoF, c, sum_hr,
                                            final_h_active_for_def)
+        maxdef = max(deflection)
+        mindef = abs(min(deflection))
+        max_deflection = max(maxdef, mindef)
+        if unit_system == "us":
+            E_allowable_deflection = E * 1000 * float(allowable_deflection) / (12 ** 3)  # E: Ksi , M: lb.ft
+        else:
+            E_allowable_deflection = E * float(allowable_deflection) * (10 ** 9)  # E: Mpa , M: N.m
+        Ix_min = max_deflection / E_allowable_deflection
 
         # shear control
         V_max = max(abs(shear_values))
@@ -298,11 +306,13 @@ def main_unrestrained_shoring(inputs):
         # export appropriate section
         output_section_list = []
         for w in selected_design_sections:
-            w = w[1:]
-            output_section = SQL_reader(w, A_required, s_required_final, unit_system)
+            w = w[1:]  # section has sent : w + number
+            output_section = SQL_reader(w, A_required, s_required_final, Ix_min, unit_system)
             output_section_list.append(output_section)
 
         #  divide deflections by EI of every section
+        DCR_moment = []
+        DCR_shear = []
         final_deflection = []
         for item in output_section_list:
             section, Ix, section_area, Sx = item.values()
@@ -312,20 +322,29 @@ def main_unrestrained_shoring(inputs):
                     EI = E * 1000 * float(Ix) / (12 ** 3)  # E: Ksi , M: lb.ft
                 else:
                     EI = E * float(Ix) * (10 ** 9)  # E: Mpa , M: N.m
+                #  DCR moment
+                DCR_m = s_required_final / Sx
+                DCR_moment.append(DCR_m)
+
+                #  DCR shear
+                DCR_v = A_required / section_area
+                DCR_shear.append(DCR_v)
 
                 deflection_copy = copy.deepcopy(deflection)
                 for i in range(len(deflection)):
                     deflection_copy[i] = deflection_copy[i] / EI
                 final_deflection.append(deflection_copy)
-                DCR_deflection = []
-                max_delta_list = []
-                for delta in final_deflection:
-                    max_delta = max(delta)
-                    min_delta = abs(min(delta))
-                    max_delta = max(min_delta, max_delta)
-                    max_delta_list.append(max_delta)
-                    DCR = allowable_deflection / max_delta
-                    DCR_deflection.append(DCR)
+
+            #  DCR deflection
+            DCR_deflection = []
+            max_delta_list = []
+            for delta in final_deflection:
+                max_delta = max(delta)
+                min_delta = abs(min(delta))
+                max_delta = max(min_delta, max_delta)
+                max_delta_list.append(max_delta)
+                DCR_def = max_delta / allowable_deflection
+                DCR_deflection.append(DCR_def)
 
         #  check error for available sections according to S and A.
         #  deflection ratio don't be checked when export sections.(Ix not control)
