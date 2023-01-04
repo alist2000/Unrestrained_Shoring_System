@@ -74,11 +74,15 @@ def cantilever_soldier_pile(unit_system, h_active, h_passive, Surcharge_force, S
     h_passive_copy_2 = copy.deepcopy(h_passive)
 
     # calculating moment of surcharge
-    Md_surcharge = (sum(h_active) - Surcharge_arm) * Surcharge_force * pile_spacing  # surcharge arm is from top layer.
+    Md_surcharge_total = 0
+    for i in range(len(Surcharge_force)):
+        Md_surcharge = (sum(h_active) - Surcharge_arm[i]) * Surcharge_force[
+            i] * pile_spacing  # surcharge arm is from top layer.
+        Md_surcharge_total += Md_surcharge
     Md = moment_calculator(active_force, active_arm, pile_spacing)  # driving moment
     Ms = moment_calculator(passive_force, passive_arm, pile_spacing)  # resisting moment
-    equation = Ms - FS * (Md + Md_surcharge)
-    equation2 = Ms - (Md + Md_surcharge)
+    equation = Ms - FS * (Md + Md_surcharge_total)
+    equation2 = Ms - (Md + Md_surcharge_total)
 
     # finding D0
     D_zero = solve(equation, D)
@@ -119,7 +123,7 @@ def cantilever_soldier_pile(unit_system, h_active, h_passive, Surcharge_force, S
     for layer in passive_force:
         for force in layer:
             passive_force_sum += force
-    equation_shear = passive_force_sum - active_force_sum - Surcharge_force
+    equation_shear = passive_force_sum - active_force_sum - sum(Surcharge_force)
     Y = solve(equation_shear, D)
     Y = control_solution(Y)
     if Y == "There is no answer!":
@@ -149,10 +153,15 @@ def cantilever_soldier_pile(unit_system, h_active, h_passive, Surcharge_force, S
                     pass
 
         # surcharge arm is from top layer.
-        M_max_surcharge = (sum(h_active[:-1]) + Y - Surcharge_arm) * Surcharge_force * pile_spacing
+        M_max_surcharge_total = 0
+        for i in range(len(Surcharge_force)):
+            M_max_surcharge = (sum(h_active[:-1]) + Y - Surcharge_arm[i]) * Surcharge_force[i] * pile_spacing
+            M_max_surcharge_total += M_max_surcharge
+
         M_max_active = moment_calculator(active_force_zero_shear, active_arm_zero_shear, pile_spacing)
         M_max_passive = moment_calculator(passive_force_zero_shear, passive_arm_zero_shear, pile_spacing)
-        M_max = abs(M_max_passive - M_max_active - M_max_surcharge)
+
+        M_max = abs(M_max_passive - M_max_active - M_max_surcharge_total)
         M_max = M_max.subs(D, Y)
         fb = 0.66 * fy
         if unit_system == "us":
