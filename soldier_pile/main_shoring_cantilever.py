@@ -7,6 +7,7 @@ from shear_moment_diagram import diagram
 from database import SQL_reader
 from deflection import deflection_calculator
 from shear_moment_diagram import plotter
+from report import create_feather
 from Output import output_single_solved
 
 import sys
@@ -290,6 +291,18 @@ def main_unrestrained_shoring(inputs):
         shear_diagram, shear_values = main_diagram.shear_diagram(depth, sigma)
         moment_diagram, moment_values = main_diagram.moment_diagram(depth, shear_values)
 
+        # create feather for load diagram
+        create_feather(depth, sigma, "Load",
+                       "load_project" + str(project + 1))
+
+        # create feather for shear diagram
+        create_feather(depth, shear_values, "Shear",
+                       "shear_project" + str(project + 1))
+
+        # create feather for moment diagram
+        create_feather(depth, moment_values, "Moment",
+                       "moment_project" + str(project + 1))
+
         # calculate deflection
         delta_h_decimal = str(delta_h)[::-1].find('.')
         if delta_h_decimal == -1:
@@ -360,9 +373,12 @@ def main_unrestrained_shoring(inputs):
         DCR_deflection = []
         max_delta_list = []
         deflection_plot = []
+        i = 0
         for delta in final_deflection:
             # deflection plot
             plot = plotter(depth_deflection, delta, "deflection", "Z", deflection_unit, length_unit)
+            create_feather(depth_deflection, delta, "Deflection",
+                           "deflection_project" + str(project + 1) + "_section" + str(i + 1))
             deflection_plot.append(plot)
             max_delta = max(delta)
             min_delta = abs(min(delta))
@@ -370,6 +386,7 @@ def main_unrestrained_shoring(inputs):
             max_delta_list.append(max_delta)
             DCR_def = max_delta / allowable_deflection
             DCR_deflection.append(DCR_def)
+            i += 1
 
         #  check error for available sections according to S and A.
         #  deflection ratio don't be checked when export sections.(Ix not control)
@@ -390,4 +407,4 @@ def main_unrestrained_shoring(inputs):
     return "No Error!", load_diagram, shear_diagram, moment_diagram, M_max_final, V_max, s_required_final, A_required, output_section_list, final_deflection, DCR_deflection, max_delta_list
 
 
-output = main_unrestrained_shoring(input_values)
+title, values = main_unrestrained_shoring(input_values)
