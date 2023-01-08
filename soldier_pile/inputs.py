@@ -1,3 +1,5 @@
+import copy
+
 from sympy import symbols
 
 
@@ -40,15 +42,17 @@ def edit_parameters(retaining_height, height,
                 hd_list.append(h)
             i += 1
 
-        if retaining_height != 0:
-            hr_list.append(retaining_height)
-            number_of_layer += 1
-            gama.insert(-1, gama[-1])
-            phi.insert(-1, phi[-1])
-            beta.insert(-1, beta[-1])
-            omega.insert(-1, omega[-1])
-            delta.insert(-1, delta[-1])
-            water.insert(-1, water[-1])
+
+    # extra ? check and control
+    if retaining_height != 0:
+        hr_list.append(retaining_height)
+        number_of_layer += 1
+        gama.insert(-1, gama[-1])
+        phi.insert(-1, phi[-1])
+        beta.insert(-1, beta[-1])
+        omega.insert(-1, omega[-1])
+        delta.insert(-1, delta[-1])
+        water.insert(-1, water[-1])
 
     hd_list.append(height[-1])  # final excavation depth : D
     return hr_list, hd_list, number_of_layer, gama, phi, beta, omega, delta, water
@@ -82,12 +86,12 @@ def edit_parameters_user_defined(retaining_height, height,
             else:
                 hd_list.append(h)
             i += 1
-        if retaining_height != 0:
-            hr_list.append(retaining_height)
-            number_of_layer += 1
-            EFP.insert(-1, EFP[-1])
+    if retaining_height != 0:
+        hr_list.append(retaining_height)
+        number_of_layer += 1
+        EFP.insert(-1, EFP[-1])
 
-            water.insert(-1, water[-1])
+        water.insert(-1, water[-1])
 
     hd_list.append(height[-1])  # final excavation depth : D
     return hr_list, hd_list, number_of_layer, EFP, water
@@ -104,10 +108,10 @@ calculation_type = "Auto"  # or Manual
 delta_h = 0.01
 h_active = [10, 20, D]
 h_passive = [20, D]
-retaining_height = 10
+retaining_height = 12
 surcharge_depth = retaining_height
-water_active = ["No", "No", "No"]
-water_passive = ["No", "No"]
+water_active = ["Yes", "No", "No"]
+water_passive = ["Yes", "No"]
 number_of_layer_active = len(h_active)
 number_of_layer_passive = len(h_passive)
 
@@ -152,7 +156,6 @@ for i in range(len(surcharge_type)):
         l1_all.append(l1)
         l2_all.append(l2)
         teta_all.append("")
-
 
 surcharge_inputs = [q_all, l1_all, l2_all, teta_all]
 
