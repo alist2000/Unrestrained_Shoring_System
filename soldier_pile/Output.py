@@ -15,17 +15,53 @@ def output_single_solved(unit_system, general, specific):
         S_unit = "mm^3"
 
     general_plot, general_values = general.values()
+    #  create html for plots
+    i = 1
+    for plot in general_plot:
+        plot.write_html(f"plot/general_output{i}.html",
+                        full_html=False,
+                        include_plotlyjs='cdn')
+        # plot.write_image(f"plot/output{i}.png")
+        i += 1
+
     specific_plot, specific_values = specific.values()
+    number_of_section = len(specific_plot)
+    #  create html for plots
+    i = 1
+    for plot in specific_plot:
+        plot.write_html(f"plot/deflection_output{i}.html",
+                        full_html=False,
+                        include_plotlyjs='cdn')
+        # plot.write_image(f"plot/output{i}.png")
+        i += 1
+
     otitle = ["Cantilever Soldier Pile - Output Summary",
               "Final Solution Alternatives"]
     header_general = ["General Plots", "General Values"]
-    header_specific = ["Deflection Plots", "Checks"]
+    header_specific = ["Section", "Deflection Plot", "Checks"]
+    # file names
+    # excels -> this titles will use for api and download excels.
+    excel_general = ["load", "shear", "moment"]
+
     general_value_title = [f"Excavation depth ( {length_unit} ) = ", f"maximum Shear ( {force_unit} ) = ",
                            f"maximum Moment ( {moment_unit} ) = ", f"Y zero Shear ( {length_unit} ) = ",
                            f"Required Area ( {area_unit} ) = ", f"Required Sx ( {S_unit} ) = "]
     output_general_values = []
     for i in range(len(general_values)):
-        output_general_values.append(general_value_title[i] + str(general_values[i]))
+        output_general_values.append(general_value_title[i] + str(round(general_values[i], 2)))
+
+    output_specific_values = []
+    excel_specific = []
+    for i in range(number_of_section):
+        specific_values_list = [specific_values[0][i],  # section name
+                                f"Maximum Deflection ( {deflection_unit} ) = " + str(round(specific_values[1][i], 2)),
+                                # max deflection
+                                "DCR Moment = " + str(round(specific_values[2][i], 2)),  # DCR moment
+                                "DCR Shear = " + str(round(specific_values[3][i], 2)),  # DCR shear
+                                "DCR Deflection = " + str(round(specific_values[4][i], 2))]  # DCR deflection
+
+        output_specific_values.append(specific_values_list)
+        excel_specific.append("deflection" + str(i + 1))
 
     # file_name = []
     # for i in range(len(values)):
@@ -35,6 +71,9 @@ def output_single_solved(unit_system, general, specific):
     #         i + 1) + "_SurchargeLoad_Report"
     #     file_name.append(filename_summary)
     #     file_name.append(filename_detail)
-    output = [otitle, general_plot, output_general_values, specific_plot, specific_values]
+    titles = [otitle, header_general, header_specific, excel_general, excel_specific]
+    values = [output_general_values, output_specific_values]
+    output = [otitle, header_general, header_specific, general_plot, output_general_values, specific_plot,
+              specific_values]
 
-    return output
+    return titles, values
