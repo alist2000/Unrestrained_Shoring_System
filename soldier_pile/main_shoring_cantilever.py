@@ -114,8 +114,8 @@ def main_unrestrained_shoring(inputs):
                     surcharge_force, surcharge_arm, surcharge_pressure = result_surcharge(main_surcharge,
                                                                                           surcharge_type, q, l1, l2,
                                                                                           teta, Ka)
-                    if i != 0:
-                        surcharge_arm += hr[i - 1]
+                    if i_sur != 0:
+                        surcharge_arm += hr[i_sur - 1]
                     surcharge_force_list.append(surcharge_force)
                     surcharge_arm_list.append(surcharge_arm)
                     surcharge_pressure_list.append(surcharge_pressure)
@@ -142,17 +142,19 @@ def main_unrestrained_shoring(inputs):
                 surcharge_force_list = []
                 surcharge_arm_list = []
                 surcharge_pressure_list = []
+                i_sur = 0
                 for h in hr:
                     main_surcharge = surcharge(unit_system, h, delta_h)
                     surcharge_force, surcharge_arm, surcharge_pressure = result_surcharge(main_surcharge,
                                                                                           surcharge_type, q, l1, l2,
                                                                                           teta, Ka)
-                    if i != 0:
-                        surcharge_arm += hr[i - 1]
+                    if i_sur != 0:
+                        surcharge_arm += hr[i_sur - 1]
                     surcharge_force_list.append(surcharge_force)
                     surcharge_arm_list.append(surcharge_arm)
                     surcharge_pressure_list.append(surcharge_pressure)
                     # error_surcharge_list.append(error_surcharge)
+                    i_sur += 1
 
             force_soil_active, arm_soil_active = calculate_force_and_arm(soil_active, water_active_pressure,
                                                                          main_active)
@@ -207,11 +209,11 @@ def main_unrestrained_shoring(inputs):
             # control D final with height of layer.
             h_passive_copy = copy.deepcopy(h_passive)
             h_passive_copy[-1] = h_passive_copy[-1].subs(D, second_D_zero)
-            if 0 <= y0 <= h_passive_copy[i]:
+            if 0 <= y0 <= h_passive_copy[-1]:
                 Y_zero_shear = y0
                 s_required_final = s_required
                 M_max_final = M_max
-            if 0 <= second_D_zero <= h_passive_copy[i]:
+            if 0 <= second_D_zero <= h_passive_copy[-1]:
                 second_D_zero_copy = copy.deepcopy(second_D_zero)
                 depth_list_active_copy = copy.deepcopy(depth_list_active)
                 depth_list_passive_copy = copy.deepcopy(depth_list_passive)
