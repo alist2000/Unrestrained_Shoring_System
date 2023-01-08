@@ -104,13 +104,13 @@ def main_unrestrained_shoring(inputs):
                     delta=delta_active[:layer_number_active])
 
                 # *** calculate surcharge ***
-                i = 0
+                i_sur = 0
                 surcharge_force_list = []
                 surcharge_arm_list = []
                 surcharge_pressure_list = []
                 for h in hr:
                     main_surcharge = surcharge(unit_system, h, delta_h)
-                    Ka = k[i]
+                    Ka = k[i_sur]
                     surcharge_force, surcharge_arm, surcharge_pressure = result_surcharge(main_surcharge,
                                                                                           surcharge_type, q, l1, l2,
                                                                                           teta, Ka)
@@ -119,6 +119,7 @@ def main_unrestrained_shoring(inputs):
                     surcharge_force_list.append(surcharge_force)
                     surcharge_arm_list.append(surcharge_arm)
                     surcharge_pressure_list.append(surcharge_pressure)
+                    i_sur += 1
                     # error_surcharge_list.append(error_surcharge)
 
             else:
@@ -211,13 +212,20 @@ def main_unrestrained_shoring(inputs):
                 s_required_final = s_required
                 M_max_final = M_max
             if 0 <= second_D_zero <= h_passive_copy[i]:
-                second_D_zero_final = second_D_zero
-                depth_list_active_final = depth_list_active
-                depth_list_passive_final = depth_list_passive
-                soil_active_final = soil_active
-                soil_passive_final = soil_passive
-                water_active_pressure_final = water_active_pressure
-                water_passive_pressure_final = water_passive_pressure
+                second_D_zero_copy = copy.deepcopy(second_D_zero)
+                depth_list_active_copy = copy.deepcopy(depth_list_active)
+                depth_list_passive_copy = copy.deepcopy(depth_list_passive)
+                soil_active_copy = copy.deepcopy(soil_active)
+                soil_passive_copy = copy.deepcopy(soil_passive)
+                water_active_pressure_copy = copy.deepcopy(water_active_pressure)
+                water_passive_pressure_copy = copy.deepcopy(water_passive_pressure)
+                second_D_zero_final = second_D_zero_copy
+                depth_list_active_final = depth_list_active_copy
+                depth_list_passive_final = depth_list_passive_copy
+                soil_active_final = soil_active_copy
+                soil_passive_final = soil_passive_copy
+                water_active_pressure_final = water_active_pressure_copy
+                water_passive_pressure_final = water_passive_pressure_copy
 
             if hd_use == h_passive:
                 controller = True
@@ -407,4 +415,4 @@ def main_unrestrained_shoring(inputs):
     return "No Error!", load_diagram, shear_diagram, moment_diagram, M_max_final, V_max, s_required_final, A_required, output_section_list, final_deflection, DCR_deflection, max_delta_list
 
 
-title, values = main_unrestrained_shoring(input_values)
+a = main_unrestrained_shoring(input_values)
