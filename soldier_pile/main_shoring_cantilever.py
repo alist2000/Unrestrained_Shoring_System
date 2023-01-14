@@ -8,7 +8,7 @@ from database import SQL_reader
 from deflection import deflection_calculator
 from shear_moment_diagram import plotter
 from report import create_feather
-from Output import output_single_solved
+from Output import output_single_solved, output_single_no_solution
 
 import sys
 
@@ -46,6 +46,7 @@ def main_unrestrained_shoring(inputs):
         deflection_unit = "mm"
         length_unit = "m"
 
+    project_error = []
     for project in range(number_of_project):
         delta_h = delta_h_list[project]
         h_active = h_active_list[project]
@@ -111,9 +112,10 @@ def main_unrestrained_shoring(inputs):
                 for h in hr:
                     main_surcharge = surcharge(unit_system, h, delta_h)
                     Ka = k[i_sur]
-                    surcharge_force, surcharge_arm, surcharge_pressure = result_surcharge(main_surcharge,
-                                                                                          surcharge_type, q, l1, l2,
-                                                                                          teta, Ka)
+                    surcharge_force, surcharge_arm, surcharge_pressure, error_surcharge_list = result_surcharge(
+                        main_surcharge,
+                        surcharge_type, q, l1, l2,
+                        teta, Ka)
                     if i_sur != 0:
                         surcharge_arm += hr[i_sur - 1]
                     surcharge_force_list.append(surcharge_force)
@@ -145,9 +147,10 @@ def main_unrestrained_shoring(inputs):
                 i_sur = 0
                 for h in hr:
                     main_surcharge = surcharge(unit_system, h, delta_h)
-                    surcharge_force, surcharge_arm, surcharge_pressure = result_surcharge(main_surcharge,
-                                                                                          surcharge_type, q, l1, l2,
-                                                                                          teta, Ka)
+                    surcharge_force, surcharge_arm, surcharge_pressure, error_surcharge_list = result_surcharge(
+                        main_surcharge,
+                        surcharge_type, q, l1, l2,
+                        teta, Ka)
                     if i_sur != 0:
                         surcharge_arm += hr[i_sur - 1]
                     surcharge_force_list.append(surcharge_force)
@@ -155,6 +158,10 @@ def main_unrestrained_shoring(inputs):
                     surcharge_pressure_list.append(surcharge_pressure)
                     # error_surcharge_list.append(error_surcharge)
                     i_sur += 1
+
+            if error_surcharge_list[0] != "No Error!":
+                project_error.append(error_surcharge_list)
+                break
 
             force_soil_active, arm_soil_active = calculate_force_and_arm(soil_active, water_active_pressure,
                                                                          main_active)
@@ -192,19 +199,22 @@ def main_unrestrained_shoring(inputs):
             force_soil_passive, arm_soil_passive = calculate_force_and_arm(soil_passive, water_passive_pressure,
                                                                            main_passive)
 
-            error, d0, d_final, y0, M_max, s_required, second_D_zero = cantilever_soldier_pile(unit_system,
-                                                                                               h_active_use, hd_use,
-                                                                                               surcharge_force_list,
-                                                                                               surcharge_arm_list,
-                                                                                               surcharge_depth,
-                                                                                               force_soil_active,
-                                                                                               force_soil_passive,
-                                                                                               arm_soil_active,
-                                                                                               arm_soil_passive, FS,
-                                                                                               Pile_spacing,
-                                                                                               Fy)
-            if error != "No Error!":
-                return error
+            error_cantilever, d0, d_final, y0, M_max, s_required, second_D_zero = cantilever_soldier_pile(unit_system,
+                                                                                                          h_active_use,
+                                                                                                          hd_use,
+                                                                                                          surcharge_force_list,
+                                                                                                          surcharge_arm_list,
+                                                                                                          surcharge_depth,
+                                                                                                          force_soil_active,
+                                                                                                          force_soil_passive,
+                                                                                                          arm_soil_active,
+                                                                                                          arm_soil_passive,
+                                                                                                          FS,
+                                                                                                          Pile_spacing,
+                                                                                                          Fy)
+            if error_cantilever != "No Error!":
+                project_error.append([error_cantilever])
+                break
 
             # control D final with height of layer.
             h_passive_copy = copy.deepcopy(h_passive)
@@ -245,166 +255,170 @@ def main_unrestrained_shoring(inputs):
                     water_active_pressure_final = water_active_pressure_final[:len(h_active)]
                     water_passive_pressure_final = water_passive_pressure_final[:len(h_passive)]
 
-        #  Control R: summation of horizontal forces.
-        controller2 = True
-        passive_force_result = 0
-        active_force_result = 0
-        while controller2:
-            force_soil_active_final = put_D_in_list(force_soil_active, d_final)
-            force_soil_passive_final = put_D_in_list(force_soil_passive, d_final)
-            for layer in force_soil_passive_final:
-                for force in layer:
-                    passive_force_result += force
-            for layer in force_soil_active_final:
-                for force in layer:
-                    active_force_result += force
-            active_force_result += sum(surcharge_force_list)
-            R = active_force_result - passive_force_result
-            # passive force must be greater than active.
-            if R > 0:
-                controller2 = True
-                # fail! --> increase D
-                d_final += delta_h
-            else:
-                controller2 = False
+        if not project_error:
 
-        h_active_for_def = copy.deepcopy(h_active)
-        h_active_for_def[-1] = h_active_for_def[-1].subs(D, d_final)
-        final_h_active_for_def = float(sum(h_active_for_def))
-        excavation_depth_dfinal = final_h_active_for_def - sum(hr)
-
-        depth_list_active_final[-1][-1] = depth_list_active_final[-1][-1].subs(D, second_D_zero_final)
-        depth_list_passive_final[-1][-1] = depth_list_passive_final[-1][-1].subs(D, second_D_zero_final)
-        excavation_depth = 0
-        for i in depth_list_passive_final:
-            excavation_depth += float(sum(i))
-
-        soil_active_final = put_D_in_list(soil_active_final, second_D_zero_final)
-        soil_passive_final = put_D_in_list(soil_passive_final, second_D_zero_final)
-        water_active_pressure_final = put_D_in_list(water_active_pressure_final, second_D_zero_final)
-        water_passive_pressure_final = put_D_in_list(water_passive_pressure_final, second_D_zero_final)
-
-        surcharge_pressure = multiple_pressure_pile_spacing(np.array([surcharge_pressure]), Pile_spacing)
-        soil_active_final = multiple_pressure_pile_spacing(soil_active_final, Pile_spacing)
-        soil_passive_final = multiple_pressure_pile_spacing(soil_passive_final, Pile_spacing)
-        water_active_pressure_final = multiple_pressure_pile_spacing(water_active_pressure_final, Pile_spacing)
-        water_passive_pressure_final = multiple_pressure_pile_spacing(water_passive_pressure_final, Pile_spacing)
-
-        main_diagram = diagram("us", surcharge_pressure[0], surcharge_depth, depth_list_active_final,
-                               depth_list_passive_final,
-                               soil_active_final,
-                               soil_passive_final, water_active_pressure_final,
-                               water_passive_pressure_final)
-
-        depth, sigma = main_diagram.base_calculate(delta_h)
-        load_diagram = main_diagram.load_diagram(depth, sigma)
-        shear_diagram, shear_values = main_diagram.shear_diagram(depth, sigma)
-        moment_diagram, moment_values = main_diagram.moment_diagram(depth, shear_values)
-
-        # create feather for load diagram
-        create_feather(depth, sigma, "Load",
-                       "load_project" + str(project + 1))
-
-        # create feather for shear diagram
-        create_feather(depth, shear_values, "Shear",
-                       "shear_project" + str(project + 1))
-
-        # create feather for moment diagram
-        create_feather(depth, moment_values, "Moment",
-                       "moment_project" + str(project + 1))
-
-        # calculate deflection
-        delta_h_decimal = str(delta_h)[::-1].find('.')
-        if delta_h_decimal == -1:
-            delta_h_decimal = 0
-
-        j = 0
-        for i in depth:
-            depth[j] = round(i, delta_h_decimal)
-            j += 1
-
-        PoF = round(0.25 * excavation_depth, delta_h_decimal)  # point of fixity --> B
-        c = round((excavation_depth - PoF) / 2, delta_h_decimal) + PoF  # point c --> center of OB
-        sum_hr = round(sum(hr), delta_h_decimal)
-        depth_deflection, deflection = deflection_calculator(delta_h, delta_h_decimal, depth, moment_values, PoF, c,
-                                                             sum_hr,
-                                                             final_h_active_for_def)
-        maxdef = max(deflection)
-        mindef = abs(min(deflection))
-        max_deflection = max(maxdef, mindef)
-        if unit_system == "us":
-            E_allowable_deflection = E * 1000 * float(allowable_deflection) / (12 ** 3)  # E: Ksi , M: lb.ft
-        else:
-            E_allowable_deflection = E * float(allowable_deflection) * (10 ** 9)  # E: Mpa , M: N.m
-        Ix_min = max_deflection / E_allowable_deflection
-
-        # shear control
-        V_max = max(abs(shear_values))
-        if unit_system == "us":
-            A_required = V_max / (0.44 * Fy * 1000)  # in^2
-        else:
-            A_required = V_max * 1000 / (0.44 * Fy)  # mm^2
-
-        # export appropriate section
-        output_section_list = []
-        for w in selected_design_sections:
-            w = w[1:]  # section has sent : w + number
-            output_section = SQL_reader(w, A_required, s_required_final, Ix_min, unit_system)
-            output_section_list.append(output_section)
-
-        #  divide deflections by EI of every section
-        DCR_moment = []
-        DCR_shear = []
-        final_deflection = []
-        final_sections = []
-        for item in output_section_list:
-            section, Ix, section_area, Sx = item.values()
-            #  control available sections
-            if section != "" and Ix != "":
-                final_sections.append(section)
-                if unit_system == "us":
-                    EI = E * 1000 * float(Ix) / (12 ** 3)  # E: Ksi , M: lb.ft
+            #  Control R: summation of horizontal forces.
+            controller2 = True
+            passive_force_result = 0
+            active_force_result = 0
+            while controller2:
+                force_soil_active_final = put_D_in_list(force_soil_active, d_final)
+                force_soil_passive_final = put_D_in_list(force_soil_passive, d_final)
+                for layer in force_soil_passive_final:
+                    for force in layer:
+                        passive_force_result += force
+                for layer in force_soil_active_final:
+                    for force in layer:
+                        active_force_result += force
+                active_force_result += sum(surcharge_force_list)
+                R = active_force_result - passive_force_result
+                # passive force must be greater than active.
+                if R > 0:
+                    controller2 = True
+                    # fail! --> increase D
+                    d_final += delta_h
                 else:
-                    EI = E * float(Ix) * (10 ** 9)  # E: Mpa , M: N.m
-                #  DCR moment
-                DCR_m = s_required_final / Sx
-                DCR_moment.append(DCR_m)
+                    controller2 = False
 
-                #  DCR shear
-                DCR_v = A_required / section_area
-                DCR_shear.append(DCR_v)
+            h_active_for_def = copy.deepcopy(h_active)
+            h_active_for_def[-1] = h_active_for_def[-1].subs(D, d_final)
+            final_h_active_for_def = float(sum(h_active_for_def))
+            excavation_depth_dfinal = final_h_active_for_def - sum(hr)
 
-                deflection_copy = copy.deepcopy(deflection)
-                for i in range(len(deflection)):
-                    deflection_copy[i] = deflection_copy[i] / EI
-                final_deflection.append(deflection_copy)
+            depth_list_active_final[-1][-1] = depth_list_active_final[-1][-1].subs(D, second_D_zero_final)
+            depth_list_passive_final[-1][-1] = depth_list_passive_final[-1][-1].subs(D, second_D_zero_final)
+            excavation_depth = 0
+            for i in depth_list_passive_final:
+                excavation_depth += float(sum(i))
 
-        #  DCR deflection
-        DCR_deflection = []
-        max_delta_list = []
-        deflection_plot = []
-        i = 0
-        for delta in final_deflection:
-            # deflection plot
-            plot = plotter(depth_deflection, delta, "deflection", "Z", deflection_unit, length_unit)
-            create_feather(depth_deflection, delta, "Deflection",
-                           "deflection_project" + str(project + 1) + "_section" + str(i + 1))
-            deflection_plot.append(plot)
-            max_delta = max(delta)
-            min_delta = abs(min(delta))
-            max_delta = max(min_delta, max_delta)
-            max_delta_list.append(max_delta)
-            DCR_def = max_delta / allowable_deflection
-            DCR_deflection.append(DCR_def)
-            i += 1
+            soil_active_final = put_D_in_list(soil_active_final, second_D_zero_final)
+            soil_passive_final = put_D_in_list(soil_passive_final, second_D_zero_final)
+            water_active_pressure_final = put_D_in_list(water_active_pressure_final, second_D_zero_final)
+            water_passive_pressure_final = put_D_in_list(water_passive_pressure_final, second_D_zero_final)
 
-        #  check error for available sections according to S and A.
-        #  deflection ratio don't be checked when export sections.(Ix not control)
-        if not final_deflection:
-            section_error = "No answer! No section is appropriate for your situation!"
-            return section_error
+            surcharge_pressure = multiple_pressure_pile_spacing(np.array([surcharge_pressure]), Pile_spacing)
+            soil_active_final = multiple_pressure_pile_spacing(soil_active_final, Pile_spacing)
+            soil_passive_final = multiple_pressure_pile_spacing(soil_passive_final, Pile_spacing)
+            water_active_pressure_final = multiple_pressure_pile_spacing(water_active_pressure_final, Pile_spacing)
+            water_passive_pressure_final = multiple_pressure_pile_spacing(water_passive_pressure_final, Pile_spacing)
 
-    if number_of_project == 1:
+            main_diagram = diagram("us", surcharge_pressure[0], surcharge_depth, depth_list_active_final,
+                                   depth_list_passive_final,
+                                   soil_active_final,
+                                   soil_passive_final, water_active_pressure_final,
+                                   water_passive_pressure_final)
+
+            depth, sigma = main_diagram.base_calculate(delta_h)
+            load_diagram = main_diagram.load_diagram(depth, sigma)
+            shear_diagram, shear_values = main_diagram.shear_diagram(depth, sigma)
+            moment_diagram, moment_values = main_diagram.moment_diagram(depth, shear_values)
+
+            # create feather for load diagram
+            create_feather(depth, sigma, "Load",
+                           "load_project" + str(project + 1))
+
+            # create feather for shear diagram
+            create_feather(depth, shear_values, "Shear",
+                           "shear_project" + str(project + 1))
+
+            # create feather for moment diagram
+            create_feather(depth, moment_values, "Moment",
+                           "moment_project" + str(project + 1))
+
+            # calculate deflection
+            delta_h_decimal = str(delta_h)[::-1].find('.')
+            if delta_h_decimal == -1:
+                delta_h_decimal = 0
+
+            j = 0
+            for i in depth:
+                depth[j] = round(i, delta_h_decimal)
+                j += 1
+
+            PoF = round(0.25 * excavation_depth, delta_h_decimal)  # point of fixity --> B
+            c = round((excavation_depth - PoF) / 2, delta_h_decimal) + PoF  # point c --> center of OB
+            sum_hr = round(sum(hr), delta_h_decimal)
+            depth_deflection, deflection = deflection_calculator(delta_h, delta_h_decimal, depth, moment_values, PoF, c,
+                                                                 sum_hr,
+                                                                 final_h_active_for_def)
+            maxdef = max(deflection)
+            mindef = abs(min(deflection))
+            max_deflection = max(maxdef, mindef)
+            if unit_system == "us":
+                E_allowable_deflection = E * 1000 * float(allowable_deflection) / (12 ** 3)  # E: Ksi , M: lb.ft
+            else:
+                E_allowable_deflection = E * float(allowable_deflection) * (10 ** 9)  # E: Mpa , M: N.m
+            Ix_min = max_deflection / E_allowable_deflection
+
+            # shear control
+            V_max = max(abs(shear_values))
+            if unit_system == "us":
+                A_required = V_max / (0.44 * Fy * 1000)  # in^2
+            else:
+                A_required = V_max * 1000 / (0.44 * Fy)  # mm^2
+
+            # export appropriate section
+            output_section_list = []
+            for w in selected_design_sections:
+                w = w[1:]  # section has sent : w + number
+                output_section = SQL_reader(w, A_required, s_required_final, Ix_min, unit_system)
+                output_section_list.append(output_section)
+
+            #  divide deflections by EI of every section
+            DCR_moment = []
+            DCR_shear = []
+            final_deflection = []
+            final_sections = []
+            for item in output_section_list:
+                section, Ix, section_area, Sx = item.values()
+                #  control available sections
+                if section != "" and Ix != "":
+                    final_sections.append(section)
+                    if unit_system == "us":
+                        EI = E * 1000 * float(Ix) / (12 ** 3)  # E: Ksi , M: lb.ft
+                    else:
+                        EI = E * float(Ix) * (10 ** 9)  # E: Mpa , M: N.m
+                    #  DCR moment
+                    DCR_m = s_required_final / Sx
+                    DCR_moment.append(DCR_m)
+
+                    #  DCR shear
+                    DCR_v = A_required / section_area
+                    DCR_shear.append(DCR_v)
+
+                    deflection_copy = copy.deepcopy(deflection)
+                    for i in range(len(deflection)):
+                        deflection_copy[i] = deflection_copy[i] / EI
+                    final_deflection.append(deflection_copy)
+
+            #  DCR deflection
+            DCR_deflection = []
+            max_delta_list = []
+            deflection_plot = []
+            i = 0
+            for delta in final_deflection:
+                # deflection plot
+                plot = plotter(depth_deflection, delta, "deflection", "Z", deflection_unit, length_unit)
+                create_feather(depth_deflection, delta, "Deflection",
+                               "deflection_project" + str(project + 1) + "_section" + str(i + 1))
+                deflection_plot.append(plot)
+                max_delta = max(delta)
+                min_delta = abs(min(delta))
+                max_delta = max(min_delta, max_delta)
+                max_delta_list.append(max_delta)
+                DCR_def = max_delta / allowable_deflection
+                DCR_deflection.append(DCR_def)
+                i += 1
+
+            #  check error for available sections according to S and A.
+            #  deflection ratio don't be checked when export sections.(Ix not control)
+            if not final_deflection:
+                section_error = ["No answer! No section is appropriate for your situation!"]
+                project_error.append(section_error)
+            else:
+                continue
+
+    if number_of_project == 1 and not project_error:
         general_plot = [load_diagram, shear_diagram, moment_diagram]
         general_values = [excavation_depth_dfinal, V_max, M_max_final, Y_zero_shear, A_required, s_required_final]
         general_output = {"plot": general_plot, "value": general_values}
@@ -412,6 +426,9 @@ def main_unrestrained_shoring(inputs):
         specific_values = [final_sections, max_delta_list, DCR_moment, DCR_shear, DCR_deflection]
         specific_output = {"plot": specific_plot, "value": specific_values}
         output_single = output_single_solved(unit_system, general_output, specific_output)
+        return output_single
+    if number_of_project == 1 and project_error:
+        output_single = output_single_no_solution(project_error)
         return output_single
 
     return "No Error!", load_diagram, shear_diagram, moment_diagram, M_max_final, V_max, s_required_final, A_required, output_section_list, final_deflection, DCR_deflection, max_delta_list
