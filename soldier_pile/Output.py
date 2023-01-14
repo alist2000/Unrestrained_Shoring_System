@@ -77,3 +77,16 @@ def output_single_solved(unit_system, general, specific):
               specific_values]
 
     return titles, values
+
+
+def output_single_no_solution(error):
+    print(error)
+    otitle = ["Cantilever Soldier Pile - Output Summary",
+              "Final Solution Alternatives"]
+    header = ["Error NO.", "Description"]
+    number_of_error = len(error)
+    errors = []
+    for i in range(number_of_error):
+        errors.append((i + 1, error[i][0]))
+    output = [otitle, header, errors]
+    return output
