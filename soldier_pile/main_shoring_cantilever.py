@@ -92,7 +92,7 @@ def main_unrestrained_shoring(inputs):
                  delta_active
                  ] = soil_properties_active_list[project]
 
-                soil_active, water_active_pressure, depth_list_active, h_water_active, k = main_active.pressure_calculator(
+                soil_active, water_active_pressure, depth_list_active, h_water_active, k, water_pressure_list_active = main_active.pressure_calculator(
                     number_of_layer=layer_number_active,
                     gama=gama_active[:layer_number_active],
                     phi=phi_active[:layer_number_active],
@@ -127,7 +127,7 @@ def main_unrestrained_shoring(inputs):
                 [EFPa, Ka] = soil_properties_active_list[project]
 
                 # we have EFP = gama * K. assume K = 1 and gama = EFP. other values is not necessary.
-                soil_active, water_active_pressure, depth_list_active, h_water_active, k = main_active.pressure_calculator(
+                soil_active, water_active_pressure, depth_list_active, h_water_active, k, water_pressure_list_active = main_active.pressure_calculator(
                     number_of_layer=layer_number_active,
                     gama=EFPa[:layer_number_active],
                     phi=None,  # this value is not necessary.
@@ -165,7 +165,7 @@ def main_unrestrained_shoring(inputs):
                 [gama_passive, phi_passive, state_passive, beta_passive, omega_passive,
                  delta_passive
                  ] = soil_properties_passive_list[project]
-                soil_passive, water_passive_pressure, depth_list_passive, h_water_passive, k = main_passive.pressure_calculator(
+                soil_passive, water_passive_pressure, depth_list_passive, h_water_passive, k, water_pressure_list_passive = main_passive.pressure_calculator(
                     gama=gama_passive[:layer_number_passive],
                     number_of_layer=layer_number_passive,
                     phi=phi_passive[:layer_number_passive],
@@ -178,7 +178,7 @@ def main_unrestrained_shoring(inputs):
 
             else:
                 [EFPp] = soil_properties_passive_list[project]
-                soil_passive, water_passive_pressure, depth_list_passive, h_water_passive, k = main_passive.pressure_calculator(
+                soil_passive, water_passive_pressure, depth_list_passive, h_water_passive, k, water_pressure_list_passive = main_passive.pressure_calculator(
                     number_of_layer=layer_number_passive,
                     gama=EFPp[:layer_number_passive],
                     phi=None,  # this value is not necessary.
@@ -219,8 +219,8 @@ def main_unrestrained_shoring(inputs):
                 depth_list_passive_copy = copy.deepcopy(depth_list_passive)
                 soil_active_copy = copy.deepcopy(soil_active)
                 soil_passive_copy = copy.deepcopy(soil_passive)
-                water_active_pressure_copy = copy.deepcopy(water_active_pressure)
-                water_passive_pressure_copy = copy.deepcopy(water_passive_pressure)
+                water_active_pressure_copy = copy.deepcopy(water_pressure_list_active)
+                water_passive_pressure_copy = copy.deepcopy(water_pressure_list_passive)
                 second_D_zero_final = second_D_zero_copy
                 depth_list_active_final = depth_list_active_copy
                 depth_list_passive_final = depth_list_passive_copy
