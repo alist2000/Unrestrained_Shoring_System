@@ -38,6 +38,9 @@ def deflection_calculator(delta_h, delta_h_decimal, depth, moment, PoF, c, hr, f
                                         BC else BC for i in
         range(0, int((BC + delta_h) * pow(10, delta_h_decimal)),
               int(delta_h * pow(10, delta_h_decimal)))]
+    if BC_list[-1] != BC:
+        BC_list.insert(-1, BC)
+
     Bc = np.array(BC_list)
     area_cb = abs(spi.simpson(moment[c_point:PoF_point:-1], depth[c_point:PoF_point:-1]))
     X_cb = abs(spi.simpson(moment[c_point:PoF_point:-1] * Bc[:-1],
