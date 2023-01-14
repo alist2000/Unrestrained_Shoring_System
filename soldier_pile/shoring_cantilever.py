@@ -39,6 +39,7 @@ def calculate_force_and_arm(soil_pressure, water_pressure, main):
 def control_solution(item):
     final = []
     for number in item:
+        number = number.evalf(chop=True)
         try:
             final.append(float(number))
         except:
@@ -128,7 +129,7 @@ def cantilever_soldier_pile(unit_system, h_active, h_passive, Surcharge_force, S
     Y = control_solution(Y)
     if Y == "There is no answer!":
         return "There is no answer for Y! ( where shear equal to zero )", D_zero, D_final, "", "", "", second_D_zero
-    elif Surcharge_depth > sum(h_active) + Y:
+    elif Surcharge_depth > sum(h_active) + Y and Y >= 0:
         return "Surcharge depth couldn't be larger than H + Y0", D_zero, D_final, "", "", "", second_D_zero
     else:
         # active passive
