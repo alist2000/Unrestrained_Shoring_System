@@ -101,25 +101,33 @@ class diagram:
                  water_pressure_passive):
         self.unit_system = unit_system
 
-        for i in range(len(depth_active), 0, -1):
-            try:
-                a = depth_passive[i]
-            except:
-                depth_passive.insert(-i, [0, 0])
-            try:
-                a = passive_pressure[i]
-            except:
-                passive_pressure.insert(-i, [0, 0])
-            try:
-                a = water_pressure_active[i]
-            except:
-                water_pressure_active.insert(-i, [0, 0])
-            try:
-                a = water_pressure_passive[i]
-            except:
-                water_pressure_passive.insert(-i, [0, 0])
+        for i in range(len(depth_active) - len(depth_passive)):
+            depth_passive.insert(i, [0, 0])
+            passive_pressure.insert(i, [0, 0])
+        for i in range(len(depth_active) - len(water_pressure_active)):
+            water_pressure_active.insert(i, [0, 0])
+        for i in range(len(depth_active) - len(water_pressure_passive)):
+            water_pressure_passive.insert(i, [0, 0])
+        # for i in range(len(depth_active), 0, -1):
+        #     try:
+        #         a = depth_passive[i]
+        #     except:
+        #         depth_passive.insert(-i, [0, 0])
+        #     try:
+        #         a = passive_pressure[i]
+        #     except:
+        #         passive_pressure.insert(-i, [0, 0])
+        #     try:
+        #         a = water_pressure_active[i]
+        #     except:
+        #         water_pressure_active.insert(-i, [0, 0])
+        #     try:
+        #         a = water_pressure_passive[i]
+        #     except:
+        #         water_pressure_pass
+        # ive.insert(-i, [0, 0])
 
-            # surcharge must be checked also.
+        # surcharge must be checked also.
         self.depth_active = depth_active
         self.depth_passive = depth_passive
         self.active_pressure = active_pressure
