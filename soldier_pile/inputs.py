@@ -42,7 +42,6 @@ def edit_parameters(retaining_height, height,
                 hd_list.append(h)
             i += 1
 
-
     # extra ? check and control
     if retaining_height != 0:
         hr_list.append(retaining_height)
@@ -108,10 +107,10 @@ calculation_type = "Auto"  # or Manual
 delta_h = 0.01
 h_active = [10, 20, D]
 h_passive = [20, D]
-retaining_height = 12
+retaining_height = 10
 surcharge_depth = retaining_height
-water_active = ["Yes", "No", "No"]
-water_passive = ["Yes", "No"]
+water_active = ["No", "No", "No"]
+water_passive = ["No", "No"]
 number_of_layer_active = len(h_active)
 number_of_layer_passive = len(h_passive)
 
