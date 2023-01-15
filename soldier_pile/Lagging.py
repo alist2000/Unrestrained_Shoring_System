@@ -3,6 +3,7 @@ from sympy.solvers import solve
 from sympy import diff
 
 from shoring_cantilever import control_solution
+from database import SQL_reader_timber
 
 
 class lagging_design:
@@ -63,9 +64,39 @@ class lagging_design:
         V = diff(M, x)
         v_zero = solve(V, x)
         v_zero = control_solution(v_zero)
-        M_max = M.subs(x, v_zero)  # this is not exactly true! CHECK REPORT!
-        return M_max, v_zero
+        # check M edited -> is it necessary to use tw of section. or we can assume.
+        M_edited = R * (x + (0.75 * d_concrete / 2)) - (ph / (lc / 2)) * pow(x,
+                                                                             3) / 6  # for 2 ft -> 0.75 ft according to report/ formula is my guess! must be qualified.
+        M_max = M_edited.subs(x, v_zero)  # this is not exactly true! CHECK REPORT!
+
+        # calculate S required
+        if unit_system == "us":
+            # M unit: lb-ft. should be: lb-in
+            s_req = 12 * M_max / Fb
+        else:
+            # M unit: N-m. should be: N-mm
+            s_req = 1000 * M_max / Fb
+
+        # import section
+        b, h = SQL_reader_timber(timber_size, unit_system).values()
+
+        # calculate s supplied
+        s_sup = (1.25 * 1.1 * 1.1) * h * pow(b, 2) / 6  # coefficients must be checked and qualified!
+
+        DCR_moment_timber = s_req / s_sup
+        if DCR_moment_timber <= 1:
+            status = "Pass!"
+        else:
+            status = "Fail! Your timber fail in moment design."
+
+        return M_max, v_zero, DCR_moment_timber, status, s_sup, s_req
+
+    # *** shear design function must be developed! ***
+    def shear_design(self, v, Q, I, t):
+        unit_system = self.unit_system
+        ta = v * Q / (I * t)
+        return ta
 
 
-test = lagging_design("us", 8, "W22X126", 400, "3X12")
+test = lagging_design("us", 8, "W22X126", 400, "3 x 16")
 M = test.moment_design(845)
