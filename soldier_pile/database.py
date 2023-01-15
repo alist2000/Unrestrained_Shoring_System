@@ -24,6 +24,18 @@ except:
     # print("fail!")
     pass
 
+# create database file
+dbase = sqlite3.connect("../../database/timber.db")
+cursor = dbase.cursor()
+timber = open("../../database/timber_size.sql")
+timber_r = timber.read()
+try:
+    cursor.executescript(timber_r)
+    print("Done!")
+except:
+    print("fail!")
+    pass
+
 
 def SQL_reader(w, A_min, S_min, Ix_min, unit_system):
     w = str(w)
@@ -56,4 +68,23 @@ def SQL_reader(w, A_min, S_min, Ix_min, unit_system):
     dbase.close()
     return {"section": section, "Ix": Ix, "area": area, "Sx": Sx}
 
+
+def SQL_reader_timber(section, unit_system):
+    dbase = sqlite3.connect('../../database/timber.db')  # Open a database File in local
+    cursor = dbase.cursor()
+    sql_select_Query = "SELECT b_actual_size_inches, h_actual_size_inches, b_actual_size_mm,h_actual_size_mm FROM timber WHERE nominal_size = ?"
+    cursor.execute(sql_select_Query, [section])
+    parameters = cursor.fetchone()
+    if unit_system == "us":
+        b = parameters[0]  # inches
+        h = parameters[1]
+    else:
+        b = parameters[2]  # mm
+        h = parameters[3]
+
+    dbase.close()
+    return {"b": b, "h": h}
+
+
+# output = SQL_reader_timber("3 x 12", "us")
 # output = SQL_reader('40', 150, 1900, 'us')
