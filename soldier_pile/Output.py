@@ -58,7 +58,15 @@ def output_single_solved(unit_system, general, specific):
                                 # max deflection
                                 "DCR Moment = " + str(round(specific_values[2][i], 2)),  # DCR moment
                                 "DCR Shear = " + str(round(specific_values[3][i], 2)),  # DCR shear
-                                "DCR Deflection = " + str(round(specific_values[4][i], 2))]  # DCR deflection
+                                "DCR Deflection = " + str(round(specific_values[4][i], 2)),  # DCR deflection
+                                # lagging
+                                "lagging status for timber size " + specific_values[5] + ": \n\n" + specific_values[6][
+                                    i],
+                                f"d = {specific_values[7][i]} ( {deflection_unit} )",
+                                f"h = {specific_values[8][i]} ( {deflection_unit} )",
+                                f"b = {specific_values[9][i]} ( {deflection_unit} )",
+                                f"tw = {specific_values[10][i]} ( {deflection_unit} )",
+                                f"tf = {specific_values[11][i]} ( {deflection_unit} )"]
 
         output_specific_values.append(specific_values_list)
         excel_specific.append("deflection" + str(i + 1))
