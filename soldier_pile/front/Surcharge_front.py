@@ -94,6 +94,7 @@ def generate_html_response_cantilever_shoring(titles, values):
     th_end = "</th>"
     td = "<td>"
     td_end = "</td>"
+    empty_line = "<p></p>"
 
     def title():
 
@@ -228,7 +229,13 @@ def generate_html_response_cantilever_shoring(titles, values):
                                         <td style="width: 35%;text-align: center; vertical-align: middle", rowspan="2" ><t2>
                                         """
         third_column = """
-                                                <td style="width: 15%;text-align: center; vertical-align: middle", rowspan="2" ><t2>
+                                                <td style="width: 11.25%;text-align: center; vertical-align: middle", height="90" ><t2>
+                                                """
+        image_column = """
+                                        <td style="width: 33.75%;text-align: center; vertical-align: middle;background-color: white" colspan="3"  ><img src="D:\git\Shoring\database\section_picture_para_new.jpg" height = "360"></td>
+                                        """
+        image_column_prop = """
+                                                <td style="width: 11.25%;text-align: right; vertical-align: middle;background-color: white" ><t2>
                                                 """
         end_column = """
                                 </t2></td>
@@ -253,9 +260,13 @@ def generate_html_response_cantilever_shoring(titles, values):
             s += tr
             s += first_column + specific_values[i][0] + end_column
             s += second_column + specific_plot[i] + end_column
-            for j in range(2, 5):
+            for j in range(2, 6):
                 s += third_column + specific_values[i][j] + end_column
-            s += tr_end + tr + first_column + specific_values[i][1] + end_column + tr_end
+            s += tr_end + tr + first_column + specific_values[i][1] + end_column
+            s += image_column_prop + specific_values[i][6] + empty_line + specific_values[i][7] + empty_line + \
+                 specific_values[i][8] + empty_line + specific_values[i][9] + empty_line + specific_values[i][
+                     10] + end_column
+            s += image_column + tr_end
 
         return s
 
@@ -444,14 +455,18 @@ def generate_html_response_surcharge_no_solution(output):
 generate_html_response_cantilever_shoring_output = generate_html_response_cantilever_shoring(
     [['Cantilever Soldier Pile - Output Summary', 'Final Solution Alternatives'], ['General Plots', 'General Values'],
      ['Section', 'Deflection Plot', 'Checks'], ['load', 'shear', 'moment'],
-     ['deflection0', 'deflection1', 'deflection2', 'deflection3']], [
-        ['Excavation depth ( ft ) = 24.1', 'maximum Shear ( lb ) = 51691.1', 'maximum Moment ( lb-ft ) = 165739.69',
-         'Y zero Shear ( ft ) = 9.17', 'Required Area ( in^2 ) = 3.26', 'Required Sx ( in^3 ) = 83.71'], [
-            ['W18X86', 'Maximum Deflection ( in ) = 0.46', 'DCR Moment = 0.5', 'DCR Shear = 0.13',
-             'DCR Deflection = 0.92'],
-            ['W21X68', 'Maximum Deflection ( in ) = 0.48', 'DCR Moment = 0.6', 'DCR Shear = 0.16',
-             'DCR Deflection = 0.95'],
-            ['W24X62', 'Maximum Deflection ( in ) = 0.45', 'DCR Moment = 0.64', 'DCR Shear = 0.18',
-             'DCR Deflection = 0.91'],
-            ['W27X84', 'Maximum Deflection ( in ) = 0.25', 'DCR Moment = 0.39', 'DCR Shear = 0.13',
-             'DCR Deflection = 0.49']]])
+     ['deflection1', 'deflection2', 'deflection3', 'deflection4']],
+    [['Excavation depth ( ft ) = 24.1', 'maximum Shear ( lb ) = 51691.1', 'maximum Moment ( lb-ft ) = 165739.69',
+      'Y zero Shear ( ft ) = 9.17', 'Required Area ( in^2 ) = 3.26', 'Required Sx ( in^3 ) = 83.71'], [
+         ['W18X86', 'Maximum Deflection ( in ) = 0.46', 'DCR Moment = 0.5', 'DCR Shear = 0.13', 'DCR Deflection = 0.92',
+          'lagging status for timber size 3 x 16: \n\nPass!', 'd = 24 ( in )', 'h = 18.4 ( in )', 'b = 11.1 ( in )',
+          'tw = 0.48 ( in )', 'tf = 0.77 ( in )'],
+         ['W21X68', 'Maximum Deflection ( in ) = 0.48', 'DCR Moment = 0.6', 'DCR Shear = 0.16', 'DCR Deflection = 0.95',
+          'lagging status for timber size 3 x 16: \n\nPass!', 'd = 24 ( in )', 'h = 21.1 ( in )', 'b = 8.27 ( in )',
+          'tw = 0.43 ( in )', 'tf = 0.685 ( in )'],
+         ['W24X62', 'Maximum Deflection ( in ) = 0.45', 'DCR Moment = 0.64', 'DCR Shear = 0.18',
+          'DCR Deflection = 0.91', 'lagging status for timber size 3 x 16: \n\nPass!', 'd = 24 ( in )',
+          'h = 23.7 ( in )', 'b = 7.04 ( in )', 'tw = 0.43 ( in )', 'tf = 0.59 ( in )'],
+         ['W27X84', 'Maximum Deflection ( in ) = 0.25', 'DCR Moment = 0.39', 'DCR Shear = 0.13',
+          'DCR Deflection = 0.49', 'lagging status for timber size 3 x 16: \n\nPass!', 'd = 30.0 ( in )',
+          'h = 26.7 ( in )', 'b = 10.0 ( in )', 'tw = 0.46 ( in )', 'tf = 0.64 ( in )']]])
