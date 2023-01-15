@@ -6,6 +6,7 @@ from shoring_cantilever import calculate_force_and_arm, control_solution, cantil
 from shear_moment_diagram import diagram
 from database import SQL_reader
 from deflection import deflection_calculator
+from Lagging import lagging_design
 from shear_moment_diagram import plotter
 from report import create_feather
 from Output import output_single_solved, output_single_no_solution
@@ -36,7 +37,7 @@ def main_unrestrained_shoring(inputs):
      number_of_layer_active_list,
      number_of_layer_passive_list, surcharge_type_list, surcharge_inputs_list, formula_active_list,
      formula_passive_list, soil_properties_active_list,
-     soil_properties_passive_list, FS_list,
+     soil_properties_passive_list, ph_list, Fb_list, timber_size_list, FS_list,
      Pile_spacing_list, allowable_deflection_list, Fy_list, E_list, selected_design_sections_list] = inputs.values()
 
     if unit_system == "us":
@@ -65,6 +66,9 @@ def main_unrestrained_shoring(inputs):
         FS = FS_list[project]
         Pile_spacing = Pile_spacing_list[project]
         allowable_deflection = allowable_deflection_list[project]
+        ph = ph_list[project]
+        Fb = Fb_list[project]
+        timber_size = timber_size_list[project]
         Fy = Fy_list[project]
         E = E_list[project]
         selected_design_sections = selected_design_sections_list[project]
@@ -365,12 +369,21 @@ def main_unrestrained_shoring(inputs):
                 output_section_list.append(output_section)
 
             #  divide deflections by EI of every section
+            # + control lagging
+            status_lagging = []
+            DCR_lagging = []
+            d_concrete_list = []
+
             DCR_moment = []
             DCR_shear = []
             final_deflection = []
             final_sections = []
+            h_list = []
+            bf_list = []
+            tw_list = []
+            tf_list = []
             for item in output_section_list:
-                section, Ix, section_area, Sx = item.values()
+                section, Ix, section_area, Sx, h, bf, tw, tf = item.values()
                 #  control available sections
                 if section != "" and Ix != "":
                     final_sections.append(section)
@@ -378,6 +391,14 @@ def main_unrestrained_shoring(inputs):
                         EI = E * 1000 * float(Ix) / (12 ** 3)  # E: Ksi , M: lb.ft
                     else:
                         EI = E * float(Ix) * (10 ** 9)  # E: Mpa , M: N.m
+
+                    # lagging control
+                    lagging = lagging_design(unit_system, Pile_spacing, section, ph, timber_size)
+                    DCR_moment_timber, status, d_concrete = lagging.moment_design(Fb)
+                    DCR_lagging.append(DCR_moment_timber)
+                    status_lagging.append(status)
+                    d_concrete_list.append(d_concrete)
+
                     #  DCR moment
                     DCR_m = s_required_final / Sx
                     DCR_moment.append(DCR_m)
@@ -390,6 +411,12 @@ def main_unrestrained_shoring(inputs):
                     for i in range(len(deflection)):
                         deflection_copy[i] = deflection_copy[i] / EI
                     final_deflection.append(deflection_copy)
+
+                    # add dimensions of section
+                    h_list.append(h)
+                    bf_list.append(bf)
+                    tw_list.append(tw)
+                    tf_list.append(tf)
 
             #  DCR deflection
             DCR_deflection = []
@@ -423,7 +450,8 @@ def main_unrestrained_shoring(inputs):
         general_values = [excavation_depth_dfinal, V_max, M_max_final, Y_zero_shear, A_required, s_required_final]
         general_output = {"plot": general_plot, "value": general_values}
         specific_plot = deflection_plot
-        specific_values = [final_sections, max_delta_list, DCR_moment, DCR_shear, DCR_deflection]
+        specific_values = [final_sections, max_delta_list, DCR_moment, DCR_shear, DCR_deflection, timber_size,
+                           status_lagging, d_concrete_list, h_list, bf_list, tw_list, tf_list]
         specific_output = {"plot": specific_plot, "value": specific_values}
         output_single = output_single_solved(unit_system, general_output, specific_output)
         return output_single
