@@ -197,6 +197,13 @@ else:
     EFPp = [150, 150]  # gama * Kp
     soil_properties_passive = [EFPp]
 
+
+# lagging inputs
+ph_max = 400
+Fb = 825  # ksi for us and Mpa for metric
+timber_size = "3 x 16"
+
+
 FS = 1.3
 Pile_spacing = 6  # ft
 allowable_deflection = 0.5  # in
@@ -226,6 +233,9 @@ input_values = {"number_of_project": number_of_project,
                 "formula_passive": [Formula_passive],
                 "soil_properties_active": [soil_properties_active],
                 "soil_properties_passive": [soil_properties_passive],
+                "ph_max": [ph_max],
+                "Fb": [Fb],
+                "timber_size": [timber_size],
                 "FS": [FS],
                 "Pile_spacing": [Pile_spacing],
                 "allowable_deflection": [allowable_deflection],
