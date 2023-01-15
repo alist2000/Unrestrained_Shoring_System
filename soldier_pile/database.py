@@ -31,9 +31,9 @@ timber = open("../../database/timber_size.sql")
 timber_r = timber.read()
 try:
     cursor.executescript(timber_r)
-    print("Done!")
+    # print("Done!")
 except:
-    print("fail!")
+    # print("fail!")
     pass
 
 
@@ -42,7 +42,7 @@ def SQL_reader(w, A_min, S_min, Ix_min, unit_system):
     # dbase = sqlite3.connect('/app/app/bfp/database/stahl.db')  # Open a database File in host
     dbase = sqlite3.connect('../../database/stahl_' + unit_system + '.db')  # Open a database File in local
     cursor = dbase.cursor()
-    sql_select_Query = "SELECT EDI_Std_Nomenclature,Ix ,ag , Sx, wc FROM stahl WHERE title = ?"
+    sql_select_Query = "SELECT EDI_Std_Nomenclature,Ix ,ag , Sx, wc, d, bf, tw, tf FROM stahl WHERE title = ?"
     cursor.execute(sql_select_Query, [w])
     parameters = cursor.fetchall()
 
@@ -60,13 +60,21 @@ def SQL_reader(w, A_min, S_min, Ix_min, unit_system):
         Ix = float(final[1])
         area = float(final[2])
         Sx = float(final[3])
+        h = float(final[5])
+        bf = float(final[6])
+        tw = float(final[7])
+        tf = float(final[8])
     except:
         section = ""
         Ix = ""
         area = ""
         Sx = ""
+        h = ""
+        bf = ""
+        tw = ""
+        tf = ""
     dbase.close()
-    return {"section": section, "Ix": Ix, "area": area, "Sx": Sx}
+    return {"section": section, "Ix": Ix, "area": area, "Sx": Sx, "h": h, "bf": bf, "tw": tw, "tf": tf}
 
 
 def SQL_reader_timber(section, unit_system):
@@ -84,7 +92,6 @@ def SQL_reader_timber(section, unit_system):
 
     dbase.close()
     return {"b": b, "h": h}
-
 
 # output = SQL_reader_timber("3 x 12", "us")
 # output = SQL_reader('40', 150, 1900, 'us')
