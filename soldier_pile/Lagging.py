@@ -14,7 +14,8 @@ class lagging_design:
         self.ph = ph
         self.timber_size = timber_size
 
-    def moment_design(self, Fb):
+    def moment_design(self, Fb, tw, a_coef=1, b_coef=1, c_coef=1, d_coef=1, e_coef=1, f_coef=1):
+        """a, b , ... f are coefficient for wood if user don't input them assume one"""
         unit_system = self.unit_system
         l = self.L
         section = self.section
@@ -65,7 +66,7 @@ class lagging_design:
         v_zero = solve(V, x)
         v_zero = control_solution(v_zero)
         # check M edited -> is it necessary to use tw of section. or we can assume.
-        M_edited = R * (x + (0.75 * d_concrete / 2)) - (ph / (lc / 2)) * pow(x,
+        M_edited = R * (x + ((d_concrete - tw) / 2)) - (ph / (lc / 2)) * pow(x,
                                                                              3) / 6  # for 2 ft -> 0.75 ft according to report/ formula is my guess! must be qualified.
         M_max = M_edited.subs(x, v_zero)  # this is not exactly true! CHECK REPORT!
 
@@ -81,7 +82,8 @@ class lagging_design:
         b, h = SQL_reader_timber(timber_size, unit_system).values()
 
         # calculate s supplied
-        s_sup = (1.25 * 1.1 * 1.1) * h * pow(b, 2) / 6  # coefficients must be checked and qualified!
+        s_sup = (a_coef * b_coef * c_coef * d_coef * e_coef * f_coef) * h * pow(b,
+                                                                                2) / 6
 
         DCR_moment_timber = s_req / s_sup
         if DCR_moment_timber <= 1:
