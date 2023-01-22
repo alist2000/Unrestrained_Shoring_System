@@ -394,7 +394,7 @@ def main_unrestrained_shoring(inputs):
 
                     # lagging control
                     lagging = lagging_design(unit_system, Pile_spacing, section, ph, timber_size)
-                    DCR_moment_timber, status, d_concrete = lagging.moment_design(Fb)
+                    DCR_moment_timber, status, d_concrete = lagging.moment_design(Fb, tw, 1.25, 1.1, 1.1)
                     DCR_lagging.append(DCR_moment_timber)
                     status_lagging.append(status)
                     d_concrete_list.append(d_concrete)
