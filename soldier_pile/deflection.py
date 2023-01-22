@@ -10,7 +10,6 @@ import scipy.integrate as spi
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.graph_objs import Layout
-from shear_moment_diagram import plotter
 
 
 def deflection_calculator(delta_h, delta_h_decimal, depth, moment, PoF, c, hr, final_depth):
@@ -126,5 +125,4 @@ def deflection_calculator(delta_h, delta_h_decimal, depth, moment, PoF, c, hr, f
     # deflection_total = deflection3[::-1] + deflection2 + deflection1
     deflection_total = deflection3[::-1] + [0]
     deflection_depth = AB_list + [final_depth]
-    # plot = plotter(deflection_depth, deflection_total, "deflection", "Z", "in", "ft")
     return deflection_depth, deflection_total
