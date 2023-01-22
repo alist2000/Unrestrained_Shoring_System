@@ -277,7 +277,7 @@ def generate_html_response_cantilever_shoring(titles, values):
     return export
 
 
-def generate_html_response_surcharge_no_solution(output):
+def generate_html_response_cantilever_shoring_no_solution(output):
     html = "<html>"
     html_end = "</html>"
 
@@ -353,7 +353,6 @@ def generate_html_response_surcharge_no_solution(output):
     td_end = "</td>"
 
     def title():
-
         t1 = """		<table border="0" style="border-collapse: collapse; width: 100%;">
 			<tbody>
 				<tr>
@@ -386,9 +385,13 @@ def generate_html_response_surcharge_no_solution(output):
           <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
 			<tbody>
 				<tr>
-					<td style="width: 100%;padding: 5px;border: 5px solid white;background-color: #bfd6f6  ;"><t2b>
+					<td style="width: 15%;padding: 5px;border: 5px solid white;background-color: #bfd6f6  ;"><t2b>
           """
         h2 = """
+          </t2b></td>
+          <td style="width: 85%;padding: 5px;border: 5px solid white;background-color: #bfd6f6  ;"><t2b>
+          """
+        h1_2_end = """
           </t2b></td>
           </tr>
         </tbody>
@@ -405,11 +408,11 @@ def generate_html_response_surcharge_no_solution(output):
       </table>
           """
 
-        h8 = f"""
-        <td style="width: 10%;text-align: center;" ><t2>
+        h8 = """
+        <td style="width: 15%;text-align: center;" ><t2>
         """
-        h8_1 = f"""
-                <td style="width: 10%;text-align: center;" colspan="{output[1][0] - 1}"><t2>
+        h8_1 = """
+                <td style="width: 85%;text-align: center;"><t2>
                 """
 
         h9 = """
@@ -417,32 +420,12 @@ def generate_html_response_surcharge_no_solution(output):
         """
 
         s = ""
-        print(range(len(output[4])))
-        for k in range(len(output[4])):
-            c1 = 0
-            c2 = 0
-            c3 = 0
-            # Table Solution Group Fields, Field labels, units and values
-            for i in range(0, int(len(output[1]))):
-                if i % 2 == 0:
-                    s = s + h1 + str(output[1][i + 1]) + h2 + h3
-                    s += tr
-                    for j in range(output[1][i]):
-                        if j == 0:
-                            s = s + h8 + output[2][c1] + h9
-                        else:
-                            s = s + h8_1 + output[2][c1] + h9
-                            break
-                        c1 = c1 + 1
-                    s += tr_end
-                    for j in range(output[1][i]):
-                        if j == 0:
-                            s = s + tr
-                        s = s + h8 + str(output[4][k][c3]) + h9
-                        c3 = c3 + 1
-                    s += tr_end
-                    s = s + tbody_end + table_end
-            s = s + m1 + hr
+        s += h1 + output[1][0] + h2 + output[1][1] + h1_2_end + h3
+        for i in range(len(output[2])):
+            s += tr + h8 + str(output[2][i][0]) + h9 + h8_1 + str(output[2][i][1]) + h9
+            s += tr_end
+        s = s + tbody_end + table_end
+        s = s + m1 + hr
 
         return s
 
@@ -470,3 +453,7 @@ generate_html_response_cantilever_shoring_output = generate_html_response_cantil
          ['W27X84', 'Maximum Deflection ( in ) = 0.25', 'DCR Moment = 0.39', 'DCR Shear = 0.13',
           'DCR Deflection = 0.49', 'lagging status for timber size 3 x 16: \n\nPass!', 'd = 30.0 ( in )',
           'h = 26.7 ( in )', 'b = 10.0 ( in )', 'tw = 0.46 ( in )', 'tf = 0.64 ( in )']]])
+
+generate_html_response_cantilever_shoring_output_no_solution = generate_html_response_cantilever_shoring_no_solution(
+    [['Cantilever Soldier Pile - Output Summary', 'Final Solution Alternatives'], ['Error NO.', 'Description'],
+     [(1, 'You must define at least one load!')]])
