@@ -66,7 +66,218 @@ def calculate_pressure(depth, pressure):
     return pressure_list
 
 
-def plotter(depth_final, sigma_final, x_title, y_title, x_unit, y_unit):
+def plotter_load(depth_final, sigma_final, x_title, y_title, x_unit, y_unit):
+    plot = px.line(y=depth_final, x=sigma_final, color_discrete_sequence=["#595959"]).update_layout(
+        xaxis_title=f"{x_title} ({x_unit})",
+        yaxis_title=f"{y_title} ({y_unit})",
+        xaxis={"side": "top",
+               "zeroline": True,
+               "mirror": "ticks",
+               "zerolinecolor": "#000000",
+               "zerolinewidth": 7},
+        yaxis={"zeroline": True,
+               "mirror": "ticks",
+               "zerolinecolor": "#969696",
+               "zerolinewidth": 4}
+    )
+    plot['layout']['yaxis']['autorange'] = "reversed"
+    layout = Layout(
+        paper_bgcolor='#ffffff',
+        plot_bgcolor='#ffffff'
+    )
+    plot.update_layout(layout)
+
+    zero_list = []
+    for i in range(len(sigma_final)):
+        zero_list.append(0)
+    plot.add_traces(go.Scatter(x=zero_list, y=depth_final,
+                               mode="lines", hoverinfo="skip", fill=None, connectgaps=True, showlegend=False,
+                               line_color="#969696"))
+    plot.add_traces(go.Scatter(x=sigma_final, y=depth_final,
+                               mode="lines", hoverinfo="skip", fill="tonexty", connectgaps=True, showlegend=False,
+                               fillcolor="rgba(242, 87, 87, 0.7)"
+                               ))
+
+    j = int(len(depth_final) / 5)
+    arrow0 = go.layout.Annotation(dict(
+        x=0.01,
+        y=depth_final[0],
+        xref="x", yref="y",
+        text="",
+        showarrow=True,
+        axref="x", ayref='y',
+        ax=sigma_final[0],
+        ay=depth_final[0],
+        arrowhead=3,
+        arrowwidth=1.5,
+        arrowcolor='#595959', )
+    )
+
+    arrow1 = go.layout.Annotation(dict(
+        x=0.01,
+        y=depth_final[j],
+        xref="x", yref="y",
+        text="",
+        showarrow=True,
+        axref="x", ayref='y',
+        ax=sigma_final[j],
+        ay=depth_final[j],
+        arrowhead=3,
+        arrowwidth=1.5,
+        arrowcolor='#595959', )
+    )
+    arrow2 = go.layout.Annotation(dict(
+        x=0.01,
+        y=depth_final[2 * j],
+        xref="x", yref="y",
+        text="",
+        showarrow=True,
+        axref="x", ayref='y',
+        ax=sigma_final[2 * j],
+        ay=depth_final[2 * j],
+        arrowhead=3,
+        arrowwidth=1.5,
+        arrowcolor='#595959', )
+    )
+    arrow3 = go.layout.Annotation(dict(
+        x=0.01,
+        y=depth_final[3 * j],
+        xref="x", yref="y",
+        text="",
+        showarrow=True,
+        axref="x", ayref='y',
+        ax=sigma_final[3 * j],
+        ay=depth_final[3 * j],
+        arrowhead=3,
+        arrowwidth=1.5,
+        arrowcolor='#595959', )
+    )
+    arrow4 = go.layout.Annotation(dict(
+        x=0.01,
+        y=depth_final[4 * j],
+        xref="x", yref="y",
+        text="",
+        showarrow=True,
+        axref="x", ayref='y',
+        ax=sigma_final[4 * j],
+        ay=depth_final[4 * j],
+        arrowhead=3,
+        arrowwidth=1.5,
+        arrowcolor='#595959', )
+    )
+    arrow5 = go.layout.Annotation(dict(
+        x=0.01,
+        y=depth_final[5 * j - 1],
+        xref="x", yref="y",
+        text="",
+        showarrow=True,
+        axref="x", ayref='y',
+        ax=sigma_final[5 * j - 1],
+        ay=depth_final[5 * j - 1],
+        arrowhead=3,
+        arrowwidth=1.5,
+        arrowcolor='#595959', )
+    )
+    # arrow_final = go.layout.Annotation(dict(
+    #     x=0.01,
+    #     y=depth_final[-1],
+    #     xref="x", yref="y",
+    #     text="",
+    #     showarrow=True,
+    #     axref="x", ayref='y',
+    #     ax=sigma_final[-1],
+    #     ay=depth_final[-1],
+    #     arrowhead=3,
+    #     arrowwidth=1.5,
+    #     arrowcolor='#595959', )
+    # )
+    list_of_all_arrows = [arrow0, arrow1, arrow2, arrow3, arrow4, arrow5]
+    plot.update_layout(annotations=list_of_all_arrows)
+
+    # plot.write_html("output.html",
+    #                 full_html=False,
+    #                 include_plotlyjs='cdn')
+    # plot.show()
+    return plot
+
+
+def plotter_shear(depth_final, sigma_final, x_title, y_title, x_unit, y_unit):
+    plot = px.line(y=depth_final, x=sigma_final, color_discrete_sequence=["#595959"]).update_layout(
+        xaxis_title=f"{x_title} ({x_unit})",
+        yaxis_title=f"{y_title} ({y_unit})",
+        xaxis={"side": "top",
+               "zeroline": True,
+               "mirror": "ticks",
+               "zerolinecolor": "#000000",
+               "zerolinewidth": 7},
+        yaxis={"zeroline": True,
+               "mirror": "ticks",
+               "zerolinecolor": "#969696",
+               "zerolinewidth": 4}
+    )
+    plot['layout']['yaxis']['autorange'] = "reversed"
+    layout = Layout(
+        paper_bgcolor='#ffffff',
+        plot_bgcolor='#ffffff'
+    )
+    plot.update_layout(layout)
+
+    zero_list = []
+    for i in range(len(sigma_final)):
+        zero_list.append(0)
+    plot.add_traces(go.Scatter(x=zero_list, y=depth_final,
+                               mode="lines", hoverinfo="skip", fill=None, connectgaps=True, showlegend=False,
+                               line_color="#969696"))
+    plot.add_traces(go.Scatter(x=sigma_final, y=depth_final,
+                               mode="lines", hoverinfo="skip", fill="tonexty", connectgaps=True, showlegend=False,
+                               fillcolor="rgba(152, 193, 217, 0.7)"
+                               ))
+    # plot.write_html("output.html",
+    #                 full_html=False,
+    #                 include_plotlyjs='cdn')
+    # plot.show()
+    return plot
+
+
+def plotter_moment(depth_final, sigma_final, x_title, y_title, x_unit, y_unit):
+    plot = px.line(y=depth_final, x=sigma_final, color_discrete_sequence=["#595959"]).update_layout(
+        xaxis_title=f"{x_title} ({x_unit})",
+        yaxis_title=f"{y_title} ({y_unit})",
+        xaxis={"side": "top",
+               "zeroline": True,
+               "mirror": "ticks",
+               "zerolinecolor": "#000000",
+               "zerolinewidth": 7},
+        yaxis={"zeroline": True,
+               "mirror": "ticks",
+               "zerolinecolor": "#969696",
+               "zerolinewidth": 4}
+    )
+    plot['layout']['yaxis']['autorange'] = "reversed"
+    layout = Layout(
+        paper_bgcolor='#ffffff',
+        plot_bgcolor='#ffffff'
+    )
+    plot.update_layout(layout)
+
+    zero_list = []
+    for i in range(len(sigma_final)):
+        zero_list.append(0)
+    plot.add_traces(go.Scatter(x=zero_list, y=depth_final,
+                               mode="lines", hoverinfo="skip", fill=None, connectgaps=True, showlegend=False,
+                               line_color="#969696"))
+    plot.add_traces(go.Scatter(x=sigma_final, y=depth_final,
+                               mode="lines", hoverinfo="skip", fill="tonexty", connectgaps=True, showlegend=False,
+                               fillcolor="rgba(93, 211, 158, 0.7)"
+                               ))
+    # plot.write_html("output.html",
+    #                 full_html=False,
+    #                 include_plotlyjs='cdn')
+    # plot.show()
+    return plot
+
+
+def plotter_deflection(depth_final, sigma_final, x_title, y_title, x_unit, y_unit):
     plot = px.line(y=depth_final, x=sigma_final, color_discrete_sequence=["#595959"]).update_layout(
         xaxis_title=f"{x_title} ({x_unit})",
         yaxis_title=f"{y_title} ({y_unit})",
@@ -220,7 +431,7 @@ class diagram:
             load_unit = "N/m"
             length_unit = "m"
 
-        plot = plotter(depth, sigma_final, "q", "Z", load_unit, length_unit)
+        plot = plotter_load(depth, sigma_final, "q", "Z", load_unit, length_unit)
         return plot
 
     def shear_diagram(self, depth, sigma_final):
@@ -240,7 +451,7 @@ class diagram:
             shear_values.append(shear)
         shear_values = np.array(shear_values)
 
-        plot = plotter(depth, shear_values, "V", "Z", load_unit, length_unit)
+        plot = plotter_shear(depth, shear_values, "V", "Z", load_unit, length_unit)
 
         return plot, shear_values
 
@@ -262,6 +473,6 @@ class diagram:
         moment_values[-1] = 0
         moment_values = np.array(moment_values)
 
-        plot = plotter(depth, moment_values, "M", "Z", load_unit, length_unit)
+        plot = plotter_moment(depth, moment_values, "M", "Z", load_unit, length_unit)
 
         return plot, moment_values
