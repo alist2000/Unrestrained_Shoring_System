@@ -7,7 +7,7 @@ from shear_moment_diagram import diagram
 from database import SQL_reader
 from deflection import deflection_calculator
 from Lagging import lagging_design
-from shear_moment_diagram import plotter
+from shear_moment_diagram import plotter_deflection
 from report import create_feather
 from Output import output_single_solved, output_single_no_solution
 
@@ -425,7 +425,7 @@ def main_unrestrained_shoring(inputs):
             i = 0
             for delta in final_deflection:
                 # deflection plot
-                plot = plotter(depth_deflection, delta, "deflection", "Z", deflection_unit, length_unit)
+                plot = plotter_deflection(depth_deflection, delta, "deflection", "Z", deflection_unit, length_unit)
                 create_feather(depth_deflection, delta, "Deflection",
                                "deflection_project" + str(project + 1) + "_section" + str(i + 1))
                 deflection_plot.append(plot)
