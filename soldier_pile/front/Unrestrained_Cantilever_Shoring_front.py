@@ -84,7 +84,6 @@ def generate_html_response_cantilever_shoring(titles, values):
       .menu {
         background: #84c1ff;
         height: 4rem;
-        width: 20%;
       }
       .menu ol {
         list-style-type: none;
@@ -242,13 +241,6 @@ def generate_html_response_cantilever_shoring(titles, values):
       }
 
       html,
-      body {
-        font-size: 16px;
-        font-family: "Fira Mono", monospace;
-        margin: 0;
-        background: #2a363b;
-      }
-
       * {
         box-sizing: border-box;
       }
@@ -425,9 +417,18 @@ def generate_html_response_cantilever_shoring(titles, values):
                     			<tbody>
                     				<tr>
                     				"""
-        specific_t1_mid1 = """<td style="width: 20%; text-align: center; vertical-align: middle;  padding: 0.1%"><h3>"""
-        specific_t1_mid2 = """<td style="width: 35%; text-align: center; vertical-align: middle;  padding: 0.1%"><h3>"""
-        specific_t1_mid3 = """<td style="width: 45%; text-align: center; vertical-align: middle;  padding: 0.1%"><h3>"""
+        drop_down_1 = """<nav ">
+        <ol>
+        <h3 class="menu-item" style="cursor: pointer">"""
+        drop_down_2 = """<ol class="sub-menu">"""
+        drop_down_end = """</ol>
+              </h3>
+             </ol>
+            </nav>"""
+        specific_t1_mid1 = """<td  class="menu" style="width: 20%; text-align: center; vertical-align: middle;  padding: 0.1%">"""
+        specific_t1_mid2 = """<td  class="menu" style="width: 35%; text-align: center; vertical-align: middle;  padding: 0.1%"><h3>"""
+        specific_t1_mid3 = """<td  class="menu" style="width: 45%; text-align: center; vertical-align: middle;  padding: 0.1%"><h3>"""
+        specific_t1_mid_end = """</h3></td>"""
         specific_t1_end = """</h3></td>
                                       </tr>
                                     </tbody>
@@ -452,12 +453,26 @@ def generate_html_response_cantilever_shoring(titles, values):
         end_column = """
                                 </t2></td>
                                 """
+        # create titles
+        s += specific_t1 + specific_t1_mid1 + drop_down_1 + titles[2][0] + drop_down_2
+        for i in range(len(specific_values)):
+            drop_down_3 = f"""<h3
+              style="cursor: pointer"
+              class="menu-item"
+              ONCLICK="ShowAndHide('{specific_values[i][0]}')"
+            >
+              {specific_values[i][0]}
+            </h3>"""
+            s += drop_down_3
+
+        s += drop_down_end
+        s += specific_t1_mid2 + titles[2][1] + specific_t1_mid_end + specific_t1_mid3 + \
+             titles[2][
+                 2] + specific_t1_end
 
         for i in range(len(specific_values)):
-            # create titles
-            s += specific_t1 + specific_t1_mid1 + titles[2][0] + specific_t1_mid2 + titles[2][1] + specific_t1_mid3 + \
-                 titles[2][
-                     2] + specific_t1_end
+            drop_down_values = f"""<div style="display:none" id="{specific_values[i][0]}">"""
+            s += drop_down_values
 
             # create reports
             s += start_table + excel_start_specific + titles[4][i] + excel_end_specific + end_table
@@ -479,6 +494,8 @@ def generate_html_response_cantilever_shoring(titles, values):
                  specific_values[i][8] + empty_line + specific_values[i][9] + empty_line + specific_values[i][
                      10] + end_column
             s += image_column + tr_end
+            s += div_end
+            s += div_end
 
         return s
 
