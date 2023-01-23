@@ -25,6 +25,16 @@ def generate_html_response_cantilever_shoring(titles, values):
 	<title>Output Summary</title>
 	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+	<script>
+      function ShowAndHide(id) {
+        var x = document.getElementById(id);
+        if (x.style.display == "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+      }
+    </script>
 	<style type="text/css">
 		* {font-size: 10px; }
 		body {
@@ -70,6 +80,208 @@ def generate_html_response_cantilever_shoring(titles, values):
 		p {font-size: 10px;}
 		td {vertical-align: top;}
 	</style>
+	<style>
+      .menu {
+        background: #84c1ff;
+        height: 4rem;
+        width: 20%;
+      }
+      .menu ol {
+        list-style-type: none;
+        margin: 0 auto;
+        padding: 0;
+      }
+      .menu > ol {
+        max-width: 1000px;
+        padding: 0 2rem;
+        display: flex;
+      }
+      .menu > ol > .menu-item {
+        flex: 1;
+        padding: 0.75rem 0;
+      }
+      .menu > ol > .menu-item:after {
+        content: "";
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        bottom: 5px;
+        left: calc(50% - 2px);
+        background: #feceab;
+        will-change: transform;
+        transform: scale(0);
+        transition: transform 0.2s ease;
+      }
+      .menu > ol > .menu-item:hover:after {
+        transform: scale(1);
+      }
+      .menu-item {
+        position: relative;
+        line-height: 2.5rem;
+        text-align: center;
+      }
+      .menu-item a {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        display: block;
+        color: #fff;
+      }
+      .sub-menu .menu-item {
+        padding: 0.75rem 0;
+        background: #84c1ff;
+        opacity: 0;
+        transform-origin: bottom;
+        animation: enter 0.2s ease forwards;
+      }
+      .sub-menu .menu-item:nth-child(1) {
+        animation-duration: 0.2s;
+        animation-delay: 0s;
+      }
+      .sub-menu .menu-item:nth-child(2) {
+        animation-duration: 0.3s;
+        animation-delay: 0.1s;
+      }
+      .sub-menu .menu-item:nth-child(3) {
+        animation-duration: 0.4s;
+        animation-delay: 0.2s;
+      }
+      .sub-menu .menu-item:hover {
+        background: #c4ddff;
+      }
+      .sub-menu .menu-item a {
+        padding: 0 0.75rem;
+      }
+      @media screen and (max-width: 600px) {
+        .sub-menu .menu-item {
+          background: #c06c84;
+        }
+      }
+
+      @media screen and (max-width: 600px) {
+        .menu {
+          position: relative;
+        }
+        .menu:after {
+          content: "";
+          position: absolute;
+          top: calc(50% - 2px);
+          right: 1rem;
+          width: 30px;
+          height: 4px;
+          background: #fff;
+          box-shadow: 0 10px #fff, 0 -10px #fff;
+        }
+        .menu > ol {
+          display: none;
+          background: #f67280;
+          flex-direction: column;
+          justify-content: center;
+          height: 100vh;
+          animation: fade 0.2s ease-out;
+        }
+        .menu > ol > .menu-item {
+          flex: 0;
+          opacity: 0;
+          animation: enter 0.3s ease-out forwards;
+        }
+        .menu > ol > .menu-item:nth-child(1) {
+          animation-delay: 0s;
+        }
+        .menu > ol > .menu-item:nth-child(2) {
+          animation-delay: 0.1s;
+        }
+        .menu > ol > .menu-item:nth-child(3) {
+          animation-delay: 0.2s;
+        }
+        .menu > ol > .menu-item:nth-child(4) {
+          animation-delay: 0.3s;
+        }
+        .menu > ol > .menu-item:nth-child(5) {
+          animation-delay: 0.4s;
+        }
+        .menu > ol > .menu-item + .menu-item {
+          margin-top: 0.75rem;
+        }
+        .menu > ol > .menu-item:after {
+          left: auto;
+          right: 1rem;
+          bottom: calc(50% - 2px);
+        }
+        .menu > ol > .menu-item:hover {
+          z-index: 1;
+        }
+        .menu:hover > ol {
+          display: flex;
+        }
+        .menu:hover:after {
+          box-shadow: none;
+        }
+      }
+
+      .sub-menu {
+        position: absolute;
+        width: 100%;
+        top: 100%;
+        left: 0;
+        display: none;
+        z-index: 1;
+      }
+      .menu-item:hover > .sub-menu {
+        display: block;
+      }
+
+      @media screen and (max-width: 600px) {
+        .sub-menu {
+          width: 100vw;
+          left: -2rem;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      }
+
+      html,
+      body {
+        font-size: 16px;
+        font-family: "Fira Mono", monospace;
+        margin: 0;
+        background: #2a363b;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      *:before,
+      *:after {
+        box-sizing: inherit;
+      }
+
+      a {
+        text-decoration: none;
+      }
+      buttom {
+        cursor: pointer;
+      }
+      @keyframes enter {
+        from {
+          opacity: 0;
+          transform: scaleY(0.98) translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+    </style>
   </head>"""
 
     body = "<body>"
