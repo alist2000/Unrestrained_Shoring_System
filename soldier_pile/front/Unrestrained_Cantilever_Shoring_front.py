@@ -274,6 +274,20 @@ def generate_html_response_cantilever_shoring(titles, values):
         }
       }
     </style>
+    <style>
+    .dropdown-caret {
+        border-bottom-color: #0000;
+        border-left-color: #0000;
+        border-right-color: #0000;
+        border-style: solid;
+        border-width: var(--primer-borderWidth-thicker, 4px) var(--primer-borderWidth-thicker, 4px) 0;
+        content: "";
+        display: inline-block;
+        height: 0;
+        vertical-align: middle;
+        width: 0;
+        }
+    </style>
   </head>"""
 
     body = "<body>"
@@ -324,6 +338,15 @@ def generate_html_response_cantilever_shoring(titles, values):
                      <tbody>
                        <tr>
                          <td style="width: 100%;"><t1b></t1b></td>
+                       </tr>
+                     </tbody>
+                   </table>
+                     """
+    m2 = """
+                 <table border="0" style="border-collapse: collapse; width: 100%;">
+                     <tbody>
+                       <tr>
+                         <td style="width: 100%; height: 20; background-image: linear-gradient(white, #84c1ff);"><t1b></t1b></td>
                        </tr>
                      </tbody>
                    </table>
@@ -454,7 +477,8 @@ def generate_html_response_cantilever_shoring(titles, values):
                                 </t2></td>
                                 """
         # create titles
-        s += specific_t1 + specific_t1_mid1 + drop_down_1 + titles[2][0] + drop_down_2
+        s += specific_t1 + specific_t1_mid1 + drop_down_1 + titles[2][
+            0] + """  <span class="dropdown-caret"></span>""" + drop_down_2
         for i in range(len(specific_values)):
             drop_down_3 = f"""<h3
               style="cursor: pointer"
@@ -493,9 +517,10 @@ def generate_html_response_cantilever_shoring(titles, values):
             s += image_column_prop + specific_values[i][6] + empty_line + specific_values[i][7] + empty_line + \
                  specific_values[i][8] + empty_line + specific_values[i][9] + empty_line + specific_values[i][
                      10] + end_column
-            s += image_column + tr_end
+            s += image_column + tr_end + tbody_end + table_end
+            s += m2
             s += div_end
-            s += div_end
+
 
         return s
 
