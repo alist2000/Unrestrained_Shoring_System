@@ -178,21 +178,10 @@ def plotter_load(depth_final, sigma_final, x_title, y_title, x_unit, y_unit):
         arrowwidth=1.5,
         arrowcolor='#595959', )
     )
-    # arrow_final = go.layout.Annotation(dict(
-    #     x=0.01,
-    #     y=depth_final[-1],
-    #     xref="x", yref="y",
-    #     text="",
-    #     showarrow=True,
-    #     axref="x", ayref='y',
-    #     ax=sigma_final[-1],
-    #     ay=depth_final[-1],
-    #     arrowhead=3,
-    #     arrowwidth=1.5,
-    #     arrowcolor='#595959', )
-    # )
     list_of_all_arrows = [arrow0, arrow1, arrow2, arrow3, arrow4, arrow5]
     plot.update_layout(annotations=list_of_all_arrows)
+
+    plot.update_layout(title_text='Load Diagram', title_y=0.96)
 
     # plot.write_html("output.html",
     #                 full_html=False,
@@ -232,6 +221,9 @@ def plotter_shear(depth_final, sigma_final, x_title, y_title, x_unit, y_unit):
                                mode="lines", hoverinfo="skip", fill="tonexty", connectgaps=True, showlegend=False,
                                fillcolor="rgba(152, 193, 217, 0.7)"
                                ))
+
+    plot.update_layout(title_text='Shear Diagram', title_y=0.96)
+
     # plot.write_html("output.html",
     #                 full_html=False,
     #                 include_plotlyjs='cdn')
@@ -270,6 +262,9 @@ def plotter_moment(depth_final, sigma_final, x_title, y_title, x_unit, y_unit):
                                mode="lines", hoverinfo="skip", fill="tonexty", connectgaps=True, showlegend=False,
                                fillcolor="rgba(93, 211, 158, 0.7)"
                                ))
+
+    plot.update_layout(title_text='Moment Diagram', title_y=0.96)
+
     # plot.write_html("output.html",
     #                 full_html=False,
     #                 include_plotlyjs='cdn')
