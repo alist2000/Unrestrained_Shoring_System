@@ -9,8 +9,8 @@ def output_single_solved(unit_system, general, specific):
     else:
         deflection_unit = "mm"
         length_unit = "m"
-        force_unit = "N"
-        moment_unit = "N-m"
+        force_unit = "10^6 N"  # must be checked
+        moment_unit = "10^6 N-m"  # must be checked
         area_unit = "mm^2"
         S_unit = "mm^3"
 

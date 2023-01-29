@@ -423,7 +423,7 @@ class diagram:
             load_unit = "lb/m"
             length_unit = "ft"
         else:
-            load_unit = "N/m"
+            load_unit = "10^6 N/m"
             length_unit = "m"
 
         plot = plotter_load(depth, sigma_final, "q", "Z", load_unit, length_unit)
@@ -435,7 +435,7 @@ class diagram:
             load_unit = "lb"
             length_unit = "ft"
         else:
-            load_unit = "N"
+            load_unit = "10^6 N"
             length_unit = "m"
         shear_values = []
         for i in range(len(depth)):
@@ -456,7 +456,7 @@ class diagram:
             load_unit = "lb-ft"
             length_unit = "ft"
         else:
-            load_unit = "N-m"
+            load_unit = "10^6 N-m"
             length_unit = "m"
         moment_values = []
         for i in range(len(depth)):
