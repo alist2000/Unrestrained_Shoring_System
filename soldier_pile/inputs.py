@@ -160,7 +160,7 @@ surcharge_inputs = [q_all, l1_all, l2_all, teta_all]
 
 Formula_active = "Coulomb"
 if Formula_active != "User Defined":
-    gama_active = [120, 125, 125]
+    gama_active = [120, 125, 125]  # pcf or N/m^3
     phi_active = [34, 36, 36]
     state_active = "active"
     beta_active = [0, 0, 0]
