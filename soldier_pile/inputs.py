@@ -53,7 +53,7 @@ def edit_parameters(retaining_height, height,
         delta.insert(-1, delta[-1])
         water.insert(-1, water[-1])
 
-    hd_list.append(height[-1])  # final excavation depth : D
+    hd_list.append(height[-1])  # final Embedment Depth : D
     return hr_list, hd_list, number_of_layer, gama, phi, beta, omega, delta, water
 
 
@@ -92,7 +92,7 @@ def edit_parameters_user_defined(retaining_height, height,
 
         water.insert(-1, water[-1])
 
-    hd_list.append(height[-1])  # final excavation depth : D
+    hd_list.append(height[-1])  # final Embedment Depth : D
     return hr_list, hd_list, number_of_layer, EFP, water
 
 

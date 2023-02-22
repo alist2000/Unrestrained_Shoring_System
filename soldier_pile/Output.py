@@ -43,7 +43,7 @@ def output_single_solved(unit_system, general, specific):
     # excels -> this titles will use for api and download excels.
     excel_general = ["load", "shear", "moment"]
 
-    general_value_title = [f"Excavation depth ( {length_unit} ) = ", f"maximum Shear ( {force_unit} ) = ",
+    general_value_title = [f"Embedment Depth ( {length_unit} ) = ", f"maximum Shear ( {force_unit} ) = ",
                            f"maximum Moment ( {moment_unit} ) = ", f"Y zero Shear ( {length_unit} ) = ",
                            f"Required Area ( {area_unit} ) = ", f"Required Sx ( {S_unit} ) = "]
     output_general_values = []
