@@ -173,7 +173,7 @@ if Formula_active != "User Defined":
                               delta_active
                               ]
 else:
-    EFPa = [33.96, 26.875, 26.875]  # gama * Ka
+    EFPa = [33.96, 26.875, 26.875]  # gama * Ka  unit: pcf or N/m^3
     Ka_surcharge = 0.283
     hr, hd, number_of_layer_passive, EFPa, water_active = edit_parameters_user_defined(retaining_height, h_active,
                                                                                        number_of_layer_active, EFPa,
@@ -194,12 +194,12 @@ if Formula_passive != "User Defined":
                                ]
 else:
 
-    EFPp = [150, 150]  # gama * Kp
+    EFPp = [150, 150]  # gama * Kp  unit: pcf or N/m^3
     soil_properties_passive = [EFPp]
 
 
 # lagging inputs
-ph_max = 400
+ph_max = 400  # psf or N/M^2
 Fb = 825  # ksi for us and Mpa for metric
 timber_size = "3 x 16"
 
