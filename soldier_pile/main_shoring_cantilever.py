@@ -1,4 +1,5 @@
-from inputs import input_values
+from inputs import input_single
+from site_input import input2
 
 from surchargeLoad import surcharge
 from shoring_cantilever import calculate_force_and_arm, control_solution, cantilever_soldier_pile, put_D_in_list, \
@@ -38,7 +39,8 @@ def main_unrestrained_shoring(inputs):
      number_of_layer_passive_list, surcharge_type_list, surcharge_inputs_list, formula_active_list,
      formula_passive_list, soil_properties_active_list,
      soil_properties_passive_list, ph_list, Fb_list, timber_size_list, FS_list,
-     Pile_spacing_list, allowable_deflection_list, Fy_list, E_list, selected_design_sections_list] = inputs.values()
+     Pile_spacing_list, allowable_deflection_list, Fy_list, E_list, selected_design_sections_list] = input_single(
+        inputs).values()
 
     if unit_system == "us":
         deflection_unit = "in"
@@ -462,4 +464,4 @@ def main_unrestrained_shoring(inputs):
     return "No Error!", load_diagram, shear_diagram, moment_diagram, M_max_final, V_max, s_required_final, A_required, output_section_list, final_deflection, DCR_deflection, max_delta_list
 
 
-a = main_unrestrained_shoring(input_values)
+a = main_unrestrained_shoring(input2)
