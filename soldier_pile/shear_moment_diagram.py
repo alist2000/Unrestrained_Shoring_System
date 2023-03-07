@@ -70,12 +70,12 @@ def plotter_load(depth_final, sigma_final, x_title, y_title, x_unit, y_unit):
     plot = px.line(y=depth_final, x=sigma_final, color_discrete_sequence=["#595959"]).update_layout(
         xaxis_title=f"{x_title} ({x_unit})",
         yaxis_title=f"{y_title} ({y_unit})",
-        xaxis={"side": "top",
+        xaxis={"side": "top", "tickfont": {"size": 16},
                "zeroline": True,
                "mirror": "ticks",
                "zerolinecolor": "#000000",
                "zerolinewidth": 7},
-        yaxis={"zeroline": True,
+        yaxis={"zeroline": True, "tickfont": {"size": 16},
                "mirror": "ticks",
                "zerolinecolor": "#969696",
                "zerolinewidth": 4}
@@ -194,12 +194,12 @@ def plotter_shear(depth_final, sigma_final, x_title, y_title, x_unit, y_unit):
     plot = px.line(y=depth_final, x=sigma_final, color_discrete_sequence=["#595959"]).update_layout(
         xaxis_title=f"{x_title} ({x_unit})",
         yaxis_title=f"{y_title} ({y_unit})",
-        xaxis={"side": "top",
+        xaxis={"side": "top", "tickfont": {"size": 16},
                "zeroline": True,
                "mirror": "ticks",
                "zerolinecolor": "#000000",
                "zerolinewidth": 7},
-        yaxis={"zeroline": True,
+        yaxis={"zeroline": True, "tickfont": {"size": 16},
                "mirror": "ticks",
                "zerolinecolor": "#969696",
                "zerolinewidth": 4}
@@ -235,12 +235,12 @@ def plotter_moment(depth_final, sigma_final, x_title, y_title, x_unit, y_unit):
     plot = px.line(y=depth_final, x=sigma_final, color_discrete_sequence=["#595959"]).update_layout(
         xaxis_title=f"{x_title} ({x_unit})",
         yaxis_title=f"{y_title} ({y_unit})",
-        xaxis={"side": "top",
+        xaxis={"side": "top", "tickfont": {"size": 16},
                "zeroline": True,
                "mirror": "ticks",
                "zerolinecolor": "#000000",
                "zerolinewidth": 7},
-        yaxis={"zeroline": True,
+        yaxis={"zeroline": True, "tickfont": {"size": 16},
                "mirror": "ticks",
                "zerolinecolor": "#969696",
                "zerolinewidth": 4}
@@ -276,12 +276,12 @@ def plotter_deflection(depth_final, sigma_final, x_title, y_title, x_unit, y_uni
     plot = px.line(y=depth_final, x=sigma_final, color_discrete_sequence=["#595959"]).update_layout(
         xaxis_title=f"{x_title} ({x_unit})",
         yaxis_title=f"{y_title} ({y_unit})",
-        xaxis={"side": "top",
+        xaxis={"side": "top", "tickfont": {"size": 16},
                "zeroline": True,
                "mirror": "ticks",
                "zerolinecolor": "#000000",
                "zerolinewidth": 7},
-        yaxis={"zeroline": True,
+        yaxis={"zeroline": True, "tickfont": {"size": 16},
                "mirror": "ticks",
                "zerolinecolor": "#969696",
                "zerolinewidth": 4}
