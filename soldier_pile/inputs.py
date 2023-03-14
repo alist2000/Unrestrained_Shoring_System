@@ -252,6 +252,9 @@ D = symbols("D")
 
 
 def input_single(input_values):
+    # INPUT errors --> can be developed. now we have no error for inputs.
+    # *** pile spacing need a limitation.
+
     # *** GENERAL INFORMATION ***
 
     product_id = input_values.get("product_id")
@@ -309,6 +312,10 @@ def input_single(input_values):
         except:  # checkbox input in site won't be sent if user don't select that.
             water = "No"
         water_active.append(water)
+    EFPa_valid = True
+    EFPp_valid = True
+    Ka_valid = True
+    gama_valid = True
 
     if formula == "User Defined":
         EFPa = float(
@@ -321,6 +328,10 @@ def input_single(input_values):
 
         soil_properties_active = [EFPa, Ka_surcharge]
         soil_properties_passive = [EFPp]
+
+        EFPa_valid = EFPa
+        EFPp_valid = EFPp
+        Ka_valid = Ka_surcharge
 
     elif formula == "Rankine":
         gama_active = [
@@ -337,6 +348,9 @@ def input_single(input_values):
             for layer in range(number_of_layer_active)]
         delta_active = [0 for layer in range(number_of_layer_active)]
         beta_passive = [0 for layer in range(number_of_layer_active)]
+        for i in gama_active:
+            if i == 0:
+                gama_valid = 0  # then this value will go to the validation
 
     elif formula == "Coulomb":
         gama_active = [
@@ -359,8 +373,11 @@ def input_single(input_values):
             abs(float(input_values.get("data").get("Soil Properties").get('β passive' + layer * space).get(
                 "value")))
             for layer in range(number_of_layer_active)]
+        for i in gama_active:
+            if i == 0:
+                gama_valid = 0  # then this value will go to the validation
 
-    if formula != "User Defined":
+    if formula != "User Defined" and retaining_height != 0 and gama_valid:
         hr, hd, number_of_layer_active, gama_active, phi_active, beta_active, omega_active, delta_active, water_active = edit_parameters(
             retaining_height, h_active, number_of_layer_active, gama_active, phi_active, beta_active,
             omega_active,
@@ -381,10 +398,18 @@ def input_single(input_values):
         soil_properties_passive = [gama_passive, phi_passive, "passive", beta_passive, omega_passive,
                                    delta_passive
                                    ]
-
-    water_passive = water_active[len(hr):]
-    number_of_layer_passive = len(hd)
-    h_passive = hd
+    try:  # if gama was ok
+        water_passive = water_active[len(hr):]
+        number_of_layer_passive = len(hd)
+        h_passive = hd
+    except:  # if gama or retaining height equal to zero.
+        hr = []
+        hd = []
+        water_passive = []
+        number_of_layer_passive = []
+        h_passive = []
+        soil_properties_active = []
+        soil_properties_passive = []
 
     # *** SURCHARGE ***
 
@@ -457,7 +482,17 @@ def input_single(input_values):
         "value")))
     timber_size = json.loads(input_values.get("data").get("Lagging").get("Timber Size").get("value")).get("item")
 
-    final_values = {"number_of_project": number_of_project,
+    validation_dict = {"FS": FS, "Fy": Fy, "E": E, "Pile Spacing": pile_spacing,
+                       "Allowable Deflection": allowable_deflection, "Retaining Height": retaining_height,
+                       "Ph max": ph_max, "Fb": Fb, "γ": gama_valid, "EFPa": EFPa_valid, "EFPp": EFPp_valid,
+                       "Ka surcharge": Ka_valid}
+    status, input_errors = validation_zero(validation_dict)
+    error_number = len(input_errors)
+    error_description = input_errors
+    input_validation = {"error_number": error_number,
+                        "description": error_description}
+    final_values = {"input_validation": input_validation,
+                    "number_of_project": number_of_project,
                     "unit_system": unit_system,
                     "delta_h": [delta_h],
                     "h_active": [h_active],
@@ -490,3 +525,12 @@ def input_single(input_values):
 
 
 # a = input_single(input2)
+
+def validation_zero(item):
+    errors = []
+    values = list(item.values())
+    keys = list(item.keys())
+    for i in range(len(values)):
+        if values[i] == 0:
+            errors.append([f"{keys[i]} can not be zero!"])
+    return not bool(errors), errors

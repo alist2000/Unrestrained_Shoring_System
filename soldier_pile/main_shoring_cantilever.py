@@ -30,7 +30,7 @@ import numpy as np
 def main_unrestrained_shoring(inputs):
     D = symbols("D")
 
-    [number_of_project, unit_system, delta_h_list, h_active_list, h_passive_list, hr_list, hd_list,
+    [input_validation, number_of_project, unit_system, delta_h_list, h_active_list, h_passive_list, hr_list, hd_list,
      retaining_height_list,
      surcharge_depth_list,
      water_active_list,
@@ -41,6 +41,13 @@ def main_unrestrained_shoring(inputs):
      soil_properties_passive_list, ph_list, Fb_list, timber_size_list, FS_list,
      Pile_spacing_list, allowable_deflection_list, Fy_list, E_list, selected_design_sections_list] = input_single(
         inputs).values()
+
+    inputs_errors = list(input_validation.values())
+    number_of_input_error = inputs_errors[0]
+    description_input_error = inputs_errors[1]
+    if number_of_input_error != 0:
+        output_single = output_single_no_solution(description_input_error)
+        return output_single
 
     if unit_system == "us":
         deflection_unit = "in"
