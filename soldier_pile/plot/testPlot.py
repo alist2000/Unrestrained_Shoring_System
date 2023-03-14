@@ -78,42 +78,48 @@ import numpy as np
 # fig.update_layout(
 #     title_text="Academic year 2019/2020"
 # )
-depth_final = [i for i in range(100)]
-x = symbols("x")
-y = -x ** 2
-sigma_final = []
-for i in depth_final:
-    sigma_final.append(float(y.subs(x, i)))
+# depth_final = [i for i in range(100)]
+# x = symbols("x")
+# y = -x ** 2
+# sigma_final = []
+# for i in depth_final:
+#     sigma_final.append(float(y.subs(x, i)))
+#
+# sigma_final[-1] = 0
+#
+# # sigma_final = [j for j in range(255, 355)]
+# x_title = "x_title"
+# x_unit = "x_unit"
+# y_title = "y_title"
+# y_unit = "y_unit"
+# plot = px.line(y=depth_final, x=sigma_final, color_discrete_sequence=["#595959"]).update_layout(
+#     xaxis_title=f"{x_title} ({x_unit})",
+#     yaxis_title=f"{y_title} ({y_unit})",
+#     xaxis={"side": "top",
+#            "zeroline": True,
+#            "mirror": "ticks",
+#            "zerolinecolor": "#000000",
+#            "zerolinewidth": 7},
+#     yaxis={"zeroline": True,
+#            "mirror": "ticks",
+#            "zerolinecolor": "#969696",
+#            "zerolinewidth": 4}
+# )
+# plot['layout']['yaxis']['autorange'] = "reversed"
+# layout = Layout(
+#     paper_bgcolor='#ffffff',
+#     plot_bgcolor='#ffffff'
+# )
+# plot.update_layout(layout)
+# plot.add_traces(go.Scatter(x=sigma_final, y=depth_final,
+#                            mode="none", name="Max", hoverinfo="skip", fill="tozeroy",connectgaps= True, showlegend=False, fillcolor="rgba(242, 87, 87, 0.7)"
+#                            ))
+# # plot2 = px.area(sigma_final, x="xmodel", y="ymodel", color="nation", pattern_shape="nation", pattern_shape_map=["+"])
+# # plot2.show()
+# plot.show()
 
-sigma_final[-1] = 0
+plot = px.line(x=[[i for i in range(10)], [j for j in range(20, 30)]], y=[j for j in range(20, 30)]).update_layout(
+    xaxis=dict(tickfont={"size": 25, "family": "Times New Roman"}),
+    xaxis_title=dict(text="kjhjjhjhj", font={"size": 20, "family": "Times New Roman"}))
 
-# sigma_final = [j for j in range(255, 355)]
-x_title = "x_title"
-x_unit = "x_unit"
-y_title = "y_title"
-y_unit = "y_unit"
-plot = px.line(y=depth_final, x=sigma_final, color_discrete_sequence=["#595959"]).update_layout(
-    xaxis_title=f"{x_title} ({x_unit})",
-    yaxis_title=f"{y_title} ({y_unit})",
-    xaxis={"side": "top",
-           "zeroline": True,
-           "mirror": "ticks",
-           "zerolinecolor": "#000000",
-           "zerolinewidth": 7},
-    yaxis={"zeroline": True,
-           "mirror": "ticks",
-           "zerolinecolor": "#969696",
-           "zerolinewidth": 4}
-)
-plot['layout']['yaxis']['autorange'] = "reversed"
-layout = Layout(
-    paper_bgcolor='#ffffff',
-    plot_bgcolor='#ffffff'
-)
-plot.update_layout(layout)
-plot.add_traces(go.Scatter(x=sigma_final, y=depth_final,
-                           mode="none", name="Max", hoverinfo="skip", fill="tozeroy",connectgaps= True, showlegend=False, fillcolor="rgba(242, 87, 87, 0.7)"
-                           ))
-# plot2 = px.area(sigma_final, x="xmodel", y="ymodel", color="nation", pattern_shape="nation", pattern_shape_map=["+"])
-# plot2.show()
 plot.show()
