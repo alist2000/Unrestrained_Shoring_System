@@ -172,9 +172,10 @@ def main_unrestrained_shoring(inputs):
                     # error_surcharge_list.append(error_surcharge)
                     i_sur += 1
 
-            if error_surcharge_list[0] != "No Error!":
-                project_error.append(error_surcharge_list)
-                break
+            # we ignore errors for surcharge. if we have error just don't
+            # if error_surcharge_list[0] != "No Error!":
+            #     project_error.append(error_surcharge_list)
+            #     break
 
             force_soil_active, arm_soil_active = calculate_force_and_arm(soil_active, water_active_pressure,
                                                                          main_active)
