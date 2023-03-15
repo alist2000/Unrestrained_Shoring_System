@@ -471,7 +471,7 @@ def generate_html_response_cantilever_shoring(titles, values):
                                         <td style="width: 33.75%;text-align: center; vertical-align: middle;background-color: white" colspan="3"  ><img src="D:\git\Shoring\database\section_picture_para_new.jpg" height = "360"></td>
                                         """
         image_column_prop = """
-                                                <td style="width: 11.25%;text-align: right; vertical-align: middle;background-color: white" ><t2>
+                                                <td style="width: 11.25%;text-align: center; vertical-align: middle;background-color: white" ><t2>
                                                 """
         end_column = """
                                 </t2></td>
