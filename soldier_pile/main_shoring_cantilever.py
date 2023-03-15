@@ -435,7 +435,7 @@ def main_unrestrained_shoring(inputs):
             i = 0
             for delta in final_deflection:
                 # deflection plot
-                plot = plotter_deflection(depth_deflection, delta, "deflection", "Z", deflection_unit, length_unit)
+                plot = plotter_deflection(depth_deflection, delta, "Deflection", "Z", deflection_unit, length_unit)
                 create_feather(depth_deflection, delta, "Deflection",
                                "deflection_project" + str(project + 1) + "_section" + str(i + 1))
                 deflection_plot.append(plot)

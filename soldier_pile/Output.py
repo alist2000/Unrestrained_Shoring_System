@@ -60,7 +60,7 @@ def output_single_solved(unit_system, general, specific):
                                 "DCR Shear = " + str(round(specific_values[3][i], 2)),  # DCR shear
                                 "DCR Deflection = " + str(round(specific_values[4][i], 2)),  # DCR deflection
                                 # lagging
-                                "lagging status for timber size " + specific_values[5] + ": \n\n" + specific_values[6][
+                                "Timber Size " + specific_values[5] + ": \n\n" + specific_values[6][
                                     i],
                                 f"d = {specific_values[7][i]} ( {deflection_unit} )",
                                 f"h = {specific_values[8][i]} ( {deflection_unit} )",
