@@ -13,6 +13,7 @@ from report import create_feather
 from Output import output_single_solved, output_single_no_solution
 
 import sys
+import math
 
 sys.path.append(r"D:/git/Shoring/Lateral-pressure-")
 
@@ -457,7 +458,7 @@ def main_unrestrained_shoring(inputs):
 
     if number_of_project == 1 and not project_error:
         general_plot = [load_diagram, shear_diagram, moment_diagram]
-        general_values = [excavation_depth_dfinal, V_max, M_max_final, Y_zero_shear, A_required, s_required_final]
+        general_values = [math.ceil(excavation_depth_dfinal), math.ceil(V_max), math.ceil(M_max_final), Y_zero_shear, A_required, s_required_final]
         general_output = {"plot": general_plot, "value": general_values}
         specific_plot = deflection_plot
         specific_values = [final_sections, max_delta_list, DCR_moment, DCR_shear, DCR_deflection, timber_size,
