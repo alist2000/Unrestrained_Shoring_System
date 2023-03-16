@@ -458,7 +458,8 @@ def main_unrestrained_shoring(inputs):
 
     if number_of_project == 1 and not project_error:
         general_plot = [load_diagram, shear_diagram, moment_diagram]
-        general_values = [math.ceil(excavation_depth_dfinal), math.ceil(V_max), math.ceil(M_max_final), Y_zero_shear, A_required, s_required_final]
+        general_values = [math.ceil(excavation_depth_dfinal), round(V_max / 1000, 2), round(M_max_final / 1000, 2),
+                          Y_zero_shear, A_required, s_required_final]
         general_output = {"plot": general_plot, "value": general_values}
         specific_plot = deflection_plot
         specific_values = [final_sections, max_delta_list, DCR_moment, DCR_shear, DCR_deflection, timber_size,

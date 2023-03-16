@@ -2,15 +2,15 @@ def output_single_solved(unit_system, general, specific):
     if unit_system == "us":
         deflection_unit = "in"
         length_unit = "ft"
-        force_unit = "lb"
-        moment_unit = "lb-ft"
+        force_unit = "kips"
+        moment_unit = "kips-ft"
         area_unit = "in^2"
         S_unit = "in^3"
     else:
         deflection_unit = "mm"
         length_unit = "m"
-        force_unit = "N"  # must be checked
-        moment_unit = "N-m"  # must be checked
+        force_unit = "KN"  # must be checked
+        moment_unit = "KN-m"  # must be checked
         area_unit = "mm^2"
         S_unit = "mm^3"
 
