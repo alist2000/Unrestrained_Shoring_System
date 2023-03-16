@@ -420,10 +420,10 @@ class diagram:
     def load_diagram(self, depth, sigma_final):
         unit_system = self.unit_system
         if unit_system == "us":
-            load_unit = "lb/m"
+            load_unit = "kips/m"
             length_unit = "ft"
         else:
-            load_unit = "N/m"
+            load_unit = "KN/m"
             length_unit = "m"
 
         plot = plotter_load(depth, sigma_final, "q", "Z", load_unit, length_unit)
@@ -432,10 +432,10 @@ class diagram:
     def shear_diagram(self, depth, sigma_final):
         unit_system = self.unit_system
         if unit_system == "us":
-            load_unit = "lb"
+            load_unit = "kips"
             length_unit = "ft"
         else:
-            load_unit = "N"
+            load_unit = "KN"
             length_unit = "m"
         shear_values = []
         for i in range(len(depth)):
@@ -453,10 +453,10 @@ class diagram:
     def moment_diagram(self, depth, shear_values):
         unit_system = self.unit_system
         if unit_system == "us":
-            load_unit = "lb-ft"
+            load_unit = "kips-ft"
             length_unit = "ft"
         else:
-            load_unit = "N-m"
+            load_unit = "KN-m"
             length_unit = "m"
         moment_values = []
         for i in range(len(depth)):

@@ -324,6 +324,7 @@ def main_unrestrained_shoring(inputs):
                                    water_passive_pressure_final)
 
             depth, sigma = main_diagram.base_calculate(delta_h)
+            sigma = np.array(list(map(lambda x: x / 1000, sigma)))
             load_diagram = main_diagram.load_diagram(depth, sigma)
             shear_diagram, shear_values = main_diagram.shear_diagram(depth, sigma)
             moment_diagram, moment_values = main_diagram.moment_diagram(depth, shear_values)
