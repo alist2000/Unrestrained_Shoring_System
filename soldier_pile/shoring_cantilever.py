@@ -19,6 +19,7 @@ from shear_moment_diagram import diagram
 from surchargeLoad import surcharge
 
 sys.path.append(r"D:/git/Shoring/Lateral-pressure-")
+sys.path.append(r"F:/Cvision/Lateral-pressure-")
 
 from Passive_Active.active_passive import active_passive
 from Force.force import moment_calculator

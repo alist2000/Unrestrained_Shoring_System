@@ -122,7 +122,7 @@ input2 = {'information': {'title': '1', 'jobNo': '1', 'designer': '1', 'checker'
                   'Load Type  ': {'value': '{"id":1383,"item":"Uniform","section_product_item":"40_92"}', 'unit': None},
                   'Load Type   ': {'value': '{"id":1384,"item":"No Load","section_product_item":"40_92"}',
                                    'unit': None}, 'L1': {'value': '11', 'unit': 'ft'},
-                  'q  ': {'value': '11', 'unit': None}, 'q   ': {'value': '11', 'unit': None},
+                  'q  ': {'value': '11', 'unit': None}, 'q ': {'value': '11', 'unit': None},
                   'q': {'value': '11', 'unit': None}, 'Ɵ': {'value': '0', 'unit': None}},
                    'Lagging': {'Ph max': {'value': '111', 'unit': 'psf'}, 'Fb': {'value': '11', 'unit': 'ksi'},
                                'Timber Size': {'value': '{"id":1403,"item":"1 x 2","section_product_item":"42_93"}',
