@@ -21,7 +21,8 @@ def output_single_solved(unit_system, general, specific):
         plot.write_html(f"plot/general_output{i}.html",
                         full_html=False,
                         include_plotlyjs='cdn')
-        # plot.write_image(f"plot/output{i}.png")
+        plot.write_image(f"images/general_output{i}.png")
+
         i += 1
 
     specific_plot, specific_values = specific.values()
@@ -32,7 +33,7 @@ def output_single_solved(unit_system, general, specific):
         plot.write_html(f"plot/deflection_output{i}.html",
                         full_html=False,
                         include_plotlyjs='cdn')
-        # plot.write_image(f"plot/output{i}.png")
+        plot.write_image(f"images/deflection_output{i}.png")
         i += 1
 
     otitle = ["Cantilever Soldier Pile - Output Summary",
