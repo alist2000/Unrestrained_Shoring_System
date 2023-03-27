@@ -1,0 +1,2399 @@
+<html>
+<head>
+    <title>Report Sample</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style type="text/css">
+        * {
+            font-size: 10px;
+        }
+
+        body {
+            font: 10px Arial, Helvetica, sans-serif;
+            line-height: 1.0;
+        }
+
+        @media print {
+            .pagebreak {
+                page-break-before: always;
+            }
+        }
+
+        @page {
+            size: letter;
+            margin: 1.5cm;
+            @bottom-right {
+                content: "Page " counter(page) " of " counter(pages);
+            }
+            @top-left {
+                color: rgba(0, 0, 0, 0);
+                content: "This text will not be shown";
+                background-image: url('CIV_Logo_Header.svg');
+                background-size: contain;
+                background-repeat: no-repeat;
+            }
+            @top-right {
+                content: "CiViSion Version 0.0.1";
+            }
+        }
+
+        .custom-page-start {
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+
+        h1 {
+            color: #30508A;
+            font-size: 15px;
+        }
+
+        h2 {
+            background: #CEE5F2;
+            font-size: 13px;
+            padding-top: 3px;
+            padding-bottom: 3px;
+            padding-left: 3px;
+            margin-bottom: 5px;
+            margin-top: 5px;
+            margin-left: -1px;
+            margin-right: -1px;
+        }
+
+        h3 {
+            background: #a2d2ff;
+            font-size: 10px;
+            margin-bottom: -1px;
+            margin-top: -1px;
+            margin-left: -1px;
+            margin-right: -1px;
+            padding-top: 3px;
+            padding-bottom: 3px;
+            padding-left: 3px;
+        }
+
+        t1 {
+            display: block;
+            font-size: 10px;
+            font-style: italic;
+            padding-left: 3px;
+        }
+
+        t1b {
+            font-size: 10px;
+            font-style: italic;
+            font-weight: bold;
+            padding-left: 3px;
+        }
+
+        t2 {
+            font-size: 10px;
+        }
+
+        t2p {
+            font-size: 10px;
+            color: green;
+        }
+
+        t2f {
+            font-size: 10px;
+            color: red;
+        }
+
+        t2i {
+            font-size: 10px;
+            text-indent: 50px
+        }
+
+        tc2 {
+            font-size: 10px;
+            text-align: center;
+        }
+
+        p {
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="custom-page-start">
+    <h1>Unrestrained Cantilever Shoring Design/Analysis - Detailed Report</h1>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <h2> 1 Project Info</h2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 25%;">
+                <t1>Project Title:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ project_title }}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1>Designed By:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ designer }}</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%;">
+                <t1>Job Title:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ job_title }}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1>Checked By:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ checker }}</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%;">
+                <t1>Company:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ company }}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1>Analysis Date:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ analysis_date }}</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%;">
+                <t1>Comments:</t1>
+            </td>
+            <td colspan="3" ; style="width: 25%;">
+                <t2>{{ comments }}</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <h2> 2 Input Parameters</h2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>2.1 General</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 25%;">
+                <t1>Unit System:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ unit_system }}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1></t1>
+            </td>
+            <td style="width: 25%;">
+                <t2></t2>
+            </td>
+
+        </tr>
+        <tr>
+            <td style="width: 25%;">
+                <t1>E:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ E }} {{pressure_unit}}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1>FS:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ FS }}</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%;">
+                <t1>Fy:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ Fy }}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1>Pile Spacing:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ pile_spacing }} {{length_unit}}</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%;">
+                <t1>Allowable Deflection:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ allowable_deflection }} {{deflection_unit}}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1>Sections:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ Sections }}</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>3.2 Soil Properties</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 25%;">
+                <t1>Retaining Height:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ retaining_height }} {{ length_unit }}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1>Number of Soil Layer:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ soil_layer_number }}</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%;">
+                <t1>&#611;:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ gama }} {{ density_unit }}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1>&Phi;:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ phi }} {{ ull }}</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%;">
+                <t1>&#946; Active:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ beta_active }} {{ ull }}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1>&#946; Passive:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ beta_passive }} {{ ull }}</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%;">
+                <t1>&#948;:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ delta }} {{ ull }}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1></t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+            <td style="width: 5%;">
+                <t2></t2>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>3.3 Surcharge</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 25%;">
+                <t1>Number of Surcharge Load:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ number_of_surcharge }}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1>Surcharge Depth:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ retaining_height }} {{length_unit}}</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%;">
+                <t1>Load Type:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ load_type }}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1>q:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ q }}</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%;">
+                <t1>L1:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ l1 }} {{ length_unit }}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1>L2:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ l2 }} {{ length_unit }}</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%;">
+                <t1>&#952;:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{ teta}} {{ull}}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1></t1>
+            </td>
+            <td style="width: 25%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>3.4 :Lagging</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 25%;">
+                <t1>Ph max:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{Ph_max}} {{density_unit}}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1>Fb:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{Fb}} {{pressure_unit}}</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%;">
+                <t1>Timber Size:</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>{{timber_size}}</t2>
+            </td>
+            <td style="width: 25%;">
+                <t1></t1>
+            </td>
+            <td style="width: 25%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <h2> 3 Schematic</h2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td>
+                here I should put a picture from soil and layer. these pictures are just for now.
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 33.3%;">
+                <img style="width: 100%; height: auto; margin-top:0px;" src="../../images/general_output1.png"
+                     alt="Elevation View">
+            </td>
+            <td style="width: 33.3%;">
+                <img style="width: 100%; height: auto;  margin-top:0px;" src="../../images/general_output2.png"
+                     alt="Section A">
+            </td>
+            <td style="width: 33.3%;">
+                <img style="width: 100%; height: auto;  margin-top:0px;" src="../../images/general_output3.png"
+                     alt="Section B">
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 33.3%; text-align: center;">
+                <t2>Elevation View</t2>
+            </td>
+            <td style="width: 33.3%; text-align: center;">
+                <t2>Section A-A</t2>
+            </td>
+            <td style="width: 33.3%; text-align: center;">
+                <t2>Section B-B</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="pagebreak"></div>
+<div class="custom-page-start">
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <h2> 4 Summary of Results</h2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>4.1 DCRs</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 50%;">
+                <t1b></t1b>
+            </td>
+            <td style="width: 20%; text-align: center;">
+                <t1b>DCR</t1b>
+            </td>
+            <td style="width: 5%; text-align: center;">
+                <t1b>Status</t1b>
+            </td>
+            <td style="width: 20%; text-align: center;">
+                <t1b></t1b>
+            </td>
+            <td style="width: 5%; text-align: center;">
+                <t1b></t1b>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 50%;">
+                <t1>Moment</t1>
+            </td>
+            <td style="width: 20%; text-align: center;">
+                <t2>{{ DCR_moment }}</t2>
+            </td>
+            <td style="width: 5%; text-align: center;">{{ moment_status }}</td>
+            <td style="width: 20%; text-align: center;">
+                <t2></t2>
+            </td>
+            <td style="width: 5%; text-align: center;"></td>
+        </tr>
+        <tr>
+            <td style="width: 50%;">
+                <t1>Shear</t1>
+            </td>
+            <td style="width: 20%; text-align: center;">
+                <t2>{{ DCR_shear }}</t2>
+            </td>
+            <td style="width: 5%; text-align: center;">{{ shear_status }}</td>
+            <td style="width: 20%; text-align: center;">
+                <t2></t2>
+            </td>
+            <td style="width: 5%; text-align: center;"></td>
+        </tr>
+        <tr>
+            <td style="width: 50%;">
+                <t1>Deflection</t1>
+            </td>
+            <td style="width: 20%; text-align: center;">
+                <t2>{{ DCR_deflection }}</t2>
+            </td>
+            <td style="width: 5%; text-align: center;">{{ deflection_status }}</td>
+            <td style="width: 20%; text-align: center;">
+                <t2></t2>
+            </td>
+            <td style="width: 5%; text-align: center;"></td>
+        </tr>
+        <tr>
+            <td style="width: 50%;">
+                <t1>Lagging (Moment Design)</t1>
+            </td>
+            <td style="width: 20%; text-align: center;">
+                <t2>{{ DCR_lagging }}</t2>
+            </td>
+            <td style="width: 5%; text-align: center;">{{ lagging Status }}</td>
+            <td style="width: 20%; text-align: center;">
+                <t2></t2>
+            </td>
+            <td style="width: 5%; text-align: center;"></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>4.2 Important values</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 20%;">
+                <t1b>Embedment Depth</t1b>
+            </td>
+            <td style="width: 80%;">
+                <t2>
+                    {{ D }} {{ length_unit }}
+                </t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 20%;">
+                <t1b><em>S<sub>x<sub>required</sub></sub></em></t1b>
+            </td>
+            <td style="width: 80%;">
+                <t2>
+                    {{ Sx_required }} {{Sx_unit}}
+                </t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 20%;">
+                <t1b><em>A<sub>x<sub>required</sub></sub></em></t1b>
+            </td>
+            <td style="width: 80%;">
+                <t2>
+                    {{ Ax_required }} {{Ax_unit}}
+                </t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 20%;">
+                <t1b>Moment Max</t1b>
+            </td>
+            <td style="width: 80%;">
+                <t2>
+                    {{ M_max }} {{moment_unit}}
+                </t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 20%;">
+                <t1b>Shear Max</t1b>
+            </td>
+            <td style="width: 80%;">
+                <t2>
+                    {{ shear_max }} {{ force_unit}}
+                </t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 20%;">
+                <t1b>Deflection Max</t1b>
+            </td>
+            <td style="width: 80%;">
+                <t2>
+                    {{ deflection_max }} {{ deflection_unit }}
+                </t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 20%;">
+                <t1b>Y zero shear</t1b>
+            </td>
+            <td style="width: 80%;">
+                <t2>
+                    {{ y_zero_shear }}{{ length_unit}}
+                </t2>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="pagebreak"></div>
+<div class="custom-page-start">
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <h2> 5 Detailed Design/Analysis Results</h2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.1 Soil Pressure Calculation</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <img style="width: 100%; margin-top:0px;" src="Figure1.png" alt="Elevation View">
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%; text-align: center;">
+                <t2>Figure 1 Caption</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <img style="width: 100%; margin-top:0px;" src="Figure2.png" alt="Elevation View">
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%; text-align: center;">
+                <t2>Figure 2 Caption</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <img style="width: 100%; margin-top:0px;" src="Figure3.png" alt="Elevation View">
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%; text-align: center;">
+                <t2>Figure 3 Caption</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <t2> Note: Strength reduction factors used in limit states are based
+                    on the prescribed reduction factors given in ANSI/AISC 358-16, Section 2.4.1.
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%;">
+                <t2>a) For ductile limit states: <em>&Phi;<sub>d</sub></em> = 1.0</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%;">
+                <t2>b) For non-ductile limit states: <em>&Phi;<sub>n</sub></em> = 0.9</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.1 Compute probable maximum moment at plastic hinge
+                (ANSI/AISC358-16, Sec. 7.6 - Step 1)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                <t1>1.1 &leq; <em>C<sub>pr</sub></em> = <em>( F<sub>y</sub> + F<sub>u</sub> ) / 2F<sub>y</sub></em>
+                    &leq; 1.2
+                </t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 2.4-2</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 75%;">
+                <t1><em>M<sub>pr</sub> = C<sub>pr</sub> F<sub>y</sub> R<sub>y</sub> Z<sub>e</sub></em>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 2.4-1</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>C<sub>pr</sub></em> = {{ cpr_left_bm }}, <em>M<sub>pr</sub></em> = {{ mpr_left_bm }}&nbsp;{{ um
+                    }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.2 Compute the maximum bolt diameter to prevent beam flange
+                tensile rupture for standard holes with two bolts per row (ANSI/AISC358-16, Sec. 7.6 - Step 2)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                <t1><em>d<sub>bmax</sub> = b<sub>f</sub> / 2[ 1 - R<sub>y</sub> F<sub>y</sub> /
+                    R<sub>t</sub> F<sub>t</sub> ]</em> - 1/8 in ( 3 mm )
+                </t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 7.6-2</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>R<sub>y</sub></em> = {{ ry_left_bm }}, <em>R<sub>t</sub></em> = {{ rt_left_bm }},
+                    <em>d<sub>bmax</sub></em> = {{ db_left_bm }}&nbsp;{{ uls }}
+                </t2>
+            </td>
+            </td>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.3 Determine controlling nominal bolt shear strength (ANSI/AISC358-16, Sec.
+                7.6 - Step 3)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                <t1><em>r<sub>n</sub> = min ( r<sub>n1</sub> , r<sub>n2</sub> , r<sub>n3</sub> )</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 75%;">
+                <t1><em>r<sub>n1</sub> = 1.0F<sub>nv</sub> A<sub>b</sub> , r<sub>n2</sub> =
+                    2.4R<sub>t</sub>F*<sub>ub</sub> d<sub>b</sub> t<sub>f</sub> , r<sub>n3</sub> = 2.4F<sub>up</sub>
+                    d<sub>b</sub> t<sub>p</sub></t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 7.6-3</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 75%;">
+                <t1>* F<sub>u</sub> is replaced by R<sub>t</sub>F<sub>u</sub> according to ANSI/AISC 360-16, Section
+                    A3.2
+                </t1>
+            </td>
+            <td style="width: 25%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>r<sub>n1</sub></em> = {{ bolt_rn1_left_bm }}&nbsp;{{ uf }}, <em>r<sub>n2</sub></em> = {{
+                    bolt_rn2_left_bm }}&nbsp;{{ uf }}, <em>r<sub>n3</sub></em> = {{ bolt_rn3_left_bm }}&nbsp;{{ uf }}
+                </t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 15%;">
+                <t1></t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>r<sub>n</sub></em> = {{ bolt_rn_left_bm }}&nbsp;{{ uf }}</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.4 Select a trial number of bolts (ANSI/AISC358-16, Sec. 7.6 - Step 4)</h3>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                <t1>n &#x2265; 1.25M<sub>pr</sub> / [ &Phi;<sub>n</sub> r<sub>n</sub> ( d + t<sub>p</sub> ) ]</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 7.6-4</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 75%;">
+                <t1>&Phi;<sub>n</sub> = 0.9 according to ANSI/AISC 358-2020 Section 2.4.1.</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2>t<sub>p</sub> = {{ t_pl_left_bm }} {{ uls }}, n = {{ num1_fl_bolts_left_bm }}</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.5 Determine the plastic hinge location (ANSI/AISC358-16, Sec. 7.6 - Step
+                5)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                <t1>S<sub>h</sub> = S<sub>1</sub> + s ( n / 2 - 1 ), S<sub>1</sub> is assumed to be 4.5 in.</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>S<sub>1</sub></em> = {{ s1_left_bm }}&nbsp;{{ uls }}, <em>S<sub>h</sub></em> = {{ sh_left_bm }}&nbsp;{{
+                    uls }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.6 Control spacing (ANSI/AISC360-16, Sec.J3.4&J3.10)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>S<sub>l</sub></em> = {{ sl_left_bm }}&nbsp;{{ uls }}, <em>C<sub>l</sub></em> = {{ cl_left_bm }}&nbsp;{{
+                    uls }}, <em>C<sub>t</sub></em> = {{ ct_left_bm }}&nbsp;{{ uls }}, <em>l<sub>c</sub></em> = {{
+                    lc_left_bm }}&nbsp;{{ uls }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>S<sub>l</sub> &ge; S<sub>l,min</sub></em> = {{ sl_min }}&nbsp;{{ uls }},
+                    <em>C<sub>l</sub> &ge; C<sub>l,min</sub></em> = {{ cl_min }}&nbsp;{{ uls }}
+                </t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 15%;">
+                <t1></t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>C<sub>t</sub> &ge; C<sub>t,min</sub></em> = {{ ct_min }}&nbsp;{{ uls }},
+                    <em>l<sub>c</sub> &ge; l<sub>c,min</sub></em> = {{ lc_min }}&nbsp;{{ uls }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 25%;">
+                <t1>S<sub>l</sub> : Long. bolt spacing</t1>
+            </td>
+            <td style="width: 50%;">
+                <t1>C<sub>t</sub> : Trans. edge distance</t1>
+            </td>
+            <td style="width: 25%;">
+                <t1>l<sub>c,min</sub> : 2d<sub>b</sub></t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 25%;">
+                <t1>C<sub>l</sub> : Long. edge distance</t1>
+            </td>
+            <td style="width: 50%;">
+                <t1>l<sub>c</sub> : Clear distance, in the direction of the force</t1>
+            </td>
+            <td style="width: 25%;">
+                <t1></t1>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.7 Compute the shear force at the beam plastic hinge location at each end of
+                the beam (ANSI/AISC358-16, Sec. 7.6 - Step 6)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                <t1>V<sub>h</sub> = 2M<sub>pr</sub> / L<sub>h</sub> &plusmn; V<sub>g</sub></t1>
+            </td>
+            <td style="width: 25%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>V<sub>g</sub></em> = {{ vg_left_bm }}&nbsp;{{ uf }},
+                    <em>V<sub>h</sub></em> = {{ vh_left_bm }}&nbsp;{{ uf }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.8 Calculate the moment expected at the face of the column flange
+                (ANSI/AISC358-16, Sec. 7.6 - Step 7) </h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                <t1>M<sub>f</sub> = M<sub>pr</sub> + V<sub>h</sub>S<sub>h</sub></t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 7.6-6</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>M<sub>f</sub></em> = {{ m_f_left_bm }}&nbsp;{{ um }}</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.9 Compute <em>F<sub>pr</sub></em>,
+                the force couple created in flange plates due to <em>M<sub>f</sub></em>
+                (ANSI/AISC358-16, Sec. 7.6 - Step 8)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                <t1>F<sub>pr</sub> = M<sub>f</sub> / ( d + t<sub>p</sub> )</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 7.6-7</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>F<sub>pr</sub></em> = {{ fpr_left_bm }}&nbsp;{{ uf }}</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.10 Confirm number of bolts selected in Step 4 is adequate
+                (ANSI/AISC358-16, Sec. 7.6 - Step 9)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                <t1>n &ge; F<sub>pr</sub> / &Phi;<sub>n</sub> r<sub>n</sub></t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 7.6-8</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>n / n<sub>step4</sub></em> = {{ ratio_num_fl_bolts_left_bm }} &leq; 1,
+                    if not, after a trial and error analysis:
+                    <em>n</em> = {{ num2_fl_bolts_left_bm }}, <em>S<sub>h</sub></em> = {{ sh2_left_bm }} {{ uls }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.11 Check flange plate for yielding
+                (ANSI/AISC358-16, Sec. 7.6 - Step 10)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                <t1>&Phi;<sub>d</sub> R<sub>n</sub> = &Phi;<sub>d</sub> F<sub>y</sub> A<sub>g</sub>
+                    &ge; F<sub>pr</sub></t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 7.6-9</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>&Phi;<sub>d</sub>R<sub>n</sub></em> =
+                    {{ fl_pl_ten_yield_cap_left_bm }} &ge; <em>F<sub>pr</sub></em> =
+                    {{ fpr_left_bm }}&nbsp;{{ uf }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.12 Check flange plate for tensile rupture
+                (ANSI/AISC358-16, Sec. 7.6 - Step 11)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                <t1>&Phi;<sub>n</sub> R<sub>n</sub> = &Phi;<sub>n</sub> F<sub>u</sub> A<sub>n</sub>
+                    &ge; F<sub>pr</sub></t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 7.6-10</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>&Phi;<sub>n</sub>R<sub>n</sub></em> =
+                    {{ fl_pl_ten_rupture_cap_left_bm }} &ge; <em>F<sub>pr</sub></em> =
+                    {{ fpr_left_bm }}&nbsp;{{ uf }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="pagebreak"></div>
+<div class="custom-page-start">
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.13 Check beam flange for block shear
+                (ANSI/AISC358-16, Sec. 7.6 - Step 12)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <img style="width: 100%; margin-top:0px;" src="Figure_block_shear.png" alt="Elevation View">
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%; text-align: center;">
+                <t2>Figure Caption</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                <t1>&Phi;<sub>n</sub>R<sub>n</sub> =
+                    &Phi;<sub>n</sub>[min(0.6R<sub>t</sub>F<sub>u</sub>A<sub>nv</sub> +
+                    U<sub>bs</sub>R<sub>t</sub>F<sub>u</sub>A<sub>nt</sub>,
+                    0.6R<sub>y</sub>F<sub>y</sub>A<sub>gv</sub> +
+                    U<sub>bs</sub>R<sub>t</sub>F<sub>u</sub>A<sub>nt</sub>)]
+                    &ge; F<sub>pr</sub></t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 7.6-11</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <t1>Solution</t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%; padding-left: 2em">
+                <t2>Case 1: <em>A<sub>gv</sub></em> = {{ a_gv_fl_left_bm_c1 }}&nbsp;{{ uls2 }},
+                    <em>A<sub>nv</sub></em> = {{ a_nv_fl_left_bm_c1 }}&nbsp;{{ uls2 }},
+                    <em>A<sub>nt</sub></em> = {{ a_nt_fl_left_bm_c1 }}&nbsp;{{ uls2 }},
+                    <em>U<sub>bs</sub></em> = {{ u_bs_fl_left_bm_c1 }}
+                </t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%; padding-left: 2em">
+                <t2>Case 2: <em>A<sub>gv</sub></em> = {{ a_gv_fl_left_bm_c2 }}&nbsp;{{ uls2 }},
+                    <em>A<sub>nv</sub></em> = {{ a_nv_fl_left_bm_c2 }}&nbsp;{{ uls2 }},
+                    <em>A<sub>nt</sub></em> = {{ a_nt_fl_left_bm_c2 }}&nbsp;{{ uls2 }},
+                    <em>U<sub>bs</sub></em> = {{ u_bs_fl_left_bm_c2 }}
+                </t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%; padding-left: 2em">
+                <t2>Case 3: <em>A<sub>gv</sub></em> = {{ a_gv_fl_left_bm_c3 }}&nbsp;{{ uls2 }},
+                    <em>A<sub>nv</sub></em> = {{ a_nv_fl_left_bm_c3 }}&nbsp;{{ uls2 }},
+                    <em>A<sub>nt</sub></em> = {{ a_nt_fl_left_bm_c3 }}&nbsp;{{ uls2 }},
+                    <em>U<sub>bs</sub></em> = {{ u_bs_fl_left_bm_c3 }}
+                </t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%; padding-left: 2em">
+                <t2><em>&Phi;<sub>n</sub>R<sub>n</sub></em> =
+                    {{ fl_bl_shear_cap_left_bm }} &ge; <em>F<sub>pr</sub></em> =
+                    {{ fpr_left_bm }}&nbsp;{{ uf }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.14 Check flange plate for buckling
+                (ANSI/AISC358-16, Sec. 7.6 - Step 13)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                <t1>&Phi;<sub>n</sub>R<sub>n</sub> = &Phi;<sub>n</sub>F<sub>y</sub>A<sub>g</sub> &ge; F<sub>pr</sub>
+                    if &#955;<sub>max</sub> = kl/r &le; 25
+                </t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 7.6-12</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 75%;">
+                <t1>&Phi;<sub>n</sub>R<sub>n</sub> = &Phi;<sub>n</sub>P<sub>n &ge; F<sub>pr</sub>
+                    if &#955;<sub>max</sub> = kl/r > 25</t1>
+            </td>
+            <td style="width: 25%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>k</em> = 0.65, <em>l = S<sub>l</sub></em> = {{ max_bolt_s_left_bm }}&nbsp;{{ uls }}, <em>r</em>
+                    = {{ r_fl_pl_left_bm }}&nbsp;{{ uls }},
+                    <em>&#955;<sub>max</sub></em> = {{ lamda_fl_pl_left_bm }}
+                </t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 15%;">
+                <t1></t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>&Phi;<sub>n</sub>R<sub>n</sub></em> = {{fl_pl_buckl_cap_left_bm }} &ge; <em>F<sub>pr</sub></em>
+                    = {{ fpr_left_bm }}&nbsp;{{ uf }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.15 Required beam and beam web-to-column connection shear strength
+                (ANSI/AISC358-16, Sec. 7.6 - Step 14)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <t1> Required beam shear strength: V<sub>u</sub> = 2M<sub>pr</sub>/L<sub>h</sub> + V<sub>gravity</sub>
+                </t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%;">
+                <t1> Available beam shear strength: &Phi;V<sub>n</sub></t1>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>&Phi;V<sub>n</sub></em> = {{ shear_str_left_bm }} &ge; <em>V<sub>u</sub></em> = {{
+                    req_shear_str_left_bm }}&nbsp;{{ uf }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.16 Design single-plate shear connection
+                (ANSI/AISC358-16, Sec. 7.6 - Step 15)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <t1>Check dimensional limitations for conventional method (Part 10, ANSI/AISC Construction Manual - 15th
+                    Ed.)
+                </t1>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 80%; padding-left: 1em;">
+                <t1><u>Condition</u></t1>
+            </td>
+            <td colspan="2" ; style="width: 10%;">
+                <t1><u>Satisfied?</u></t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1></t1>
+            </td>
+            <td style="width: 10%;">
+                <t1></t1>
+            </td>
+            <td style="width: 10%;">
+                <t1></t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%; padding-left: 1em;">
+                <t1>Single vertical row of bolts</t1>
+            </td>
+            <td style="width: 10%;">
+                <t1>{{ is_sh_pl_single_vert_bolt_row_left_bm }}</t1>
+            </td>
+            <td style="width: 10%;">
+                <t1></t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%; padding-left: 1em;">
+                <t1>Number of bolts in the connection is between 2 and 12</t1>
+            </td>
+            <td style="width: 10%;">
+                <t1>{{ is_sh_pl_num_bolts_two_twelve_left_bm }}</t1>
+            </td>
+            <td style="width: 10%;">
+                <t1></t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%; padding-left: 1em;">
+                <t1>Distance from the bolt line to the weld line is less than or equal to 3.5 in.</t1>
+            </td>
+            <td style="width: 10%;">
+                <t1>{{ is_sh_pl_dis_bolt_line_weld_line_less_l }}</t1>
+            </td>
+            <td style="width: 10%;">
+                <t1></t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%; padding-left: 1em;">
+                <t1>Standard holes are used</t1>
+            </td>
+            <td style="width: 10%;">
+                <t1>{{ is_sh_plate_stand_holes_left_bm }}</t1>
+            </td>
+            <td style="width: 10%;">
+                <t1></t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%; padding-left: 1em;">
+                <t1>Vertical edge distance satisfies the AISC Specification Table J3.4 requirements</t1>
+            </td>
+            <td style="width: 10%;">
+                <t1>{{ is_sh_pl_vert_edge_dist_ok_left_bm }}</t1>
+            </td>
+            <td style="width: 10%;">
+                <t1></t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%; padding-left: 1em;">
+                <t1>horizontal edge distance is greater than or equal to 2d for both the plate and the beam web</t1>
+            </td>
+            <td style="width: 10%;">
+                <t1>{{ is_sh_pl_bm_web_hor_edge_dist_ok_left_bm }}</t1>
+            </td>
+            <td style="width: 10%;">
+                <t1></t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%; padding-left: 1em;">
+                <t1>Either the plate thickness or the beam web thickness, satisfies the maximum thickness requirement
+                    given in Table 10-9 of AISC Construction Manual - 15th Ed.
+                </t1>
+            </td>
+            <td style="width: 10%;">
+                <t1>{{ is_sh_pl_bm_web_max_thick_ok_left_bm }}</t1>
+            </td>
+            <td style="width: 10%;">
+                <t1></t1>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <t1b>Design checks for conventional method (Part 10, ANSI/AISC Construction Manual - 15th Ed.)</t1b>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%;">
+                <t1>Available shear stregnth for bolts: &Phi;R<sub>n</sub> = &Phi;Cr<sub>n</sub> &ge; R<sub>u</sub>
+                    (using e and C coefficient from Table 7.6
+                    of ANSI/AISC Steel Construction Manual, 15th Ed.)
+                </t1>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>e</em> = {{ shear_pl_e_left_Bm }}&nbsp;{{ uls }}, <em>c</em> = {{ sh_pl_c_left_bm }}, <em>&Phi;R<sub>n</sub></em>
+                    = {{sh_pl_bolt_sh_str_left_bm }}
+                    &ge; <em>R<sub>u</sub></em> = {{ req_sh_pl_bolt_sh_str_left_bm }}&nbsp;{{ uf }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <t1>Beam web and shear plate bearing</t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%;">
+                <t1>&Phi;R<sub>n</sub> = min (&Phi;R<sub>n, web</sub>, &Phi;R<sub>n, plate</sub>) &ge; R<sub>u</sub>
+                </t1>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>&Phi;R<sub>n, web</sub></em> = {{ bm_wb_bearing_str_left_bm }}, <em>&Phi;R<sub>n,
+                    plate</sub></em> = {{ sh_pl_bearing_str_left_bm }},
+                    <em>&Phi;R<sub>n</sub></em> = {{ min_bearing_str_left_bm }} &ge; <em>R<sub>u</sub></em> = {{
+                    req_sh_pl_bearing_str_left_bm }}&nbsp;{{ uf }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;">
+                <t1>Beam web and shear plate tear out</t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 100%;">
+                <t1>&Phi;R<sub>n</sub> = min(&Phi;R<sub>n, web</sub>, &Phi;R<sub>n, plate</sub>) &ge; R<sub>u</sub></t1>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Solution</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>&Phi;R<sub>n, web</sub></em> = {{ bm_wb_tearout_str_left_bm }}, <em>&Phi;R<sub>n,
+                    plate</sub></em> = {{ sh_pl_tearout_str_left_bm }},
+                    <em>&Phi;R<sub>n</sub></em> = {{ min_tearout_str_left_bm }} &ge; <em>R<sub>u</sub></em> = {{
+                    req_sh_pl_tearout_str_left_bm }}&nbsp;{{ uf }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.17 Check continuity plate requirements
+                (ANSI/AISC358-16, Sec. 7.6 - Step 16)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Column flange local bending</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2>ANSI/AISC360-16, Sec. J10.1, Eq. J10-1</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>&Phi;R<sub>n,flb</sub> = &Phi;&alpha;[6.25F<sub>yc</sub>t<sub>cf</sub><sup>2</sup>] &ge;
+                    F<sub>pr</sub></t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>&alpha; = 0.5 for roof column, and 1.0 otherwise</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>F<sub>yc</sub>: Yield stress of column material, t<sub>cf</sub>: column flange thickness</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Column web local yielding</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2>ANSI/AISC360-16, Sec. J10.1, Eq. J10-2 & 3</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>&Phi;R<sub>n,wly</sub> = &Phi;F<sub>yc</sub>t<sub>cw</sub>(5k&alpha; + l<sub>b</sub>) &ge;
+                    F<sub>pr</sub></t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>&alpha; = 0.5 for roof column, and 1.0 otherwise</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>F<sub>yc</sub>: Yield stress of column material, t<sub>cw</sub>: column web thickness</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>k: distance from outer face of flange to the web toe of the fillet, l<sub>b</sub>: length of bearing
+                </t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Column web local crippling</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2>ANSI/AISC360-16, Sec. J10.1, Eq. J10-4 & 5</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <t1>If &alpha; = 1.0 -->
+                &Phi;R<sub>n,wlc</sub> = &Phi;&alpha;[0.8t<sub>cw</sub><sup>2</sup>][1 +
+                3(l<sub>b</sub>/d)(t<sub>cw</sub>/t<sub>cf</sub>)<sup>1.5</sup>]
+                [EF<sub>yc</sub>t<sub>cf</sub> / t<sub>cw</sub>]<sup>0.5</sup> &ge; F<sub>pr</t1>
+        </tr>
+        <tr>
+            <t1>If &alpha; = 0.5 and l<sub>b</sub>/d &leq; 0.2 -->
+                &Phi;R<sub>n,wlc</sub> = &Phi;&alpha;[0.8t<sub>cw</sub><sup>2</sup>][1 +
+                3(l<sub>b</sub>/d)(t<sub>cw</sub>/t<sub>cf</sub>)<sup>1.5</sup>]
+                [EF<sub>yc</sub>t<sub>cf</sub> / t<sub>cw</sub>]<sup>0.5</sup> &ge; F<sub>pr</t1>
+        </tr>
+        <tr>
+            <t1>If If &alpha; = 0.5 and l<sub>b</sub>/d > 0.2 -->
+                &Phi;R<sub>n,wlc</sub> = &Phi;&alpha;[0.8t<sub>cw</sub><sup>2</sup>][1 + (4l<sub>b</sub>/d - 0.2)(t<sub>cw</sub>/t<sub>cf</sub>)<sup>1.5</sup>]
+                [EF<sub>yc</sub>t<sub>cf</sub> / t<sub>cw</sub>]<sup>0.5</sup> &ge; F<sub>pr</sub.</t1>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>d: column depth, Q<sub>f</sub>: 1.0 for wide-flange sections and for HSS in tension, E: Elastic
+                    modulus
+                </t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Column Panel Zone</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>&Phi;R<sub>n,flb</sub></em> = {{ col_fl_loc_bending_str }}, <em>&Phi;R<sub>n,wly</sub></em> = {{
+                    col_web_loc_yield_str }}, <em>&Phi;R<sub>n,wlc</sub></em> = {{ col_web_loc_cripple_str }} {{ ulf }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Required strengths:</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Tensile strength</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>R<sub>u,t</sub> = F<sub>pr</sub> - min(&Phi;R<sub>n,flb</sub>, &Phi;R<sub>n,wly</sub>)</em></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Compressive strength</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>R<sub>u,c</sub> = F<sub>pr</sub> - min(&Phi;R<sub>n,wlc</sub>, &Phi;R<sub>n,wly</sub>)</em></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Shear strength</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>R<sub>u,s</sub> = F<sub>pr</sub> - min(&Phi;R<sub>n,flb</sub>, &Phi;R<sub>n,wly</sub>,
+                    &Phi;R<sub>n,wlc</sub>)</em></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Column Panel Zone</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>R<sub>u,t</sub></em> = {{ req_tensile_str_cp }}, <em>R<sub>u,c</sub></em> = {{
+                    req_compression_str_cp }}, <em>&Phi;R<sub>u,s</sub></em> = {{ req_shear_str_cp }} {{ ulf }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Minimum column flange thickness</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2>ANSI/AISC341-16, Sec. E3.6f.1(b), Eq. E3-8</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>t<sub>cf,min</sub> &ge; b<sub>bf</sub>/6</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Column Panel Zone</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>t<sub>cf,min</sub></em> = {{ tf_col_min }}&nbsp;{{ uls }}</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1b>Are continuity plates required?</t1b>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>If max(R<sub>u,t</sub>, R<sub>u,c</sub>, R<sub>u,s</sub>) &geq; 0 and t<sub>cf</sub> &geq; t<sub>cf,min</sub>
+                </t1>
+            </td>
+            <td style="width: 20%;"
+            <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Continuity Plates</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2> {{ is_cont_pl_req }}</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Minimum continuity plate width</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2>ANSI/AISC341-16, Sec. E3.6f.2(a)</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>b<sub>cp, min</sub> = (b<sub>fp</sub> - t<sub>cw</sub>)/2</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Continuity Plates</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>b<sub>cp, min</sub></em> = {{ b_cp_min }}&nbsp;{{ uls }}</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Minimum continuity plate thickness</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2>ANSI/AISC341-16, Sec. E3.6f.2(b)</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>t<sub>cp, min1</sub> = 0.5t<sub>fp</sub> (for one-sided connection), and 0.75t<sub>fp</sub> for
+                    2-sided connections
+                </t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Continuity Plates</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>t<sub>cp, min1</sub></em> = {{ t_cp_min1 }}&nbsp;{{ uls }}</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Continuity plate corner clips</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2>AWS D1.8, Clause 4.1</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>l<sub>cpcc-web</sub> = k<sub>det</sub> - t<sub>cf</sub> + 1.5 in.</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2>(corner clip along column web)</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>l<sub>cpcc-flange</sub> = k<sub>1</sub> - t<sub>cw</sub>/2 + 0.5 in.</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2>(corner clip along column flange)</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Continuity Plates</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>l<sub>cpcc-web</sub></em> = {{ l_cpcc_web }}&nbsp;{{ uls }}, <em>l<sub>cpcc-flange</sub></em> =
+                    {{ l_cpcc_fl }}&nbsp;{{ uls }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Minimum continuity plate thickness based on required tensile, compression and shear strengths</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>t<sub>cp, min2</sub> = max[ max(R<sub>u,t</sub>, R<sub>u,c</sub>)/(2&Phi;<sub>b</sub>
+                    (b<sub>cp</sub> - l<sub>cpcc-flange</sub>)f<sub>y</sub>),
+                    R<sub>u,s</sub>/(2&Phi;<sub>v</sub>0.6 (l<sub>cp</sub> - 2l<sub>cpcc-web</sub>)f<sub>y</sub>)]
+                </t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Continuity Plates</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>t<sub>cp, min2</sub></em> = {{ t_cp_min2 }}&nbsp;{{ uls }}</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Continuity plate thickness = t<sub>cp</sub> = max (t<sub>cp, min1</sub>, t<sub>cp, min2)</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Continuity Plates</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2>Use CP plate <em>t<sub>cp</sub> x b<sub>cp</sub> x l<sub>cp</sub> = {{ cp_thickness }} x {{ cp_width
+                    }} x {{ cp_length }} {{ uls }} </em></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Continuity plate welding</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2>ANSI/AISC341-16, Sec. E3.6f.2(c)</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Continuity plate weld to column flange: CJP</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Continuity plate weld to column web: fillet weld with required strength equal to lesser of</t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%; padding-left: 1em;">
+                <t1>a) &Phi;T<sub>n</sub>: Sum of available strengths in tension of the contact areas of the continuity
+                    plates to column flanges.
+                </t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%; padding-left: 1em;">
+                <t1>b) &Phi;V<sub>n1</sub>: Available shear strength of the contact area of the plate with the column
+                    web.
+                </t1>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%; padding-left: 1em;">
+                <t1>c) &Phi;V<sub>n2</sub>: Available shear strength of the column web.</t1>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Continuity Plates</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em><em>&Phi;T<sub>n</sub></em> = {{ cp_ten_str }}&nbsp;{{ uf }}, <em>&Phi;V<sub>n1</sub></em> = {{
+                    cp_shear_str }}&nbsp;{{ uf }}, <em>&Phi;V<sub>n2</sub></em> = {{ col_web_shear_str }}&nbsp;{{ uf }},
+                    <em>a<sub>w</sub></em> = {{ cp_fillet_size }}&nbsp;{{ uls }}</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.18 Check Column Panel Zone
+                (ANSI/AISC358-16, Sec. 7.6 - Step 17)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Check column panel zone shear</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2>ANSI/AISC360-16, Sec. J10.6, Eq. J10-9&10, ANSI/AISC341-16, Sec. E3.6e.1</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>R<sub>u</sub> = &sum;M<sub>f</sub> / (d<sub>b</sub> + 2t<sub>fp</sub>) - V<sub>c</sub> &leq;
+                    &Phi;R<sub>n</sub> =
+                    &Phi;[0.6F<sub>yc</sub>d<sub>c</sub>t<sub>cw</sub>][A]
+                </t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>A = 1.0 for &alpha;P<sub>r</sub> &leq; 0.4P<sub>y</sub> , and ( 1.4 - &alpha;P<sub>r</sub> /
+                    P<sub>y</sub> ) for &alpha;P<sub>r</sub> > 0.4P<sub>y</sub></t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Column Panel Zone</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>&Phi;R<sub>n</sub></em> = {{ col_panel_z_sh_str }} &ge; <em>R<sub>u</sub></em> = {{
+                    req_col_panel_z_sh_str }}&nbsp;{{ uf }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Check column panel zone thickness</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2>ANSI/AISC341-16, Sec. E3.6e.2</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>t<sub>cw</sub> &geq; (d<sub>z</sub> + w<sub>z</sub>) / 90</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Column panel zone</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>90t<sub>cw</sub> / (d<sub>z</sub> + w<sub>z</sub>)</em> = {{ col_web_thick_ratio }}</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Is doubler plate required?</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Doubler Plate</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2>{{ is_doub_pl_req }}</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>Calculate doubler plate thickness</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2>ANSI/AISC360-16, Sec. J10.6, Eq. J10-9&10, ANSI/AISC341-16, Sec. E3.6e.1 & E3.6e.2</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>If <em>90t<sub>cw</sub> / (d<sub>z</sub> + w<sub>z</sub>)</em> &geq; 1.0, doubler plates must be
+                    placed in contact with column web, and:
+                </t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>t<sub>dp1</sub> = (d<sub>z0</sub> + w<sub>z0</sub>)/90</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>If <em>90t<sub>cw</sub> / (d<sub>z</sub> + w<sub>z</sub>)</em> < 1.0, doubler plates can be placed
+                    away from column web, and:
+                </t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>t<sub>dp1</sub> = (d<sub>z</sub> + w<sub>z</sub>)/90</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>For both of the cases above:</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>2t<sub>dp2</sub> + t<sub>cw</sub> = (d<sub>z</sub> + w<sub>z</sub>)/90</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>R<sub>u</sub> = &sum;M<sub>f</sub> / ( d<sub>b</sub> + 2t<sub>fp</sub> ) - V<sub>c</sub> &leq; &Phi;R<sub>n</sub>
+                    =
+                    [&Phi;(0.6F<sub>yc</sub>d<sub>c</sub>)(t<sub>cw</sub> + t<sub>dp3</sub>)][A]
+                </t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>A = 1.0 for &alpha;P<sub>r</sub> &leq; 0.4P<sub>y</sub> , and (1.4 - &alpha;P<sub>r</sub> /
+                    P<sub>y</sub> ) for &alpha;P<sub>r</sub> > 0.4P<sub>y</sub></t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>t<sub>dp4</sub> = 0.25 in.</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Doubler plate</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2>No. of plug weld = {{ no_plug_wl }}, <em>t<sub>dp1</sub></em> = {{ t_doub_pl1 }}&nbsp;{{ uls }},
+                    <em>t<sub>dp2</sub></em> = {{ t_doub_pl2 }}&nbsp;{{ uls }}, <em>t<sub>dp3</sub></em> = {{ t_doub_pl3
+                    }}&nbsp;{{ uls }}, <em>t<sub>dp4</sub></em> = 0.25 in.
+                </t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Doubler plate</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2>Use doubler plate <em>t<sub>dp</sub> x b<sub>dp</sub> x l<sub>dp</sub></em> = {{ t_doub_pl }} x {{
+                    b_doub_pl }} x {{ l_doub_pl }}&nbsp;{{ uls }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.19 Strong Column - Weak Beam Check
+                (ANSI/AISC341-16, Sec. E3.4a)</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 80%;">
+                <t1>&sum;M*<sub>pc</sub> / &sum;M*<sub>pb</sub> > 1</t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 80%;">
+                <t1>&sum;M*<sub>pc</sub> = &sum;Z<sub>c</sub>( F<sub>yc</sub> - &alpha;<sub>s</sub>P<sub>r</sub> /
+                    A<sub>g</sub> ),
+                    &sum;M*<sub>pb</sub> = &sum;( M<sub>pr</sub> + &alpha;<sub>s</sub>M<sub>v</sub> )
+                </t1>
+            </td>
+            <td style="width: 20%;">
+                <t2></t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Strong Column -</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>&sum;M*<sub>pc</sub></em> = {{ sum_mp_col }}&nbsp;{{ um }}, <em>&sum;M*<sub>pb</sub></em> = {{
+                    sum_mp_bm }}&nbsp;{{ um }}
+                </t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Weak Beam</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2><em>&sum;M*<sub>pc</sub></em>/<em>&sum;M*<sub>pb</sub></em> = {{ sum_mp_col_bm_ratio }} &ge; 1.0.
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
