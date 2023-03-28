@@ -1,13 +1,8 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>Report Sample</title>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style type="text/css">
-        * {
-            font-size: 10px;
-        }
-
         body {
             font: 10px Arial, Helvetica, sans-serif;
             line-height: 1.0;
@@ -112,7 +107,19 @@
         p {
             font-size: 10px;
         }
+
+        em {
+            font-size: 10px;
+        }
+        sub {
+            font-size: 10px;
+        }
+
     </style>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+    </script>
 </head>
 <body>
 <div class="custom-page-start">
@@ -665,7 +672,84 @@
     <table border="0" style="border-collapse: collapse; width: 100%;">
         <tbody>
         <tr>
-            <td style="width: 100%;"><h3>5.1 Soil Pressure Calculation</h3></td>
+            <td style="width: 100%;"><h3>5.1  <em>K<sub>a</sub></em> &  <em>K<sub>p</sub></em> Calculation</h3></td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Rankine Theory</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2>
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
+$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 2.4-2</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 75%;">
+                <t1><em>M<sub>pr</sub> = C<sub>pr</sub> F<sub>y</sub> R<sub>y</sub> Z<sub>e</sub></em>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 2.4-1</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 15%;">
+                <t1>Coulomb Theory</t1>
+            </td>
+            <td style="width: 85%;">
+                <t2>
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 75%;">
+                <t1>1.1 &leq; <em>C<sub>pr</sub></em> = <em>( F<sub>y</sub> + F<sub>u</sub> ) / 2F<sub>y</sub></em>
+                    &leq; 1.2
+                </t1>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 2.4-2</t2>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 75%;">
+                <t1><em>M<sub>pr</sub> = C<sub>pr</sub> F<sub>y</sub> R<sub>y</sub> Z<sub>e</sub></em>
+            </td>
+            <td style="width: 25%;">
+                <t2>ANSI/AISC358-16, Eq. 2.4-1</t2>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table border="0" style="border-collapse: collapse; width: 100%;">
+        <tbody>
+        <tr>
+            <td style="width: 100%;"><h3>5.2 Soil Pressure Calculation</h3></td>
         </tr>
         </tbody>
     </table>
