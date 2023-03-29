@@ -693,20 +693,17 @@
     <table border="0" style="border-collapse: collapse; width: 100%;">
         <tbody>
         <tr>
-            <td style="width: 75%;">
-                When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
-$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
+            <td style="width: 70%;">
+            $$K_a = {cos\beta {cos\beta - \sqrt{cos^2\beta-cos^2\phi} \over cos\beta + \sqrt{cos^2\beta-cos^2\phi}}}.$$
             </td>
-            <td style="width: 25%;">
-                <t2>ANSI/AISC358-16, Eq. 2.4-2</t2>
+            <td style="width: 30%; align-items: center;">
             </td>
         </tr>
         <tr>
-            <td style="width: 75%;">
-                <t1><em>M<sub>pr</sub> = C<sub>pr</sub> F<sub>y</sub> R<sub>y</sub> Z<sub>e</sub></em>
+            <td style="width: 70%;">
+            $$K_p = {cos\beta {cos\beta + \sqrt{cos^2\beta-cos^2\phi} \over cos\beta - \sqrt{cos^2\beta-cos^2\phi}}}.$$
             </td>
-            <td style="width: 25%;">
-                <t2>ANSI/AISC358-16, Eq. 2.4-1</t2>
+            <td style="width: 30%; align-items: center;">
             </td>
         </tr>
         </tbody>
@@ -726,26 +723,42 @@ $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
     </table>
     <table border="0" style="border-collapse: collapse; width: 100%;">
         <tbody>
-        <tr>
-            <td style="width: 75%;">
-                <t1>1.1 &leq; <em>C<sub>pr</sub></em> = <em>( F<sub>y</sub> + F<sub>u</sub> ) / 2F<sub>y</sub></em>
-                    &leq; 1.2
-                </t1>
+            <tr>
+            <td style="width: 70%;">
+            $$K_a = {cos^2(\phi - \omega)\over cos^2\omega cos(\delta + \omega)[1 + \sqrt{sin(\delta + \phi) sin(\phi - \beta) \over cos(\delta + \omega) cos(\omega - \beta)}]^2}.$$
             </td>
-            <td style="width: 25%;">
-                <t2>ANSI/AISC358-16, Eq. 2.4-2</t2>
+            <td style="width: 30%; align-items: center;">
             </td>
         </tr>
         <tr>
-            <td style="width: 75%;">
-                <t1><em>M<sub>pr</sub> = C<sub>pr</sub> F<sub>y</sub> R<sub>y</sub> Z<sub>e</sub></em>
-            </td>
-            <td style="width: 25%;">
-                <t2>ANSI/AISC358-16, Eq. 2.4-1</t2>
+            <td style="width: 70%;">
+                $$K_p = {cos^2(\phi + \omega)\over cos^2\omega cos(\delta - \omega)[1 - \sqrt{sin(\delta + \phi) sin(\phi + \beta) \over cos(\delta - \omega) cos(\beta - \omega)}]^2}.$$
+
+            <td style="width: 30%; align-items: center;">
             </td>
         </tr>
         </tbody>
     </table>
+    
+    <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+        <tbody>
+        <tr>
+            <td style="width: 30%;">
+                <t1>Formula: {{ formula }}</t1>
+            </td>
+            <td style="width: 35%;">
+                <t2>
+                    <em>K<sub>a</sub></em>: {{ Ka }}
+                </t2>
+            </td>
+            <td style="width: 35%;">
+                <t2>
+                    <em>K<sub>p</sub></em>: {{ Kp }}
+                </t2>
+            </td>
+        </tr>
+        </tbody>
+   
     <table border="0" style="border-collapse: collapse; width: 100%;">
         <tbody>
         <tr>
