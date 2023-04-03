@@ -333,7 +333,7 @@ def input_single(input_values):
         EFPp_valid = EFPp
         Ka_valid = Ka_surcharge
 
-    elif formula == "Rankine":
+    elif formula == "Rankine" or formula == "Coulomb":
         gama_active = [
             abs(float(input_values.get("data").get("Soil Properties").get('γ' + layer * space).get(
                 "value")))
@@ -342,40 +342,58 @@ def input_single(input_values):
             abs(float(input_values.get("data").get("Soil Properties").get('Φ' + layer * space).get(
                 "value")))
             for layer in range(number_of_layer_active)]
-        beta_active = [
-            abs(float(input_values.get("data").get("Soil Properties").get('β active' + layer * space).get(
-                "value")))
-            for layer in range(number_of_layer_active)]
+        beta_active = []
+        beta_passive = []
+        for layer in range(number_of_layer_active):
+            try:
+                beta_active.append(
+                    abs(float(input_values.get("data").get("Soil Properties").get('β active' + layer * space).get(
+                        "value"))))
+            except:
+                beta_active.append(0)
+            try:
+                beta_passive.append(
+                    abs(float(input_values.get("data").get("Soil Properties").get('β passive' + layer * space).get(
+                        "value"))))
+            except:
+                beta_passive.append(0)
         delta_active = [0 for layer in range(number_of_layer_active)]
-        beta_passive = [0 for layer in range(number_of_layer_active)]
         for i in gama_active:
             if i == 0:
                 gama_valid = 0  # then this value will go to the validation
+        if formula == "Coulomb":
+            delta_active.clear()
+            for layer in range(number_of_layer_active):
+                try:
+                    delta_active.append(abs(float(
+                        input_values.get("data").get("Soil Properties").get('δ' + layer * space).get("value"))))
+                except:
+                    delta_active.append(0)
 
-    elif formula == "Coulomb":
-        gama_active = [
-            abs(float(input_values.get("data").get("Soil Properties").get('γ' + layer * space).get(
-                "value")))
-            for layer in range(number_of_layer_active)]
-        phi_active = [
-            abs(float(input_values.get("data").get("Soil Properties").get('Φ' + layer * space).get(
-                "value")))
-            for layer in range(number_of_layer_active)]
-        delta_active = [
-            abs(float(input_values.get("data").get("Soil Properties").get('δ' + layer * space).get(
-                "value")))
-            for layer in range(number_of_layer_active)]
-        beta_active = [
-            abs(float(input_values.get("data").get("Soil Properties").get('β active' + layer * space).get(
-                "value")))
-            for layer in range(number_of_layer_active)]
-        beta_passive = [
-            abs(float(input_values.get("data").get("Soil Properties").get('β passive' + layer * space).get(
-                "value")))
-            for layer in range(number_of_layer_active)]
-        for i in gama_active:
-            if i == 0:
-                gama_valid = 0  # then this value will go to the validation
+    # elif formula == "Coulomb":
+    #     gama_active = [
+    #         abs(float(input_values.get("data").get("Soil Properties").get('γ' + layer * space).get(
+    #             "value")))
+    #         for layer in range(number_of_layer_active)]
+    #     phi_active = [
+    #         abs(float(input_values.get("data").get("Soil Properties").get('Φ' + layer * space).get(
+    #             "value")))
+    #         for layer in range(number_of_layer_active)]
+    #     delta_active = [
+    #         abs(float(input_values.get("data").get("Soil Properties").get('δ' + layer * space).get(
+    #             "value")))
+    #         for layer in range(number_of_layer_active)]
+    #     beta_active = [
+    #         abs(float(input_values.get("data").get("Soil Properties").get('β active' + layer * space).get(
+    #             "value")))
+    #         for layer in range(number_of_layer_active)]
+    #     beta_passive = [
+    #         abs(float(input_values.get("data").get("Soil Properties").get('β passive' + layer * space).get(
+    #             "value")))
+    #         for layer in range(number_of_layer_active)]
+    #     for i in gama_active:
+    #         if i == 0:
+    #             gama_valid = 0  # then this value will go to the validation
 
     if formula != "User Defined" and retaining_height != 0 and gama_valid:
         hr, hd, number_of_layer_active, gama_active, phi_active, beta_active, omega_active, delta_active, water_active = edit_parameters(
