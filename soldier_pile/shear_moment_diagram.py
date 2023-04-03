@@ -624,6 +624,9 @@ class diagram:
         sigma_water_a_plot = list(map(float, sigma_water_a_plot))
         sigma_water_p_plot = list(map(float, sigma_water_p_plot))
 
+        unique_depth, sigma_active_plot, sigma_water_a_plot = control_index_for_plot(unique_depth, sigma_active_plot,
+                                                                                     sigma_water_a_plot)
+
         return unique_depth, edited_sigma, sigma_active_plot, sigma_passive_plot, sigma_water_a_plot, sigma_water_p_plot
 
     def load_diagram(self, depth, active_pressure, passive_pressure, water_active,
@@ -683,3 +686,23 @@ class diagram:
         plot = plotter_moment(depth, moment_values, "M", "Z", load_unit, length_unit)
 
         return plot, moment_values
+
+
+def control_index_for_plot(depth, water, soil):
+    len_depth = len(depth)
+    len_water = len(water)
+    len_soil = len(soil)
+    while len_depth != len_soil:
+        if len_depth > len_soil:
+            soil.append(soil[-1])
+        elif len_depth < len_soil:
+            del soil[-1]
+        len_soil = len(soil)
+
+    while len_depth != len_water:
+        if len_depth > len_water:
+            water.append(water[-1])
+        elif len_depth < len_water:
+            del water[-1]
+        len_water = len(water)
+    return depth, water, soil
