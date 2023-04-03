@@ -285,9 +285,12 @@ def input_single(input_values):
 
     retaining_height = abs(float(input_values.get("data").get("Soil Properties").get("Retaining Height").get("value")))
     surcharge_depth = retaining_height
-    number_of_layer_active = abs(
-        int(json.loads(input_values.get("data").get("Soil Properties").get("Soil Layer Number").get("value")).get(
-            "item")))
+    try:
+        number_of_layer_active = abs(
+            int(json.loads(input_values.get("data").get("Soil Properties").get("Soil Layer Number").get("value")).get(
+                "item")))
+    except:  # if formula = user defined --> this value not send.
+        number_of_layer_active = 1
     if number_of_layer_active == 1:
         control_index = number_of_layer_active
     else:
@@ -318,16 +321,18 @@ def input_single(input_values):
     gama_valid = True
 
     if formula == "User Defined":
-        EFPa = float(
-            abs(input_values.get("data").get("Soil Properties").get("Equivalent Fluid Pressure Active").get("value")))
-        EFPp = float(
-            abs(input_values.get("data").get("Soil Properties").get("Equivalent Fluid Pressure Passive").get("value")))
+        number_of_layer_active = 1
+        water_active.append(water_active[0])
+        EFPa = abs(
+            float(input_values.get("data").get("Soil Properties").get("Equivalent Fluid Pressure Active").get("value")))
+        EFPp = abs(
+            float(input_values.get("data").get("Soil Properties").get("Equivalent Fluid Pressure Passive").get("value")))
         Ka_surcharge = abs(float(input_values.get("data").get("Soil Properties").get("Ka Surcharge").get("value")))
-        hr = retaining_height
+        hr = [retaining_height]
         hd = [D]
 
-        soil_properties_active = [EFPa, Ka_surcharge]
-        soil_properties_passive = [EFPp]
+        soil_properties_active = [[EFPa, EFPa], Ka_surcharge]
+        soil_properties_passive = [[EFPp, EFPa]]
 
         EFPa_valid = EFPa
         EFPp_valid = EFPp
