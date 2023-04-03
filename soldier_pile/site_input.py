@@ -102,7 +102,7 @@ input5 = {'information': {'title': '1', 'jobNo': '1', 'designer': '1', 'checker'
                                'Timber Size': {'value': '{"id":1403,"item":"1 x 2","section_product_item":"42_93"}',
                                                'unit': None}}}, 'type': 1, 'number_of_projects': 1}
 
-input2 = {'information': {'title': '1', 'jobNo': '1', 'designer': '1', 'checker': '1', 'company': '1', 'client': '1',
+input6 = {'information': {'title': '1', 'jobNo': '1', 'designer': '1', 'checker': '1', 'company': '1', 'client': '1',
                           'unit': 'us', 'date': None, 'comment': None, 'other': None}, 'product_id': 26, 'user_id': 44,
           'data': {'General data': {'FS': {'value': '1.5', 'unit': None}, 'Fy': {'value': '36', 'unit': 'ksi'},
                                     'E': {'value': '29000', 'unit': 'ksi'},
@@ -126,4 +126,34 @@ input2 = {'information': {'title': '1', 'jobNo': '1', 'designer': '1', 'checker'
                   'q': {'value': '11', 'unit': None}, 'Ɵ': {'value': '0', 'unit': None}},
                    'Lagging': {'Ph max': {'value': '111', 'unit': 'psf'}, 'Fb': {'value': '11', 'unit': 'ksi'},
                                'Timber Size': {'value': '{"id":1403,"item":"1 x 2","section_product_item":"42_93"}',
+                                               'unit': None}}}, 'type': 1, 'number_of_projects': 1}
+
+input2 = {'information': {'title': '1', 'jobNo': '1', 'designer': '1', 'checker': '1', 'company': '1', 'client': '1',
+                          'unit': 'us', 'date': None, 'comment': None, 'other': None}, 'product_id': 26, 'user_id': 44,
+          'data': {'General data': {'FS': {'value': '1.8', 'unit': None}, 'Fy': {'value': '36', 'unit': 'ksi'},
+                                    'E': {'value': '29000', 'unit': 'ksi'},
+                                    'Pile Spacing': {'value': '5', 'unit': 'ft'},
+                                    'Allowable Deflection': {'value': '0.5', 'unit': 'in'}, 'Sections': {
+                  'value': '{"id":1380,"item":"W40,W36,W30","section_product_item":"39_91"}', 'unit': None}},
+                   'Soil Properties': {'β active': {'value': '0', 'unit': '°'}, 'δ': {'value': '0', 'unit': '°'},
+                                       'β passive': {'value': '0', 'unit': '°'}, 'Φ': {'value': '30', 'unit': '°'},
+                                       'γ': {'value': '120', 'unit': 'pcf'},
+                                       'Height of layer': {'value': '5', 'unit': 'ft'}, 'Soil Layer Number': {
+                           'value': '{"id":1437,"item":"2","section_product_item":"41_94"}', 'unit': None},
+                                       'γ ': {'value': '125', 'unit': 'pcf'}, 'Formula': {
+                           'value': '{"id":1439,"item":"Rankine","section_product_item":"41_94"}', 'unit': None},
+                                       'Φ ': {'value': '36', 'unit': '°'},
+                                       'Retaining Height': {'value': '10', 'unit': 'ft'},
+                                       'Water level at top of this layer? ': {'value': 'Yes', 'unit': None}},
+                   'Surcharge': {'Load Type': {'value': '{"id":1381,"item":"No Load","section_product_item":"40_92"}',
+                                               'unit': None},
+                                 'Load Type ': {'value': '{"id":1382,"item":"No Load","section_product_item":"40_92"}',
+                                                'unit': None}, 'Load Type  ': {
+                           'value': '{"id":1383,"item":"Point Load","section_product_item":"40_92"}', 'unit': None},
+                                 'Load Type   ': {
+                                     'value': '{"id":1384,"item":"No Load","section_product_item":"40_92"}',
+                                     'unit': None}, 'q  ': {'value': '10000', 'unit': None},
+                                 'Ɵ  ': {'value': '0', 'unit': None}, 'L1  ': {'value': '6', 'unit': 'ft'}},
+                   'Lagging': {'Ph max': {'value': '411', 'unit': 'psf'}, 'Fb': {'value': '54', 'unit': 'ksi'},
+                               'Timber Size': {'value': '{"id":1403,"item":"3 x 14","section_product_item":"42_93"}',
                                                'unit': None}}}, 'type': 1, 'number_of_projects': 1}
