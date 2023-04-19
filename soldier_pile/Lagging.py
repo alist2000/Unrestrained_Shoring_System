@@ -73,7 +73,7 @@ class lagging_design:
         # calculate S required
         if unit_system == "us":
             # M unit: lb-ft. should be: lb-in
-            s_req = 12 * M_max / Fb
+            s_req = 12 * M_max / (Fb * 1000)  # check
         else:
             # M unit: N-m. should be: N-mm
             s_req = 1000 * M_max / Fb
