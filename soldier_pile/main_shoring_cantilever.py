@@ -364,7 +364,9 @@ def main_unrestrained_shoring(inputs):
             if unit_system == "us":
                 E_allowable_deflection = E * 1000 * float(allowable_deflection) / (12 ** 3)  # E: Ksi , M: lb.ft
             else:
-                E_allowable_deflection = E * float(allowable_deflection) * (10 ** 9)  # E: Mpa , M: N.m
+                # E_allowable_deflection = E * float(allowable_deflection) * (10 ** 9)  # E: Mpa , M: N.m
+                E_allowable_deflection = E * float(allowable_deflection) / (
+                            10 ** 9)  # E: Mpa , M: N.m  Need to be checked
             Ix_min = max_deflection / E_allowable_deflection
 
             # shear control
@@ -372,7 +374,8 @@ def main_unrestrained_shoring(inputs):
             if unit_system == "us":
                 A_required = V_max / (0.44 * Fy * 1000)  # in^2
             else:
-                A_required = V_max * 1000 / (0.44 * Fy)  # mm^2
+                # A_required = V_max * 1000 / (0.44 * Fy)  # mm^2
+                A_required = V_max / (0.44 * Fy)  # mm^2  # Fy: MPa = N/mm^2
 
             # export appropriate section
             output_section_list = []
@@ -401,9 +404,11 @@ def main_unrestrained_shoring(inputs):
                 if section != "" and Ix != "":
                     final_sections.append(section)
                     if unit_system == "us":
-                        EI = E * 1000 * float(Ix) / (12 ** 3)  # E: Ksi , M: lb.ft
+                        EI = E * 1000 * float(Ix) / (12 ** 3)  # E: Ksi , M: lb.ft  consider final conversion for deflection here
+                        # EI = E * 1000 * float(Ix) / (12 ** 2)  # E: Ksi , M: lb.ft, I:in^4, EI: lb.ft^2
                     else:
-                        EI = E * float(Ix) * (10 ** 9)  # E: Mpa , M: N.m
+                        EI = E * float(Ix) / (10 ** 9)  # E: Mpa , M: N.m  consider final conversion for deflection here
+                        # EI = E * float(Ix) / (10 ** 6)  # E: Mpa = N/mm^2 , M: N.m , I:mm^4 -> EI: N.m^2
 
                     # lagging control
                     lagging = lagging_design(unit_system, Pile_spacing, section, ph, timber_size)
@@ -423,6 +428,11 @@ def main_unrestrained_shoring(inputs):
                     deflection_copy = copy.deepcopy(deflection)
                     for i in range(len(deflection)):
                         deflection_copy[i] = deflection_copy[i] / EI
+                        # if unit_system == "us":
+                        #     deflection_copy[i] = deflection_copy[i] * 12 / EI
+                        # else:
+                        #     deflection_copy[i] = deflection_copy[i] * 1000 / EI
+
                     final_deflection.append(deflection_copy)
 
                     # add dimensions of section
