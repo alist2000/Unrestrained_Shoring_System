@@ -60,6 +60,7 @@ def SQL_reader(w, A_min, S_min, Ix_min, unit_system):
         Ix = float(final[1])
         area = float(final[2])
         Sx = float(final[3])
+        wc = float(final[4])
         h = float(final[5])
         bf = float(final[6])
         tw = float(final[7])
@@ -69,12 +70,13 @@ def SQL_reader(w, A_min, S_min, Ix_min, unit_system):
         Ix = ""
         area = ""
         Sx = ""
+        wc = ""
         h = ""
         bf = ""
         tw = ""
         tf = ""
     dbase.close()
-    return {"section": section, "Ix": Ix, "area": area, "Sx": Sx, "h": h, "bf": bf, "tw": tw, "tf": tf}
+    return {"section": section, "Ix": Ix, "area": area, "Sx": Sx,"wc": wc, "h": h, "bf": bf, "tw": tw, "tf": tf}
 
 
 def SQL_reader_timber(section, unit_system):
