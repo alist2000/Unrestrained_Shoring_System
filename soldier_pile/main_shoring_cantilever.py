@@ -16,10 +16,16 @@ import sys
 import math
 
 sys.path.append(r"D:/git/Shoring/Lateral-pressure-")
+sys.path.append(r"D:/git/Shoring/Unrestrained_Shoring_System")
+sys.path.append(r"D:/git/Shoring/Restrained_Shoring_System")
+
+sys.path.append(r"F:/Cvision/Lateral-pressure-")
+sys.path.append(r"F:/Cvision/Unrestrained_Shoring_System")
 
 from Passive_Active.active_passive import active_passive
 from Force.force import moment_calculator
 from Surcharge.result import result_surcharge
+from front.report import section_deflection, deflection_output, DCRs, lagging_output
 
 import copy
 import sys
@@ -31,7 +37,8 @@ import numpy as np
 def main_unrestrained_shoring(inputs):
     D = symbols("D")
 
-    [input_validation, number_of_project, unit_system, delta_h_list, h_active_list, h_passive_list, hr_list, hd_list,
+    [input_validation, project_information, number_of_project, unit_system, delta_h_list, h_active_list, h_passive_list,
+     hr_list, hd_list,
      retaining_height_list,
      surcharge_depth_list,
      water_active_list,
@@ -118,6 +125,8 @@ def main_unrestrained_shoring(inputs):
                     omega=omega_active[:layer_number_active],
                     delta=delta_active[:layer_number_active])
 
+                Ka_or_EFPa = k
+
                 # *** calculate surcharge ***
                 i_sur = 0
                 surcharge_force_list = []
@@ -141,6 +150,7 @@ def main_unrestrained_shoring(inputs):
             else:
                 # inputs
                 [EFPa, Ka] = soil_properties_active_list[project]
+                Ka_or_EFPa = [EFPa]
 
                 # we have EFP = gama * K. assume K = 1 and gama = EFP. other values is not necessary.
                 soil_active, water_active_pressure, depth_list_active, h_water_active, k, water_pressure_list_active = main_active.pressure_calculator(
@@ -197,9 +207,14 @@ def main_unrestrained_shoring(inputs):
                     beta=beta_passive[:layer_number_passive],
                     omega=omega_passive[:layer_number_passive],
                     delta=delta_passive[:layer_number_passive])
+                Kp_or_EFPp = k
+
+
 
             else:
                 [EFPp] = soil_properties_passive_list[project]
+                Kp_or_EFPp = [EFPp]
+
                 soil_passive, water_passive_pressure, depth_list_passive, h_water_passive, k, water_pressure_list_passive = main_passive.pressure_calculator(
                     number_of_layer=layer_number_passive,
                     gama=EFPp[:layer_number_passive],
@@ -298,7 +313,7 @@ def main_unrestrained_shoring(inputs):
             h_active_for_def = copy.deepcopy(h_active)
             h_active_for_def[-1] = h_active_for_def[-1].subs(D, d_final)
             final_h_active_for_def = float(sum(h_active_for_def))
-            excavation_depth_dfinal = final_h_active_for_def - sum(hr)
+            embedment_depth_dfinal = final_h_active_for_def - sum(hr)
 
             depth_list_active_final[-1][-1] = depth_list_active_final[-1][-1].subs(D, second_D_zero_final)
             depth_list_passive_final[-1][-1] = depth_list_passive_final[-1][-1].subs(D, second_D_zero_final)
@@ -366,7 +381,7 @@ def main_unrestrained_shoring(inputs):
             else:
                 # E_allowable_deflection = E * float(allowable_deflection) * (10 ** 9)  # E: Mpa , M: N.m
                 E_allowable_deflection = E * float(allowable_deflection) / (
-                            10 ** 9)  # E: Mpa , M: N.m  Need to be checked
+                        10 ** 9)  # E: Mpa , M: N.m  Need to be checked
             Ix_min = max_deflection / E_allowable_deflection
 
             # shear control
@@ -389,6 +404,11 @@ def main_unrestrained_shoring(inputs):
             status_lagging = []
             DCR_lagging = []
             d_concrete_list = []
+            lc_list = []
+            R_list = []
+            M_max_lagging_list = []
+            s_req_lagging_list = []
+            s_sup_lagging_list = []
 
             DCR_moment = []
             DCR_shear = []
@@ -398,13 +418,20 @@ def main_unrestrained_shoring(inputs):
             bf_list = []
             tw_list = []
             tf_list = []
+            Sx_list = []
+            Ix_list = []
+            A_list = []
             for item in output_section_list:
-                section, Ix, section_area, Sx, h, bf, tw, tf = item.values()
+                section, Ix, section_area, Sx, wc, h, bf, tw, tf = item.values()
                 #  control available sections
-                if section != "" and Ix != "":
+                if section and Ix:
                     final_sections.append(section)
+                    Sx_list.append(Sx)
+                    Ix_list.append(Ix)
+                    A_list.append(section_area)
                     if unit_system == "us":
-                        EI = E * 1000 * float(Ix) / (12 ** 3)  # E: Ksi , M: lb.ft  consider final conversion for deflection here
+                        EI = E * 1000 * float(Ix) / (
+                                    12 ** 3)  # E: Ksi , M: lb.ft  consider final conversion for deflection here
                         # EI = E * 1000 * float(Ix) / (12 ** 2)  # E: Ksi , M: lb.ft, I:in^4, EI: lb.ft^2
                     else:
                         EI = E * float(Ix) / (10 ** 9)  # E: Mpa , M: N.m  consider final conversion for deflection here
@@ -412,10 +439,15 @@ def main_unrestrained_shoring(inputs):
 
                     # lagging control
                     lagging = lagging_design(unit_system, Pile_spacing, section, ph, timber_size)
-                    DCR_moment_timber, status, d_concrete = lagging.moment_design(Fb, tw, 1.25, 1.1, 1.1)
+                    DCR_moment_timber, status, d_concrete, lc, R, M_max_lagging, s_req_lagging, s_sup_lagging = lagging.moment_design(Fb, tw, 1.25, 1.1, 1.1)
                     DCR_lagging.append(DCR_moment_timber)
                     status_lagging.append(status)
                     d_concrete_list.append(d_concrete)
+                    lc_list.append(lc)
+                    R_list.append(R)
+                    M_max_lagging_list.append(M_max_lagging)
+                    s_req_lagging_list.append(s_req_lagging)
+                    s_sup_lagging_list.append(s_sup_lagging)
 
                     #  DCR moment
                     DCR_m = s_required_final / Sx
@@ -466,11 +498,33 @@ def main_unrestrained_shoring(inputs):
                 section_error = ["No answer! No section is appropriate for your situation!"]
                 project_error.append(section_error)
             else:
+                report_values = report_final(Inputs, S_required, A_required, M_max_final, V_max, Y_zero_shear, Ka_or_EFPa, Kp_or_EFPp,
+                                             pressure_list_report,
+                                             force_list_report, arm_list_report, equation_for_report, excavation_depth_dfinal,
+                                             )
+                for i in range(len(final_sections)):
+                    DCRs(DCR_moment[i], DCR_shear[i], DCR_deflection[i], DCR_lagging[i], status_lagging[i], i + 1)
+                    section_deflection(unit_system, Fy, final_sections_names[i], A_list[i], Sx_list[i], Ix_list[i], V_max, M_max_final,
+                                       max_delta_list[i], allowable_deflection, i + 1)
+                    deflection_output(max_delta_list[i], unit_system, i + 1)
+                    lagging_output(unit_system, tieback_spacing, d_concrete_list[i], lc_list[i], ph_max, R_list[i],
+                                   M_max_lagging_list[i], s_req_lagging_list[i], timber_size, s_sup_lagging_list[i], status_lagging[i],
+                                   i + 1)
+
+                    report_values["DCR_file"] = f"template/DCRs{i + 1}.html"
+                    report_values["def_max_file"] = f"template/deflection_max{i + 1}.html"
+                    report_values["section_file"] = f"template/section_deflection{i + 1}.html"
+                    report_values["lagging_file"] = f"template/lagging_output{i + 1}.html"
+
+                    create_pdf_report("reports/template/Rep_Unrestrained.html", report_values)
+
+                    shutil.copyfile("reports/template/Rep_Unrestrained_Filled.html",
+                                    f"reports/Rep_Unrestrained_Shoring{i + 1}.html")
                 continue
 
     if number_of_project == 1 and not project_error:
         general_plot = [load_diagram, shear_diagram, moment_diagram]
-        general_values = [math.ceil(excavation_depth_dfinal), round(V_max / 1000, 2), round(M_max_final / 1000, 2),
+        general_values = [math.ceil(embedment_depth_dfinal), round(V_max / 1000, 2), round(M_max_final / 1000, 2),
                           Y_zero_shear, A_required, s_required_final]
         general_output = {"plot": general_plot, "value": general_values}
         specific_plot = deflection_plot
