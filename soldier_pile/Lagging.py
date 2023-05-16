@@ -87,16 +87,17 @@ class lagging_design:
 
         DCR_moment_timber = s_req / s_sup
         if DCR_moment_timber <= 1:
-            status = "Pass!"
+            status = "Pass"
         else:
-            status = "Fail! Your timber fail in moment design."
+            status = "Fail"
+            # status = "Fail! Your timber fail in moment design."
 
         if unit_system == "us":
             d_concrete_edited = d_concrete * 12  # inch for output
         else:
             d_concrete_edited = d_concrete * 1000  # mm for output
 
-        return DCR_moment_timber, status, d_concrete_edited
+        return DCR_moment_timber, status, d_concrete_edited, lc, R, M_max, s_req, s_sup
 
     # *** shear design function must be developed! ***
     def shear_design(self, v, Q, I, t):

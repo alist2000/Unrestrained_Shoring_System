@@ -270,6 +270,9 @@ def input_single(input_values):
     comment = input_values.get("information").get("comment")
     other = input_values.get("information").get("other")
 
+    project_information = [product_id, user_id, title, jobNo, designer, checker, company, client, date, comment, other]
+
+
     # *** GENERAL DATA ***
 
     FS = abs(float(input_values.get("data").get("General data").get("FS").get("value")))
@@ -284,7 +287,6 @@ def input_single(input_values):
     # *** SOIL PROPERTIES ***
 
     retaining_height = abs(float(input_values.get("data").get("Soil Properties").get("Retaining Height").get("value")))
-    surcharge_depth = retaining_height
     try:
         number_of_layer_active = abs(
             int(json.loads(input_values.get("data").get("Soil Properties").get("Soil Layer Number").get("value")).get(
@@ -435,6 +437,14 @@ def input_single(input_values):
         soil_properties_passive = []
 
     # *** SURCHARGE ***
+     # this part should be added in site ( must be checked! )
+    try:
+        surcharge_depth = abs(
+            float(input_values.get("data").get("Surcharge").get("Surcharge Effective Depth").get("value")))
+    except:
+        surcharge_depth = retaining_height  # I should define it in site ***
+    if surcharge_depth > retaining_height:  # surcharge has no effect under excavation line.(ASSUMED ACCORDING TO MANUAL FILE)
+        surcharge_depth = retaining_height
 
     max_surcharge_site = 4
     surcharge_type = [
@@ -515,6 +525,7 @@ def input_single(input_values):
     input_validation = {"error_number": error_number,
                         "description": error_description}
     final_values = {"input_validation": input_validation,
+                    "project_information": project_information,
                     "number_of_project": number_of_project,
                     "unit_system": unit_system,
                     "delta_h": [delta_h],
