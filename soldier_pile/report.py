@@ -6,7 +6,7 @@ import datetime
 import math
 import numpy as np
 
-from front.report import surcharge_inputs, Formula
+from front.report import surcharge_inputs, Formula, edit_equation
 
 
 # creating excel
@@ -15,7 +15,6 @@ def create_feather(z, value, title, excel_name):
     data = list(zip(z, value))
     df = pd.DataFrame(data, columns=["Z", title])
     df.to_feather("reports/excel/" + excel_name + ".feather")
-
 
 
 def create_pdf_report(html_temp_file, template_vars):
@@ -32,8 +31,8 @@ def create_pdf_report(html_temp_file, template_vars):
 
 
 def report_final(input_values, Sx, Ax, M_max, V_max,
-                 y_zero, k_or_EFPa, k_or_EFPp, pressures, loads, arms,
-                 equations, D_0, D
+                 y_zero, k_or_EFPa, k_or_EFPp,
+                 equations, D, h_list
                  ):
     # SITE INPUTS.
     # [input_errors, project_information, number_of_project, number_of_layer_list, unit_system, anchor_number_list,
@@ -45,7 +44,8 @@ def report_final(input_values, Sx, Ax, M_max, V_max,
     #  surcharge_inputs_list, tieback_spacing_list,
     #  anchor_angle_list, FS_list, E_list, Fy_list, allowable_deflection_list,
     #  selected_design_sections_list, ph_max_list, Fb_list, timber_size_list] = input_values.values()
-    [input_validation, project_information, number_of_project, unit_system, delta_h_list, h_active_list, h_passive_list, hr_list, hd_list,
+    [input_validation, project_information, number_of_project, unit_system, delta_h_list, h_active_list, h_passive_list,
+     hr_list, hd_list,
      retaining_height_list,
      surcharge_depth_list,
      water_active_list,
@@ -54,7 +54,8 @@ def report_final(input_values, Sx, Ax, M_max, V_max,
      number_of_layer_passive_list, surcharge_type_list, surcharge_inputs_list, formula_active_list,
      formula_passive_list, soil_properties_active_list,
      soil_properties_passive_list, ph_max_list, Fb_list, timber_size_list, FS_list,
-     Pile_spacing_list, allowable_deflection_list, Fy_list, E_list, selected_design_sections_list] = input_values.values()
+     Pile_spacing_list, allowable_deflection_list, Fy_list, E_list,
+     selected_design_sections_list] = input_values.values()
     for project in range(number_of_project):
         delta_h = delta_h_list[project]
         h_active = h_active_list[project]
@@ -71,22 +72,6 @@ def report_final(input_values, Sx, Ax, M_max, V_max,
         formula_active = formula_active_list[project]
         formula_passive = formula_passive_list[project]
         [q, l1, l2, teta] = surcharge_inputs_list[project]
-    # for project in range(number_of_project):
-    #     number_of_layer = number_of_layer_list[project]
-    #     anchor_number = anchor_number_list[project]
-    #     h = h_list[project]
-    #     delta_h = delta_h_list[project]
-    #     gama = gama_list[project]
-    #     h_list_first = h_list_list[project]
-    #     cohesive_properties = cohesive_properties_list[project]
-    #     pressure_distribution = pressure_distribution_list[project]
-    #     k_formula = k_formula_list[project]
-    #     soil_properties = soil_properties_list[project]
-    #     there_is_water = there_is_water_list[project]
-    #     water_started = water_started_list[project]
-    #     surcharge_type = surcharge_type_list[project]
-    #     surcharge_depth = surcharge_depth_list[project]
-    #     [q, l1, l2, teta] = surcharge_inputs_list[project]
 
         surcharge_inputs(surcharge_type, q, l1, l2, teta, surcharge_depth, unit_system=unit_system)
 
@@ -113,19 +98,19 @@ def report_final(input_values, Sx, Ax, M_max, V_max,
              ] = soil_properties_active_list[project]
         else:
             [EFPa, ka_surcharge] = soil_properties_active_list[project]
-            soil_prop = [k_or_EFPa, k_or_EFPp, ka_surcharge]
-
+            soil_prop = [k_or_EFPa[0], k_or_EFPp[0], ka_surcharge]
 
         if formula_passive != "User Defined":
             [gama_passive, phi_passive, state_passive, beta_passive, omega_passive,
              delta_passive
              ] = soil_properties_passive_list[project]
 
-            soil_prop = [k_or_EFPa, k_or_EFPp, gama_active, phi_active, beta_active, beta_passive, delta_active]
-
+            soil_prop = [k_or_EFPa, k_or_EFPp, gama_active, phi_active, beta_active, beta_passive, delta_active,
+                         h_list]
         else:
             [EFPp] = soil_properties_passive_list[project]
 
+        Formula(formula_active, soil_prop, h, unit_system)
 
         [product_id, user_id, title, jobNo, designer, checker, company, client, date, comment,
          other] = project_information
@@ -158,31 +143,31 @@ def report_final(input_values, Sx, Ax, M_max, V_max,
             density_unit = "N/m<sup>2</sup>"
             A_unit = "mm<sup>2</sup>"
             s_unit = "mm<sup>3</sup>"
-
-        # PRESSURES
-        # better appearance
-        [soil_top_active, soil_end_active, soil_end_passive, water_pre_e_a, water_pre_e_p] = edit_equation(*pressures)
-        # pressure picture
-        if pressure_distribution == "Trapezoidal" and c == 0:
-            distribution_pic = "template/picture_pressure1.html"
-        elif pressure_distribution == "Trapezoidal" and c != 0:
-            distribution_pic = "template/picture_pressure2.html"
-        else:
-            distribution_pic = "template/picture_pressure3.html"
-
-        # LOADS
-        # better appearance
-        [trapezoidal_force, force_soil1, force_soil2, surcharge_force, water_active_force, soil_passive_force,
-         water_passive_force] = edit_equation(*loads)
-        [trapezoidal_arm, arm_soil1, arm_soil2, surcharge_arm, water_active_arm, soil_passive_arm,
-         water_passive_arm] = edit_equation(*arms)
-        # force & arm picture
-        if pressure_distribution == "Trapezoidal" and c == 0:
-            force_pic = "template/picture_force1.html"
-        elif pressure_distribution == "Trapezoidal" and c != 0:
-            force_pic = "template/picture_force2.html"
-        else:
-            force_pic = "template/picture_force3.html"
+        # EXTRA (THEY ARE NOT FOR HERE)
+        #       # PRESSURES
+        #       # better appearance
+        #       [soil_top_active, soil_end_active, soil_end_passive, water_pre_e_a, water_pre_e_p] = edit_equation(*pressures)
+        #       # pressure picture
+        #       if pressure_distribution == "Trapezoidal" and c == 0:
+        #           distribution_pic = "template/picture_pressure1.html"
+        #       elif pressure_distribution == "Trapezoidal" and c != 0:
+        #           distribution_pic = "template/picture_pressure2.html"
+        #       else:
+        #           distribution_pic = "template/picture_pressure3.html"
+        #
+        #       # LOADS
+        #       # better appearance
+        #       [trapezoidal_force, force_soil1, force_soil2, surcharge_force, water_active_force, soil_passive_force,
+        #        water_passive_force] = edit_equation(*loads)
+        #       [trapezoidal_arm, arm_soil1, arm_soil2, surcharge_arm, water_active_arm, soil_passive_arm,
+        #        water_passive_arm] = edit_equation(*arms)
+        #       # force & arm picture
+        #       if pressure_distribution == "Trapezoidal" and c == 0:
+        #           force_pic = "template/picture_force1.html"
+        #       elif pressure_distribution == "Trapezoidal" and c != 0:
+        #           force_pic = "template/picture_force2.html"
+        #       else:
+        #           force_pic = "template/picture_force3.html"
 
         # EQUATIONS
         Mr = equations[0]
@@ -190,9 +175,9 @@ def report_final(input_values, Sx, Ax, M_max, V_max,
         d_equation = equations[2]
         [Mr, Md, d_equation] = edit_equation(Mr, Md, d_equation)
 
-        # WATER
-        if there_is_water == "No":
-            water_started = "-"
+        # # WATER
+        # if there_is_water == "No":
+        #     water_started = "-"
 
         # # LAGGING
         # [d_concrete, lc, R_lagging, M_max_lagging, Sx_req_lagging, Sx_sup_lagging, lagging_status] = lagging_prop
@@ -208,32 +193,16 @@ def report_final(input_values, Sx, Ax, M_max, V_max,
             "pile_spacing": Pile_spacing, "allowable_deflection": allowable_deflection,
             "retaining_height": h, "Sections": sections,
 
-            # WATER PROPERTIES
-            "there_is_water": there_is_water, "water_started": water_started,
-
             # LAGGING INPUTS AND OUTPUTS
             "Ph_max": ph_max, "timber_size": timber_size,
 
             # IMPORTANT VALUES FROM ANALYSIS
-            "D": math.ceil(D),
+            "D_round": math.ceil(D),
+            "D": round(D, 2),
+            "first_D": round(D / 1.2, 2),
             "Sx_required": round(Sx, 1), "Ax_required": math.ceil(Ax), "M_max": round(M_max / 1000, 1),
             "shear_max": round(V_max / 1000, 1),
-            "y_zero_shear": y_zero, "d0": round(D_0, 2), "d_equation": d_equation, "Md": Md, "Mr": Mr,
-
-            # PRESSURES
-            "sp_s_a": soil_top_active, "sp_e_a": soil_end_active, "sp_e_p": soil_end_passive,
-            "wp_e_a": water_pre_e_a, "wp_e_p": water_pre_e_p, "load_distribution_pic": distribution_pic,
-
-            # LOADS & ARMS
-            "dr1": round(trapezoidal_force, 2), "dr2": force_soil1, "dr3": force_soil2,
-            "dr4": round(surcharge_force, 2),
-            "dr5": water_active_force,
-            "rs1": soil_passive_force, "rs2": water_passive_force,
-            "arm_dr1": round(trapezoidal_arm, 2), "arm_dr2": arm_soil1, "arm_dr3": arm_soil2,
-            "arm_dr4": round(surcharge_arm, 2),
-            "arm_dr5": water_active_arm,
-            "arm_rs1": soil_passive_arm, "arm_rs2": water_passive_arm,
-            "force_pic": force_pic,
+            "y_zero_shear": y_zero, "d_equation": d_equation, "Md": Md, "Mr": Mr,
 
             # STATUSES --> IT'S ALWAYS Pass BECAUSE WE CHOOSE SECTION TO Pass IN MOMENT SHEAR AND DEFLECTION.
             "moment_status": "Pass",
@@ -250,37 +219,6 @@ def report_final(input_values, Sx, Ax, M_max, V_max,
         return report_values
 
 
-def edit_equation(*equations):
-    return_list = []
-    for equation in equations:
-        if type(equation) not in [float, int, str, np.float64, np.int64]:
-            equation = round_number_equation(equation)
-            equation = str(equation)
-            equation = equation.replace("**", "<sup>")
-            equation = equation.replace("*", "×")
-            equation = edit_power(equation)
-            return_list.append(equation)
-        else:
-            return_list.append(equation)
-    return return_list
 
 
-import sympy
 
-
-def round_number_equation(equation):
-    new_args = ()
-    for i in equation.args:
-        if type(i) == sympy.core.Float:
-            i = round(i, 2)
-        new_args += (i,)
-
-    edited_equation = equation.func(*new_args)
-    return edited_equation
-
-
-def edit_power(equation):
-    for i in range(len(equation)):
-        if equation[i] == ">":
-            equation = equation[: i + 2] + "</sup>" + equation[i + 2:]
-    return equation

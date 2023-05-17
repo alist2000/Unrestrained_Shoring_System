@@ -9,11 +9,12 @@ from database import SQL_reader
 from deflection import deflection_calculator
 from Lagging import lagging_design
 from shear_moment_diagram import plotter_deflection
-from report import create_feather
+from report import create_feather, report_final, create_pdf_report
 from Output import output_single_solved, output_single_no_solution
 
 import sys
 import math
+import shutil
 
 sys.path.append(r"D:/git/Shoring/Lateral-pressure-")
 sys.path.append(r"D:/git/Shoring/Unrestrained_Shoring_System")
@@ -25,7 +26,7 @@ sys.path.append(r"F:/Cvision/Unrestrained_Shoring_System")
 from Passive_Active.active_passive import active_passive
 from Force.force import moment_calculator
 from Surcharge.result import result_surcharge
-from front.report import section_deflection, deflection_output, DCRs, lagging_output
+from front.report import section_deflection, deflection_output, DCRs, lagging_output, pressure_table
 
 import copy
 import sys
@@ -36,6 +37,7 @@ import numpy as np
 
 def main_unrestrained_shoring(inputs):
     D = symbols("D")
+    Inputs = input_single(inputs)
 
     [input_validation, project_information, number_of_project, unit_system, delta_h_list, h_active_list, h_passive_list,
      hr_list, hd_list,
@@ -47,8 +49,7 @@ def main_unrestrained_shoring(inputs):
      number_of_layer_passive_list, surcharge_type_list, surcharge_inputs_list, formula_active_list,
      formula_passive_list, soil_properties_active_list,
      soil_properties_passive_list, ph_list, Fb_list, timber_size_list, FS_list,
-     Pile_spacing_list, allowable_deflection_list, Fy_list, E_list, selected_design_sections_list] = input_single(
-        inputs).values()
+     Pile_spacing_list, allowable_deflection_list, Fy_list, E_list, selected_design_sections_list] = Inputs.values()
 
     inputs_errors = list(input_validation.values())
     number_of_input_error = inputs_errors[0]
@@ -228,20 +229,24 @@ def main_unrestrained_shoring(inputs):
 
             force_soil_passive, arm_soil_passive = calculate_force_and_arm(soil_passive, water_passive_pressure,
                                                                            main_passive)
+            active_pressure = [soil_active, water_active_pressure]
+            passive_pressure = [soil_passive, water_passive_pressure]
+            pressure_table(active_pressure, passive_pressure, h_active_use, h_passive_use, unit_system)
 
-            error_cantilever, d0, d_final, y0, M_max, s_required, second_D_zero = cantilever_soldier_pile(unit_system,
-                                                                                                          h_active_use,
-                                                                                                          hd_use,
-                                                                                                          surcharge_force_list,
-                                                                                                          surcharge_arm_list,
-                                                                                                          surcharge_depth,
-                                                                                                          force_soil_active,
-                                                                                                          force_soil_passive,
-                                                                                                          arm_soil_active,
-                                                                                                          arm_soil_passive,
-                                                                                                          FS,
-                                                                                                          Pile_spacing,
-                                                                                                          Fy)
+            error_cantilever, d0, d_final, y0, M_max, s_required, second_D_zero, equations_report = cantilever_soldier_pile(
+                unit_system,
+                h_active_use,
+                hd_use,
+                surcharge_force_list,
+                surcharge_arm_list,
+                surcharge_depth,
+                force_soil_active,
+                force_soil_passive,
+                arm_soil_active,
+                arm_soil_passive,
+                FS,
+                Pile_spacing,
+                Fy)
             if error_cantilever != "No Error!":
                 project_error.append([error_cantilever])
                 break
@@ -431,7 +436,7 @@ def main_unrestrained_shoring(inputs):
                     A_list.append(section_area)
                     if unit_system == "us":
                         EI = E * 1000 * float(Ix) / (
-                                    12 ** 3)  # E: Ksi , M: lb.ft  consider final conversion for deflection here
+                                12 ** 3)  # E: Ksi , M: lb.ft  consider final conversion for deflection here
                         # EI = E * 1000 * float(Ix) / (12 ** 2)  # E: Ksi , M: lb.ft, I:in^4, EI: lb.ft^2
                     else:
                         EI = E * float(Ix) / (10 ** 9)  # E: Mpa , M: N.m  consider final conversion for deflection here
@@ -439,7 +444,8 @@ def main_unrestrained_shoring(inputs):
 
                     # lagging control
                     lagging = lagging_design(unit_system, Pile_spacing, section, ph, timber_size)
-                    DCR_moment_timber, status, d_concrete, lc, R, M_max_lagging, s_req_lagging, s_sup_lagging = lagging.moment_design(Fb, tw, 1.25, 1.1, 1.1)
+                    DCR_moment_timber, status, d_concrete, lc, R, M_max_lagging, s_req_lagging, s_sup_lagging = lagging.moment_design(
+                        Fb, tw, 1.25, 1.1, 1.1)
                     DCR_lagging.append(DCR_moment_timber)
                     status_lagging.append(status)
                     d_concrete_list.append(d_concrete)
@@ -498,17 +504,20 @@ def main_unrestrained_shoring(inputs):
                 section_error = ["No answer! No section is appropriate for your situation!"]
                 project_error.append(section_error)
             else:
-                report_values = report_final(Inputs, S_required, A_required, M_max_final, V_max, Y_zero_shear, Ka_or_EFPa, Kp_or_EFPp,
-                                             pressure_list_report,
-                                             force_list_report, arm_list_report, equation_for_report, excavation_depth_dfinal,
+                report_values = report_final(Inputs, s_required_final, A_required, M_max_final, V_max, round(Y_zero_shear, 2),
+                                             Ka_or_EFPa, Kp_or_EFPp,
+                                             equations_report,
+                                             embedment_depth_dfinal, hr + hd
                                              )
                 for i in range(len(final_sections)):
                     DCRs(DCR_moment[i], DCR_shear[i], DCR_deflection[i], DCR_lagging[i], status_lagging[i], i + 1)
-                    section_deflection(unit_system, Fy, final_sections_names[i], A_list[i], Sx_list[i], Ix_list[i], V_max, M_max_final,
+                    section_deflection(unit_system, Fy, final_sections[i], A_list[i], Sx_list[i], Ix_list[i], V_max,
+                                       M_max_final,
                                        max_delta_list[i], allowable_deflection, i + 1)
                     deflection_output(max_delta_list[i], unit_system, i + 1)
-                    lagging_output(unit_system, tieback_spacing, d_concrete_list[i], lc_list[i], ph_max, R_list[i],
-                                   M_max_lagging_list[i], s_req_lagging_list[i], timber_size, s_sup_lagging_list[i], status_lagging[i],
+                    lagging_output(unit_system, Pile_spacing, d_concrete_list[i], lc_list[i], ph, R_list[i],
+                                   M_max_lagging_list[i], s_req_lagging_list[i], timber_size, s_sup_lagging_list[i],
+                                   status_lagging[i],
                                    i + 1)
 
                     report_values["DCR_file"] = f"template/DCRs{i + 1}.html"

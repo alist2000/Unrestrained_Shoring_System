@@ -219,11 +219,7 @@ blockquote {
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script>
-        $(function () {
-            $("#soil_prop").load("template/soil_properties.html");
-        });
-    </script>
+
     <script>
         $(function () {
             $("#surcharge_inputs").load("template/surcharge_input.html");
@@ -242,14 +238,14 @@ blockquote {
             );
         });
     </script>
-    <script>
-            $(function () {
-            var force_picture = $("#force_picture").attr("force_pic");
-            $("#force_picture").load(
-                force_picture
-            );
-        });
-    </script>
+<!--    <script>-->
+<!--            $(function () {-->
+<!--            var force_picture = $("#force_picture").attr("force_pic");-->
+<!--            $("#force_picture").load(-->
+<!--                force_picture-->
+<!--            );-->
+<!--        });-->
+<!--    </script>-->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script type="text/javascript" id="MathJax-script" async
             src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
@@ -267,6 +263,13 @@ blockquote {
             var file_name = $("#DCRs").attr("file_name");
             $("#DCRs").load(
                 file_name
+            );
+        });
+    </script>
+    <script>
+        $(function () {
+            $("#soil_prop").load(
+                "template/soil_properties.html"
             );
         });
     </script>
@@ -301,6 +304,20 @@ blockquote {
         MathJax.startup.document.updateDocument();
     });
 });
+    </script>
+    <script>
+        $(function () {
+            $("#active_pressure").load(
+                "template/active_pressure_table.html"
+            );
+        });
+    </script>
+    <script>
+        $(function () {
+            $("#passive_pressure").load(
+                "template/passive_pressure_table.html"
+            );
+        });
     </script>
     <script>
         $(function () {
@@ -473,7 +490,7 @@ blockquote {
     <table border="0" style="border-collapse: collapse; width: 100%;">
         <tbody>
         <tr>
-            <td style="width: 100%;"><h3>3.2 Soil Properties</h3></td>
+            <td style="width: 100%;"><h3>2.2 Soil Properties</h3></td>
         </tr>
         </tbody>
     </table>
@@ -481,7 +498,7 @@ blockquote {
     <table border="0" style="border-collapse: collapse; width: 100%;">
         <tbody>
         <tr>
-            <td style="width: 100%;"><h3>3.3 Surcharge</h3></td>
+            <td style="width: 100%;"><h3>2.3 Surcharge</h3></td>
         </tr>
         </tbody>
     </table>
@@ -493,7 +510,7 @@ blockquote {
     <table border="0" style="border-collapse: collapse; width: 100%;">
         <tbody>
         <tr>
-            <td style="width: 100%;"><h3>3.4 :Lagging</h3></td>
+            <td style="width: 100%;"><h3>2.4 :Lagging</h3></td>
         </tr>
         </tbody>
     </table>
@@ -556,7 +573,7 @@ blockquote {
             </td>
             <td style="width: 80%;">
                 <t2>
-                    {{ D }} {{ length_unit }}
+                    {{ D_round }} {{ length_unit }}
                 </t2>
             </td>
         </tr>
@@ -640,12 +657,7 @@ blockquote {
         </tr>
         </tbody>
     </table>
-    <table id="picture_distribution" load_distribution_pic={{load_distribution_pic}}> </table>
-
-            <table>
-
-    <tr>
-      <td><table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+   <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
         <tbody>
         <tr>
             <td style="width: 35%;">
@@ -656,8 +668,22 @@ blockquote {
                 </t2>
             </td>
         </tr>
-      </tbody></table></td>
-        <td><table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
+      </tbody>
+       <table>
+        <thead>
+          <tr>
+            <th>Location</th>
+            <th>Soil <em>(K<sub>a</sub> × H × &#611;/ EFP<sub>a</sub> × H)</em></th>
+            <th>Water</th>
+
+          </tr>
+          <thead></thead>
+          <tbody id="active_pressure">
+          </tbody>
+          <table />
+
+        </thead>
+      </table></table><table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
           <tbody>
           <tr>
               <td style="width: 35%;">
@@ -667,40 +693,10 @@ blockquote {
                   <t2>
                   </t2>
               </td>
-          </tr></tbody></table></td>
-    </tr>
-    <tr>
-      <td>
-    <table>
-        <thead>
-          <tr>
-            <th>Location</th>
-            <th>Soil <em>(K<sub>a</sub> × H × &#611;/ EFP<sub>a</sub> × H)</em></th>
-            <th>Water</th>
+          </tr></tbody></table>
 
-          </tr>
-          <thead></thead>
-          <tbody>
-            <tr>
-              <td>a</td>
-              <td>{{ sp_s_a}} {{pressure_unit}}</td>
-              <td> - </td>
 
-            </tr>
-            <tr>
-              <td>b</td>
-              <td>{{ sp_e_a}} {{pressure_unit}}</td>
-              <td>{{ wp_e_a}} {{pressure_unit}}</td>
-
-            </tr>
-
-          </tbody>
-          <table />
-
-        </thead>
-      </table>
-    </td>
-    <td> <table>
+ <table>
       <thead>
         <tr>
           <th>Location</th>
@@ -709,27 +705,12 @@ blockquote {
 
         </tr>
         <thead></thead>
-        <tbody>
-          <tr>
-            <td>a</td>
-            <td>0</td>
-            <td>0</td>
-
-          </tr>
-          <tr>
-            <td>b</td>
-            <td>{{ sp_e_p}} {{pressure_unit}}</td>
-              <td>{{ wp_e_p}} {{pressure_unit}}</td>
-
-          </tr>
-
+        <tbody id="passive_pressure">
         </tbody>
         <table />
 
       </thead>
     </table>
-  </td>
-    </tr>
     </table>
     <table border="0" style="border-collapse: collapse; width: 100%;">
             <tbody>
@@ -764,7 +745,7 @@ blockquote {
         </tr>
         </tbody>
     </table>
-    <table id="force_picture" force_pic={{force_pic}}> </table>
+<!--    <table id="force_picture" force_pic={{force_pic}}> </table>-->
 
     <table>
     <tr>
@@ -929,7 +910,7 @@ blockquote {
                 <t1> {{ d_equation }}</t1>
             </td>
             <td style="width: 70%;">
-                <t2>D = {{ D }} {{ length_unit }}</t2>
+                <t2>D = {{ first_D }} {{ length_unit }}</t2>
             </td>
         </tr>
         </tbody>
@@ -944,10 +925,10 @@ recommendation:
             </td>
         </tr>
         <tr>
-            <td style="width: 100%; alignment: left"> {{ D }} × 1.2 = {{ D_final_decimal }} {{ length_unit }}</td>
+            <td style="width: 100%; alignment: left"> {{ first_D }} × 1.2 = {{ D }} {{ length_unit }}</td>
         </tr>
         <tr>
-            <td style="width: 100%; alignment: left"> <b>USE: D = {{ D_final }} {{ length_unit }}</b></td>
+            <td style="width: 100%; alignment: left"> <b>USE: D = {{ D_round }} {{ length_unit }}</b></td>
         </tr>
 
         </tbody>
