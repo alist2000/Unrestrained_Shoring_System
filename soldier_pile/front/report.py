@@ -1,3 +1,60 @@
+import copy
+
+import sympy
+import numpy as np
+
+
+def edit_equation(*equations):
+    return_list = []
+    for equation in equations:
+        if type(equation) not in [float, int, str, np.float64, np.int64]:
+            equation = round_number_equation(equation)
+            equation = str(equation)
+            equation = equation.replace("**", "<sup>")
+            equation = edit_power(equation)
+            equation = equation.replace("*", "&times;")
+            return_list.append(equation)
+        else:
+            if type(equation) in [float, int, np.float64, np.int64]:
+                equation = round(equation, 2)
+            return_list.append(equation)
+    return return_list
+
+
+def round_number_equation(equation):
+    new_args = ()
+    for i in equation.args:
+
+        if type(i) == sympy.core.Float:
+            i = round(i, 2)
+        elif type(i) == sympy.core.mul.Mul:
+            new_args2 = ()
+            for j in i.args:
+                if type(j) == sympy.core.Float:
+                    j = round(j, 2)
+                new_args2 += (j,)
+            i = i.func(*new_args2)
+
+        new_args += (i,)
+
+    edited_equation = equation.func(*new_args)
+    return edited_equation
+
+
+def edit_power(equation):
+    # insert_index = []
+    # for i in range(len(equation)):
+    #     if equation[i] == ">":
+    #         insert_index.append(i + 2)
+    # for i in insert_index:
+    #     equation.insert(i, "</sup>")
+    equation_new = ""
+    for i in range(len(equation)):
+        if equation[i] == ">":
+            equation_new += equation[: i + 2] + "</sup>" + equation[i + 2:]
+    return equation_new
+
+
 def surcharge_inputs(surcharge_type, q, l1, l2, teta, surcharge_depth, unit_system):
     surcharge_depth = round(surcharge_depth, 2)
     if unit_system == "us":
@@ -505,13 +562,13 @@ def Formula(formula, soil_prop, retaining_height, unit_system):
                 <t1>EFP<sub>a</sub>:</t1>
             </td>
             <td style="width: 25%;">
-                <t2>{EFPa} {density_unit}</t2>
+                <t2>{EFPa[0]} {density_unit}</t2>
             </td>
             <td style="width: 25%;">
                 <t1>EFP<sub>p</sub>:</t1>
             </td>
             <td style="width: 25%;">
-                <t2>{EFPp} {density_unit}</t2>
+                <t2>{EFPp[0]} {density_unit}</t2>
             </td>
         </tr>
         <tr>
@@ -522,10 +579,10 @@ def Formula(formula, soil_prop, retaining_height, unit_system):
                 <t2>{ka_surcharge}</t2>
             </td>
             <td style="width: 25%;">
-                <t1>c:</t1>
+                <t1></t1>
             </td>
             <td style="width: 25%;">
-                <t2>{c} {pressure_unit}</t2>
+                <t2></t2>
             </td>
             
         </tr>
@@ -539,22 +596,24 @@ def Formula(formula, soil_prop, retaining_height, unit_system):
             </td>
             <td style="width: 35%;">
                 <t2>
-                    <em>EFP<sub>a</sub></em>: {EFPa} {density_unit}
+                    <em>EFP<sub>a</sub></em>: {EFPa[0]} {density_unit}
                 </t2>
             </td>
             <td style="width: 35%;">
                 <t2>
-                    <em>EFP<sub>p</sub></em>: {EFPp} {density_unit}
+                    <em>EFP<sub>p</sub></em>: {EFPp[0]} {density_unit}
                 </t2>
             </td>
         </tr>
         </tbody>"""
     else:
-        [ka, kp, gama, phi, beta_active, beta_passive, delta] = soil_prop
+        [ka, kp, gama, phi, beta_active, beta_passive, delta, heights] = soil_prop
+        heights[-1] = "-"
+        layer_number = len(gama)  # or any item in soil prop -> all of them have same length
         for i in soil_prop:
             if i is None or i == "":
                 i = 0
-        table_properties = f"""<tbody>
+        table_properties1 = f"""<tbody>
         <tr>
             <td style="width: 25%;">
                 <t1>Retaining Height:</t1>
@@ -566,54 +625,76 @@ def Formula(formula, soil_prop, retaining_height, unit_system):
                 <t1>Number of Soil Layer:</t1>
             </td>
             <td style="width: 25%;">
-                <t2> 1 </t2>
+                <t2> {layer_number} </t2>
             </td>
-        </tr>
-        <tr>
-            <td style="width: 25%;">
-                <t1>&#611;:</t1>
-            </td>
-            <td style="width: 25%;">
-                <t2>{gama} {density_unit}</t2>
-            </td>
-            <td style="width: 25%;">
-                <t1>&Phi;:</t1>
-            </td>
-            <td style="width: 25%;">
-                <t2>{phi} &deg;</t2>
-            </td>
-        </tr>
-        <tr>
-            <td style="width: 25%;">
-                <t1>&#946; Active:</t1>
-            </td>
-            <td style="width: 25%;">
-                <t2>{beta_active} &deg;</t2>
-            </td>
-            <td style="width: 25%;">
-                <t1>&#946; Passive:</t1>
-            </td>
-            <td style="width: 25%;">
-                <t2>{beta_passive} &deg;</t2>
-            </td>
-        </tr>
-        <tr>
-            <td style="width: 25%;">
-                <t1>&#948;:</t1>
-            </td>
-            <td style="width: 25%;">
-                <t2>{delta} &deg;</t2>
-            </td>
-            <td style="width: 25%;">
-                <t1>c:</t1>
-            </td>
-            <td style="width: 25%;">
-                <t2>{c} {pressure_unit}</t2>
-            </td>
-            
-        </tr>
+        </tr>"""
+        table_properties2 = ""
+        len_passive = len(beta_passive)
+        for i in range(layer_number - len_passive):
+            beta_passive.insert(0, 0)
+        for i in range(layer_number):
+            table_properties2 += f"""
+                <tr style="background-color:#CEE5F2">
+                    <td style="width: 25%;">
+                        <t1>Layer Number:</t1>
+                    </td>
+                    <td style="width: 25%;">
+                        <t2>{i + 1}</t2>
+                    </td>
+                    <td style="width: 25%;">
+                        <t1>Height of Layer:</t1>
+                    </td>
+                    <td style="width: 25%;">
+                        <t2>{heights[i]} {length_unit}</t2>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 25%;">
+                        <t1>&#611;:</t1>
+                    </td>
+                    <td style="width: 25%;">
+                        <t2>{gama[i]} {density_unit}</t2>
+                    </td>
+                    <td style="width: 25%;">
+                        <t1>&Phi;:</t1>
+                    </td>
+                    <td style="width: 25%;">
+                        <t2>{phi[i]} &deg;</t2>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 25%;">
+                        <t1>&#946; Active:</t1>
+                    </td>
+                    <td style="width: 25%;">
+                        <t2>{beta_active[i]} &deg;</t2>
+                    </td>
+                    <td style="width: 25%;">
+                        <t1>&#946; Passive:</t1>
+                    </td>
+                    <td style="width: 25%;">
+                        <t2>{beta_passive[i]} &deg;</t2>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 25%;">
+                        <t1>&#948;:</t1>
+                    </td>
+                    <td style="width: 25%;">
+                        <t2>{delta[i]} &deg;</t2>
+                    </td>
+                    <td style="width: 25%;">
+                        <t1></t1>
+                    </td>
+                    <td style="width: 25%;">
+                        <t2></t2>
+                    </td>
+                    
+                </tr>
+        
+                </tbody>"""
+        table_properties = table_properties1 + table_properties2
 
-        </tbody>"""
         table = """<tbody>
         <tr>
             <td style="width: 15%;">
@@ -676,6 +757,13 @@ def Formula(formula, soil_prop, retaining_height, unit_system):
         </tbody>
     </table>
     """
+        ka_string, kp_string = "", ""
+        for i in ka:
+            ka_string += str(round(i, 3)) + ", "
+        ka_string = ka_string[:-2]
+        for i in kp:
+            kp_string += str(round(i, 3)) + ", "
+        kp_string = kp_string[:-2]
         table2 = f"""<table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
         <tbody>
         <tr>
@@ -684,12 +772,12 @@ def Formula(formula, soil_prop, retaining_height, unit_system):
             </td>
             <td style="width: 35%;">
                 <t2>
-                    <em>K<sub>a</sub></em>: {ka}
+                    <em>K<sub>a</sub></em>: {ka_string}
                 </t2>
             </td>
             <td style="width: 35%;">
                 <t2>
-                    <em>K<sub>p</sub></em>: {kp}
+                    <em>K<sub>p</sub></em>: {kp_string}
                 </t2>
             </td>
         </tr>
@@ -709,7 +797,6 @@ def Formula(formula, soil_prop, retaining_height, unit_system):
 # Formula("User Defined", [70, 190, 0.56, 0], 10, "us")
 
 
-
 def section_deflection(unit_system, fy, section, A, Sx, Ix, V_max, M_max, deflection_max, allowable_deflection, number):
     deflection_max = round(deflection_max, 2)
 
@@ -718,8 +805,8 @@ def section_deflection(unit_system, fy, section, A, Sx, Ix, V_max, M_max, deflec
     part2 = section[cross + 1:]
     section = part1 + "&#215;" + part2
 
-    # pof = """0.25D <sub> 0 </sub>"""  # in general
-    pof = """3 ft"""  # in San Marino Project
+    pof = """0.25D <sub> 0 </sub>"""  # in general
+    # pof = """3 ft"""  # in San Marino Project
     if unit_system == "us":
         fb = round(M_max * 12 / (Sx * 1000), 2)
         fb_unit = "ksi"
@@ -1063,4 +1150,98 @@ def lagging_output(unit_system, spacing, d_pile, lc, ph, R, M_max, S_req, timber
     </table>"""
     file = open(f"reports/template/lagging_output{number}.html", "w")
     file.write(table)
+    file.close()
+
+
+def pressure_table(active_pressure, passive_pressure, h_active, h_passive, unit_system):
+    if unit_system == "us":
+        pressure_unit = "Ksi"
+    else:
+        pressure_unit = "MPa"
+
+    table1 = ""
+    table2 = """<tr>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+
+          </tr>"""
+
+    #  *** PUT ALL PRESSURE AS AN INDEX IN A LIST ***
+    active_pressures = []
+    passive_pressures = []
+    for soil_or_water in active_pressure:
+        for pressure in soil_or_water:
+            for j in pressure:
+                active_pressures.append(j)
+    active_pressures = edit_equation(*active_pressures)
+
+    soil_active = active_pressures[1:-2]
+    water_active = active_pressures[-1]
+    for soil_or_water in passive_pressure:
+        for pressure in soil_or_water:
+            for j in pressure:
+                passive_pressures.append(j)
+
+    passive_pressures = edit_equation(*passive_pressures)
+
+    soil_passive = passive_pressures[1:-2]
+    water_passive = passive_pressures[-1]
+
+    # SUM EVERY HEIGHT WITH LAST INDEX
+    h_active_edited = []
+    for i in range(len(h_active)):
+        h_active_edited.append(sum(h_active[:i + 1]))
+    h_passive_edited = []
+    for i in range(len(h_passive)):
+        h_passive_edited.append(sum(h_passive[:i + 1]))
+
+    i, j = 0, -1
+    for pressure_value in soil_active:
+        if i % 2 == 0:
+            power = "-"  # negative power
+            j += 1
+        else:
+            power = "+"  # positive power
+        if i == len(soil_active) - 1:
+            power = ""  # for last item we have no power.
+            water_pressure = water_active
+        else:
+            water_pressure = "-"
+
+        table1 += f"""<tr>
+              <td>{h_active_edited[j]} <sup>{power}</sup></td>
+              <td>{pressure_value} {pressure_unit}</td>
+              <td> {water_pressure} </td>
+
+            </tr>"""
+        i += 1
+
+    i, j = 0, -1
+    for pressure_value in soil_passive:
+        if i % 2 == 0:
+            power = "-"  # negative power
+            j += 1
+        else:
+            power = "+"  # positive power
+        if i == len(soil_passive) - 1:
+            power = ""  # for last item we have no power.
+            water_pressure = water_passive
+        else:
+            water_pressure = "-"
+
+        table2 += f"""<tr>
+                  <td>{h_passive_edited[j]} <sup>{power}</sup></td>
+                  <td>{pressure_value} {pressure_unit}</td>
+                  <td> {water_pressure} </td>
+
+                </tr>"""
+        i += 1
+
+    file = open(f"reports/template/active_pressure_table.html", "w")
+    file.write(table1)
+    file.close()
+
+    file = open(f"reports/template/passive_pressure_table.html", "w")
+    file.write(table2)
     file.close()
