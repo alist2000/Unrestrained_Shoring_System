@@ -313,7 +313,7 @@ def input_single(input_values):
     water_active = []
     for layer in range(number_of_layer_active):
         try:
-            water = input_values.get("data").get("General data").get("Water level at top of this layer?").get("value")
+            water = input_values.get("data").get("Soil Properties").get("Water level at top of this layer?" +  layer * space).get("value")
         except:  # checkbox input in site won't be sent if user don't select that.
             water = "No"
         water_active.append(water)
@@ -334,7 +334,7 @@ def input_single(input_values):
         hd = [D]
 
         soil_properties_active = [[EFPa, EFPa], Ka_surcharge]
-        soil_properties_passive = [[EFPp, EFPa]]
+        soil_properties_passive = [[EFPp, EFPp]]
 
         EFPa_valid = EFPa
         EFPp_valid = EFPp
