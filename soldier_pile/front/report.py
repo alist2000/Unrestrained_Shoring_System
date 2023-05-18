@@ -1,3 +1,4 @@
+from cgi import print_arguments
 import copy
 
 import sympy
@@ -40,19 +41,31 @@ def round_number_equation(equation):
     edited_equation = equation.func(*new_args)
     return edited_equation
 
-
 def edit_power(equation):
-    # insert_index = []
-    # for i in range(len(equation)):
-    #     if equation[i] == ">":
-    #         insert_index.append(i + 2)
-    # for i in insert_index:
-    #     equation.insert(i, "</sup>")
-    equation_new = ""
+    equation_list_index = []
     for i in range(len(equation)):
         if equation[i] == ">":
-            equation_new += equation[: i + 2] + "</sup>" + equation[i + 2:]
-    return equation_new
+            equation_list_index.append(i + 2)
+    
+    first_index = 0
+    equation_list = []
+    for i in range(len(equation_list_index)):   
+        equation_list.append(equation[first_index:equation_list_index[i]] + "</sup>")
+        first_index += equation_list_index[i]
+        if i:
+            first_index -= equation_list_index[i - 1]
+    try:
+        if equation_list_index[-1] != len(equation):
+            equation_list.append(equation[equation_list_index[-1]:])
+    except:
+        pass
+    equation_new = ""
+    for i in equation_list:
+        equation_new += i
+    if equation_new:
+        return equation_new
+    else:
+        return equation
 
 
 def surcharge_inputs(surcharge_type, q, l1, l2, teta, surcharge_depth, unit_system):
