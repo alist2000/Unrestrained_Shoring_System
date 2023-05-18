@@ -1,3 +1,4 @@
+from operator import le
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 # from IPython.core.display import display, HTML
 import plotly.figure_factory as ff
@@ -118,8 +119,50 @@ import numpy as np
 # # plot2.show()
 # plot.show()
 
-plot = px.line(x=[[i for i in range(10)], [j for j in range(20, 30)]], y=[j for j in range(20, 30)]).update_layout(
-    xaxis=dict(tickfont={"size": 25, "family": "Times New Roman"}),
-    xaxis_title=dict(text="kjhjjhjhj", font={"size": 20, "family": "Times New Roman"}))
+# plot = px.line(x=[[i for i in range(10)], [j for j in range(20, 30)]], y=[j for j in range(20, 30)]).update_layout(
+#     xaxis=dict(tickfont={"size": 25, "family": "Times New Roman"}),
+#     xaxis_title=dict(text="kjhjjhjhj", font={"size": 20, "family": "Times New Roman"}))
 
-plot.show()
+# plot.show()
+
+
+my_test = "<alisafari> hamidata> mmdmmd> fati> mehran> farzan> amin> "
+my_list = []
+my_range = len(my_test)
+j = 0
+for i in range(my_range):
+    if my_test[i] ==">":
+        my_list.append(i + 2)
+        
+print(my_list)
+my_test_edited = []
+first_index = 0
+for i in range(len(my_list)):
+    print(first_index)
+    print(i)
+
+    my_test_edited.append(my_test[first_index:my_list[i]] + "<")
+    first_index += my_list[i]
+    try:
+        first_index -= my_list[i-1]
+    except:
+        pass
+    print(first_index)
+
+
+
+print(my_test_edited)
+my_final_text = ""
+for i in my_test_edited:
+    my_final_text+= i
+
+print(my_final_text)
+a = 1
+b = 0
+c = 5635634
+if a:
+    print("1 is true")
+if b:
+    print("0 is true")
+if c :
+    print("584835 is true")
