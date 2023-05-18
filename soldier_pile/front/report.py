@@ -1,5 +1,6 @@
 from cgi import print_arguments
 import copy
+from operator import le
 
 import sympy
 import numpy as np
@@ -1257,4 +1258,40 @@ def pressure_table(active_pressure, passive_pressure, h_active, h_passive, unit_
 
     file = open(f"reports/template/passive_pressure_table.html", "w")
     file.write(table2)
+    file.close()
+
+
+def force_arm(active_force, active_arm, passive_force , passive_arm, unit_system):
+    if unit_system == "us":
+        force_unit = "lb"
+        arm_unit = "ft"
+    else:
+        force_unit = "N"
+        arm_unit = "m"
+    active_table = ""
+    for i in range(len(active_force)):
+        active_table += f"""
+        <tr>
+              <td>DR<sub>{i + 1}</sub></td>
+              <td>{active_force[i]} {force_unit}</td>
+              <td>{active_arm[i]} {arm_unit} </td>
+
+            </tr>
+        """
+    passive_table = ""
+    for i in range(len(passive_force)):
+        passive_table += f"""
+        <tr>
+              <td>RS<sub>{i + 1}</sub></td>
+              <td>{passive_force[i]} {force_unit}</td>
+              <td>{passive_arm[i]} {arm_unit} </td>
+
+            </tr>
+        """
+    file = open(f"reports/template/force_active_table.html", "w")
+    file.write(active_table)
+    file.close()
+
+    file = open(f"reports/template/force_passive_table.html", "w")
+    file.write(passive_table)
     file.close()
