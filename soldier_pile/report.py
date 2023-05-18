@@ -1,12 +1,12 @@
 import pandas as pd
 import pyarrow.feather as feather
-from weasyprint import HTML
+# from weasyprint import HTML
 from jinja2 import Environment, FileSystemLoader
 import datetime
 import math
 import numpy as np
 
-from front.report import surcharge_inputs, Formula, edit_equation
+from front.report import surcharge_inputs, Formula, edit_equation, force_arm
 
 
 # creating excel
@@ -220,5 +220,27 @@ def report_final(input_values, Sx, Ax, M_max, V_max,
 
 
 
+def report_force_arm_edit(forces, arms):
+    new_forces = [forces[0][1]]
+    new_arms = [arms[0][1]]
+    for force_item in forces[1:-1]:
+        for force in force_item:
+            new_forces.append(force)
+    for arm_item in arms[1:-1]:
+        for arm in arm_item:
+            new_arms.append(arm)
+    new_forces.append(forces[-1][-1])
+    new_arms.append(arms[-1][-1])
 
+    return new_forces, new_arms
 
+def report_force_arm(active_force, active_arm, passive_force, passive_arm,surcharge_force, surcharge_arm, unit_system):
+    active_force, active_arm = report_force_arm_edit(active_force, active_arm)
+    active_force += surcharge_force
+    active_arm += surcharge_arm
+    passive_force, passive_arm = report_force_arm_edit(passive_force, passive_arm)
+    active_force = edit_equation(*active_force)
+    active_arm = edit_equation(*active_arm)
+    passive_force = edit_equation(*passive_force)
+    passive_arm = edit_equation(*passive_arm)
+    force_arm(active_force, active_arm, passive_force, passive_arm, unit_system)
