@@ -186,7 +186,7 @@ def report_final(input_values, Sx, Ax, M_max, V_max,
         report_values = {
             # GENERAL INFORMATION
             "project_title": title, "designer": designer, "job_title": jobNo, "checker": checker,
-            "company": company, "analysis_date": date, "comments": comment, "unit_system": unit_system,
+            "company": company, "analysis_date": date, "comments": comment, "unit_system": unit_system.upper(),
 
             # GENERAL PROPERTIES
             "E": E, "FS": FS, "Fb": Fb, "Fy": Fy,
