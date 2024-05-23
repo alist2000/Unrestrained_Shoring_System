@@ -95,6 +95,16 @@ def main_unrestrained_shoring(inputs):
         h_active_main = hr + hd
         h_passive_main = hd
         h_passive = h_passive_main  # must be equal!
+        # NOT FINISHED YET
+        if formula_passive == "User Defined":
+            maxPassive = 6500
+            firstDepth = int(maxPassive / soil_properties_passive_list[0][0][0])
+            # soil_properties_passive_list[0][0][1] = maxPassive / D
+            soil_properties_passive_list[0][0][1] = 0
+            h_passive = [firstDepth, D]  # must be equal!
+            water_active.append(water_active[-1])
+            water_passive.append(water_passive[-1])
+        # hd_use = [24, D]
         hd_use = [D]
 
         error_surcharge_list = []
@@ -151,6 +161,7 @@ def main_unrestrained_shoring(inputs):
             else:
                 # inputs
                 [EFPa, Ka] = soil_properties_active_list[project]
+                EFPa.append(EFPa[-1])
                 Ka_or_EFPa = [EFPa]
 
                 # we have EFP = gama * K. assume K = 1 and gama = EFP. other values is not necessary.
@@ -277,7 +288,7 @@ def main_unrestrained_shoring(inputs):
             if hd_use == h_passive:
                 controller = True
             else:
-                if d_final > h_passive[i]:
+                if d_final / 1.2 > h_passive[i]:
                     controller = False
                     hd_use.insert(i, h_passive[i])
                     i += 1
@@ -373,6 +384,7 @@ def main_unrestrained_shoring(inputs):
                 j += 1
 
             PoF = round(0.25 * excavation_depth, delta_h_decimal)  # point of fixity --> B
+            print("POF: ", PoF)
             c = round((excavation_depth - PoF) / 2, delta_h_decimal) + PoF  # point c --> center of OB
             sum_hr = round(sum(hr), delta_h_decimal)
             depth_deflection, deflection = deflection_calculator(delta_h, delta_h_decimal, depth, moment_values, PoF, c,
@@ -504,7 +516,8 @@ def main_unrestrained_shoring(inputs):
                 section_error = ["No answer! No section is appropriate for your situation!"]
                 project_error.append(section_error)
             else:
-                report_values = report_final(Inputs, s_required_final, A_required, M_max_final, V_max, round(Y_zero_shear, 2),
+                report_values = report_final(Inputs, s_required_final, A_required, M_max_final, V_max,
+                                             round(Y_zero_shear, 2),
                                              Ka_or_EFPa, Kp_or_EFPp,
                                              equations_report,
                                              embedment_depth_dfinal, hr + hd
@@ -550,3 +563,4 @@ def main_unrestrained_shoring(inputs):
 
 
 a = main_unrestrained_shoring(input2)
+print(a)

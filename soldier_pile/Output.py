@@ -53,6 +53,7 @@ def output_single_solved(unit_system, general, specific):
 
     output_specific_values = []
     excel_specific = []
+    report_file = []
     for i in range(number_of_section):
         specific_values_list = [specific_values[0][i],  # section name
                                 f"Maximum Deflection ( {deflection_unit} ) = " + str(round(specific_values[1][i], 2)),
@@ -71,6 +72,8 @@ def output_single_solved(unit_system, general, specific):
 
         output_specific_values.append(specific_values_list)
         excel_specific.append("deflection" + str(i + 1))
+        report_file.append("Rep_Unrestrained_Shoring" + str(i + 1))
+
 
     # file_name = []
     # for i in range(len(values)):
@@ -80,7 +83,7 @@ def output_single_solved(unit_system, general, specific):
     #         i + 1) + "_SurchargeLoad_Report"
     #     file_name.append(filename_summary)
     #     file_name.append(filename_detail)
-    titles = [otitle, header_general, header_specific, excel_general, excel_specific]
+    titles = [otitle, header_general, header_specific, excel_general, excel_specific, report_file]
     values = [output_general_values, output_specific_values]
     output = [otitle, header_general, header_specific, general_plot, output_general_values, specific_plot,
               specific_values]

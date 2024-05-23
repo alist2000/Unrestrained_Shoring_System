@@ -46,7 +46,8 @@ def control_solution(item):
         except:
             pass
     if final:
-        final_value = max(final)
+        positiveValues = [i for i in final if i >= 0]
+        final_value = min(positiveValues)
     else:
         final_value = "There is no answer!"
     return final_value
@@ -173,7 +174,8 @@ def cantilever_soldier_pile(unit_system, h_active, h_passive, Surcharge_force, S
             # s_required = M_max * 10 ** 6 / fb  # s unit --> mm^3
             s_required = M_max * 10 ** 3 / fb  # s unit --> mm^3  # fb: MPa = N/mm^2
 
-    return "No Error!", float(D_zero), float(D_final), float(Y), float(M_max), float(s_required), float(second_D_zero), equations_report
+    return "No Error!", float(D_zero), float(D_final), float(Y), float(M_max), float(s_required), float(
+        second_D_zero), equations_report
 
 
 def put_D_in_list(my_list, d):
