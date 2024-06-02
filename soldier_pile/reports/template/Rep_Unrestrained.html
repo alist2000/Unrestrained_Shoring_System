@@ -321,8 +321,15 @@ blockquote {
     </script>
     <script>
         $(function () {
-            $("#force_arm").load(
-                "template/force_arm.html"
+            $("#active_force").load(
+                "template/force_active_table.html"
+            );
+        });
+    </script>
+    <script>
+        $(function () {
+            $("#passive_force").load(
+                "template/force_passive_table.html"
             );
         });
     </script>
@@ -750,17 +757,17 @@ blockquote {
     <table>
     <tr>
       <td style="width: 100%;">
-          <t2>DR<sub>4</sub>= Force Result of Surcharge Loads</t2>
+          <t2>DR<sub>n-1</sub>= Water Force in Loading Side</t2>
       </td>
 
   </tr>
   <tr>
     <td style="width: 100%;">
-        <t2>DR<sub>5</sub>= Water Force in Loading Side</t2>
+        <t2>DR<sub>n</sub>= Force Result of Surcharge Loads</t2>
     </td></tr>
     <tr>
       <td style="width: 100%;">
-          <t2>RS<sub>2</sub>= Water Force in Resisting Side</t2>
+          <t2>RS<sub>n</sub>= Water Force in Resisting Side</t2>
       </td></tr>
   </table>
     <table border="0" style="border-collapse: collapse; width: 100%; background: #dfe3e6">
@@ -782,38 +789,7 @@ blockquote {
 
           </tr>
           <thead></thead>
-          <tbody>
-            <tr>
-              <td>DR<sub>1</sub></td>
-              <td>{{ dr1 }} {{force_unit}}</td>
-              <td>{{ arm_dr1}} {{length_unit}} </td>
-
-            </tr>
-            <tr>
-              <td>DR<sub>2</sub></td>
-              <td>{{ dr2 }} {{force_unit}}</td>
-              <td>{{ arm_dr2}} {{length_unit}} </td>
-
-            </tr>
-            <tr>
-              <td>DR<sub>3</sub></td>
-              <td>{{ dr3 }} {{force_unit}}</td>
-              <td>{{ arm_dr3}} {{length_unit}} </td>
-
-            </tr>
-            <tr>
-              <td>DR<sub>4</sub></td>
-              <td>{{ dr4 }} {{force_unit}}</td>
-              <td>{{ arm_dr4}} {{length_unit}} </td>
-
-            </tr>
-            <tr>
-              <td>DR<sub>5</sub></td>
-              <td>{{ dr5 }} {{force_unit}}</td>
-              <td>{{ arm_dr5}} {{length_unit}} </td>
-
-            </tr>
-
+          <tbody id="active_force">
           </tbody>
           <table />
 
@@ -837,20 +813,7 @@ blockquote {
 
         </tr>
         <thead></thead>
-        <tbody>
-          <tr>
-            <td>RS<sub>1</sub></td>
-            <td>{{ rs1 }} {{force_unit}}</td>
-            <td>{{ arm_rs1}} {{length_unit}} </td>
-
-          </tr>
-          <tr>
-            <td>RS<sub>2</sub></td>
-            <td>{{ rs2 }} {{force_unit}}</td>
-            <td>{{ arm_rs2}} {{length_unit}} </td>
-
-          </tr>
-
+        <tbody id="passive_force">
         </tbody>
         <table />
 

@@ -1,3 +1,4 @@
+from cgi import print_arguments
 from inputs import input_single
 from site_input import input2
 
@@ -9,7 +10,7 @@ from database import SQL_reader
 from deflection import deflection_calculator
 from Lagging import lagging_design
 from shear_moment_diagram import plotter_deflection
-from report import create_feather, report_final, create_pdf_report
+from report import create_feather, report_final, create_pdf_report, report_force_arm
 from Output import output_single_solved, output_single_no_solution
 
 import sys
@@ -194,7 +195,6 @@ def main_unrestrained_shoring(inputs):
                     surcharge_pressure_list.append(surcharge_pressure)
                     # error_surcharge_list.append(error_surcharge)
                     i_sur += 1
-
             # we ignore errors for surcharge. if we have error just don't
             # if error_surcharge_list[0] != "No Error!":
             #     project_error.append(error_surcharge_list)
@@ -240,9 +240,13 @@ def main_unrestrained_shoring(inputs):
 
             force_soil_passive, arm_soil_passive = calculate_force_and_arm(soil_passive, water_passive_pressure,
                                                                            main_passive)
+            
+            # for report
             active_pressure = [soil_active, water_active_pressure]
             passive_pressure = [soil_passive, water_passive_pressure]
             pressure_table(active_pressure, passive_pressure, h_active_use, h_passive_use, unit_system)
+
+            report_force_arm(force_soil_active, arm_soil_active, force_soil_passive, arm_soil_passive, surcharge_force_list, surcharge_arm_list, unit_system)
 
             error_cantilever, d0, d_final, y0, M_max, s_required, second_D_zero, equations_report = cantilever_soldier_pile(
                 unit_system,
