@@ -266,16 +266,16 @@ DR_project1_input2 = {
              'Lagging': {'Ph max': {'value': '200', 'unit': 'psf'}, 'Fb': {'value': '0.9', 'unit': 'ksi'},
                          'Timber Size': {'value': '{"id":1403,"item":"4 x 14","section_product_item":"42_93"}',
                                          'unit': None}}}, 'type': 1, 'number_of_projects': 1}
-input2 = {'information': {'title': 'Gramercy Place', 'jobNo': 'Gramercy Place',
+input2 = {'information': {'title': '1848 GRAMERCY PL', 'jobNo': '1848 GRAMERCY PL',
                           'designer': 'AMIA ENGINEERING',
-                          'checker': '-', 'company': 'AMIA ENGINEERING', 'client': 'Gramercy Place', 'unit': 'us',
+                          'checker': '-', 'company': 'AMIA ENGINEERING', 'client': '1848 GRAMERCY PL', 'unit': 'us',
                           'date': None, 'comment': "", 'other': None}, 'product_id': 26, 'user_id': 44,
-          'data': {'General data': {'FS': {'value': '1', 'unit': None}, 'Fy': {'value': '50', 'unit': 'ksi'},
+          'data': {'General data': {'FS': {'value': '1.3', 'unit': None}, 'Fy': {'value': '50', 'unit': 'ksi'},
                                     'E': {'value': '29000', 'unit': 'ksi'},
                                     'Pile Spacing': {'value': '8', 'unit': 'ft'},
-                                    'Allowable Deflection': {'value': '0.5', 'unit': 'in'},
+                                    'Allowable Deflection': {'value': '1', 'unit': 'in'},
                                     'Sections': {
-                                        'value': '{"id":1380,"item":"W16,W21,W24","section_product_item":"39_91"}',
+                                        'value': '{"id":1380,"item":"W24","section_product_item":"39_91"}',
                                         'unit': None}},
                    'Soil Properties': {'Ka Surcharge': {'value': '1', 'unit': None},
                                        'Equivalent Fluid Pressure Active': {'value': '25', 'unit': 'pcf'},
@@ -284,7 +284,7 @@ input2 = {'information': {'title': 'Gramercy Place', 'jobNo': 'Gramercy Place',
                                        'δ': {'value': '0', 'unit': '°'}, 'β active': {'value': '0', 'unit': '°'},
                                        'β passive': {'value': '0', 'unit': '°'}, 'Formula': {
                            'value': '{"id":1439,"item":"User Defined","section_product_item":"41_94"}', 'unit': None},
-                                       'Retaining Height': {'value': '14', 'unit': 'ft'}}, 'Surcharge': {
+                                       'Retaining Height': {'value': '9', 'unit': 'ft'}}, 'Surcharge': {
                   'Load Type': {'value': '{"id":1381,"item":"Uniform","section_product_item":"48_92"}',
                                 'unit': None},
                   'Load Type ': {'value': '{"id":1382,"item":"No Load","section_product_item":"48_92"}',
@@ -297,5 +297,5 @@ input2 = {'information': {'title': 'Gramercy Place', 'jobNo': 'Gramercy Place',
                   'q   ': {'value': '100', 'unit': None},
                   'Surcharge Effective Depth': {'value': '10', 'unit': 'ft'}},
                    'Lagging': {'Ph max': {'value': '400', 'unit': 'psf'}, 'Fb': {'value': '0.9', 'unit': 'ksi'},
-                               'Timber Size': {'value': '{"id":1403,"item":"4 x 14","section_product_item":"42_93"}',
+                               'Timber Size': {'value': '{"id":1403,"item":"3 x 12","section_product_item":"42_93"}',
                                                'unit': None}}}, 'type': 1, 'number_of_projects': 1}
