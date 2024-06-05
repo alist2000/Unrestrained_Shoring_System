@@ -6,11 +6,11 @@ Installation Instructions
 
 To use the Unrestrained Shoring System, follow these steps:
 
-    Clone the repository to your local machine:
+Clone the repository to your local machine:
 
     bash
 
-git clone https://github.com/alist2000/Unrestrained_Shoring_System.git
+    git clone https://github.com/alist2000/Unrestrained_Shoring_System.git
 
 Install the required dependencies using pip:
 
@@ -18,14 +18,12 @@ Install the required dependencies using pip:
 
 Usage Instructions
 
-    Navigate to the project directory.
-    Run the main Python script:
-
-    css
+Navigate to the project directory.
+Run the main Python script:
 
     python main.py
 
-    Follow the on-screen prompts to input project-specific parameters and analyze the shoring system.
+Follow the on-screen prompts to input project-specific parameters and analyze the shoring system.
 
 Features
 
