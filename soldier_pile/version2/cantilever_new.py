@@ -118,7 +118,7 @@ def cantilever_pile_analysis(H, D0, EFPa, EFPp, surcharges, spacing=8.0,
 
     # --- Deflection Calculation using Moment-Area Method (Delta-C Approach) ---
     # This section is kept exactly as per the user's original logic.
-    B = H + 4
+    B = H + 3
     E_pt = total_depth
     C = (B + E_pt) / 2
 
@@ -180,15 +180,15 @@ def cantilever_pile_analysis(H, D0, EFPa, EFPp, surcharges, spacing=8.0,
 # =============================================================================
 if __name__ == "__main__":
     # Example input parameters
-    H = 15.0  # ft
+    H = 11.33  # ft
     EFPa = 30.0  # pcf
     EFPp = 320.0  # pcf
     FS = 1.3
-    spacing = 8.5 # ft
+    spacing = 8.0 # ft
 
     # Define advanced surcharges
     surcharges = [
-        {'type': 'line', 'q': 4000, 'l': 11.0},
+        {'type': 'line', 'q': 2000, 'l': 7.67},
     ]
 
     # Section properties (example values)

@@ -1,10 +1,17 @@
-from cgi import print_arguments
+import sys
+import json
+import copy
+import math
+import shutil
 from inputs import input_single
-from site_input import input2
 
-from surchargeLoad import surcharge
+import numpy as np
+from sympy import symbols
+from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QFileDialog
+
 from shoring_cantilever import calculate_force_and_arm, control_solution, cantilever_soldier_pile, put_D_in_list, \
     multiple_pressure_pile_spacing, calculate_D_and_control
+from surchargeLoad import surcharge
 from shear_moment_diagram import diagram
 from database import SQL_reader
 from deflection import deflection_calculator
@@ -13,27 +20,37 @@ from shear_moment_diagram import plotter_deflection
 from report import create_feather, report_final, create_pdf_report, report_force_arm
 from Output import output_single_solved, output_single_no_solution
 
-import sys
-import math
-import shutil
-
-sys.path.append(r"D:/git/Shoring/Lateral-pressure-")
-sys.path.append(r"D:/git/Shoring/Unrestrained_Shoring_System")
-sys.path.append(r"D:/git/Shoring/Restrained_Shoring_System")
-
-sys.path.append(r"F:/Cvision/Lateral-pressure-")
-sys.path.append(r"F:/Cvision/Unrestrained_Shoring_System")
+# sys.path.append(r"D:/git/Shoring/Lateral-pressure-")
+# sys.path.append(r"D:/git/Shoring/Unrestrained_Shoring_System")
+# sys.path.append(r"D:/git/Shoring/Restrained_Shoring_System")
+#
+# sys.path.append(r"F:/Cvision/Lateral-pressure-")
+# sys.path.append(r"F:/Cvision/Unrestrained_Shoring_System")
 
 from Passive_Active.active_passive import active_passive
 from Force.force import moment_calculator
 from Surcharge.result import result_surcharge
 from front.report import section_deflection, deflection_output, DCRs, lagging_output, pressure_table
 
-import copy
-import sys
-from sympy import symbols
-from sympy.solvers import solve
-import numpy as np
+
+def open_json_file():
+    """Function to open a file dialog and load a JSON file."""
+    # Open the file dialog
+    filepath, _ = QFileDialog.getOpenFileName(
+        None,
+        "Select JSON File",
+        "",
+        "JSON Files (*.json)"
+    )
+
+    if filepath:
+        # Load the JSON data
+        with open(filepath, 'r') as file:
+            data = json.load(file)
+        return data
+    else:
+        print("No file selected!")
+        return None
 
 
 def main_unrestrained_shoring(inputs):
@@ -98,7 +115,7 @@ def main_unrestrained_shoring(inputs):
         h_passive = h_passive_main  # must be equal!
         # NOT FINISHED YET
         if formula_passive == "User Defined":
-            maxPassive = 6500
+            maxPassive = 100000000
             firstDepth = int(maxPassive / soil_properties_passive_list[0][0][0])
             # soil_properties_passive_list[0][0][1] = maxPassive / D
             soil_properties_passive_list[0][0][1] = 0
@@ -140,6 +157,7 @@ def main_unrestrained_shoring(inputs):
                 Ka_or_EFPa = k
 
                 # *** calculate surcharge ***
+
                 i_sur = 0
                 surcharge_force_list = []
                 surcharge_arm_list = []
@@ -157,8 +175,6 @@ def main_unrestrained_shoring(inputs):
                     surcharge_arm_list.append(surcharge_arm)
                     surcharge_pressure_list.append(surcharge_pressure)
                     i_sur += 1
-                    # error_surcharge_list.append(error_surcharge)
-
             else:
                 # inputs
                 [EFPa, Ka] = soil_properties_active_list[project]
@@ -178,6 +194,7 @@ def main_unrestrained_shoring(inputs):
                     delta=None)  # this value is not necessary.
 
                 # *** calculate surcharge ***
+
                 surcharge_force_list = []
                 surcharge_arm_list = []
                 surcharge_pressure_list = []
@@ -195,10 +212,6 @@ def main_unrestrained_shoring(inputs):
                     surcharge_pressure_list.append(surcharge_pressure)
                     # error_surcharge_list.append(error_surcharge)
                     i_sur += 1
-            # we ignore errors for surcharge. if we have error just don't
-            # if error_surcharge_list[0] != "No Error!":
-            #     project_error.append(error_surcharge_list)
-            #     break
 
             force_soil_active, arm_soil_active = calculate_force_and_arm(soil_active, water_active_pressure,
                                                                          main_active)
@@ -240,13 +253,14 @@ def main_unrestrained_shoring(inputs):
 
             force_soil_passive, arm_soil_passive = calculate_force_and_arm(soil_passive, water_passive_pressure,
                                                                            main_passive)
-            
+
             # for report
             active_pressure = [soil_active, water_active_pressure]
             passive_pressure = [soil_passive, water_passive_pressure]
             pressure_table(active_pressure, passive_pressure, h_active_use, h_passive_use, unit_system)
 
-            report_force_arm(force_soil_active, arm_soil_active, force_soil_passive, arm_soil_passive, surcharge_force_list, surcharge_arm_list, unit_system)
+            report_force_arm(force_soil_active, arm_soil_active, force_soil_passive, arm_soil_passive,
+                             surcharge_force_list, surcharge_arm_list, unit_system)
 
             error_cantilever, d0, d_final, y0, M_max, s_required, second_D_zero, equations_report = cantilever_soldier_pile(
                 unit_system,
@@ -387,7 +401,8 @@ def main_unrestrained_shoring(inputs):
                 depth[j] = round(i, delta_h_decimal)
                 j += 1
 
-            PoF = round(0.25 * excavation_depth, delta_h_decimal)  # point of fixity --> B
+            # PoF = round(0.25 * excavation_depth, delta_h_decimal)  # point of fixity --> B
+            PoF = 3  # point of fixity --> B
             print("POF: ", PoF)
             c = round((excavation_depth - PoF) / 2, delta_h_decimal) + PoF  # point c --> center of OB
             sum_hr = round(sum(hr), delta_h_decimal)
@@ -566,5 +581,34 @@ def main_unrestrained_shoring(inputs):
     return "No Error!", load_diagram, shear_diagram, moment_diagram, M_max_final, V_max, s_required_final, A_required, output_section_list, final_deflection, DCR_deflection, max_delta_list
 
 
-a = main_unrestrained_shoring(input2)
-print(a)
+class ShoringApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Shoring Design")
+        self.setGeometry(200, 200, 300, 100)
+
+        layout = QVBoxLayout()
+
+        self.run_button = QPushButton("Run Program")
+        self.run_button.clicked.connect(self.load_json_and_run)
+        self.result = None
+
+        layout.addWidget(self.run_button)
+        self.setLayout(layout)
+
+    def load_json_and_run(self):
+        """Function to load JSON file and call the main program."""
+        inputs = open_json_file()
+        if inputs:
+            result = main_unrestrained_shoring(inputs)
+            self.result = result
+            print(result)  # Or handle the result as needed
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = ShoringApp()
+    window.show()
+    result = window.result
+    sys.exit(app.exec())
+
