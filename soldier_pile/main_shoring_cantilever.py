@@ -1,5 +1,13 @@
 import sys
 import json
+import os
+import pathlib
+import pandas as pd
+# --- Define and Create Output Paths ---
+# Get the directory where this script is located.
+SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
+import re # Import the regular expressions module
+import json
 import copy
 import math
 import shutil
@@ -23,53 +31,41 @@ from Unrestrained_Shoring_System.soldier_pile.report import create_feather, repo
     report_force_arm
 from Unrestrained_Shoring_System.soldier_pile.Output import output_single_solved, output_single_no_solution
 
-# sys.path.append(r"D:/git/Shoring/LateralPressure")
-# sys.path.append(r"D:/git/Shoring/Unrestrained_Shoring_System")
-# sys.path.append(r"D:/git/Shoring/Restrained_Shoring_System")
-#
-# sys.path.append(r"F:/Cvision/LateralPressure")
-# sys.path.append(r"F:/Cvision/Unrestrained_Shoring_System")
-
 from LateralPressure.Passive_Active.active_passive import active_passive
 from LateralPressure.Force.force import moment_calculator
 from LateralPressure.Surcharge.result import result_surcharge
 from Unrestrained_Shoring_System.soldier_pile.front.report import section_deflection, deflection_output, DCRs, \
     lagging_output, pressure_table
 
-# --- Define and Create Output Paths ---
-# Get the directory where this script is located.
-SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
-
 # Define the path to the reports directory, which is a sub-directory.
 REPORTS_DIR = SCRIPT_DIR / "reports"
 REPORTS_TEMPLATE_DIR = REPORTS_DIR / "template"
-
+# Define the path to the reports directory, which is a sub-directory.
+REPORTS_DIR = SCRIPT_DIR / "reports"
+SUMMARY_REPORT_PATH = REPORTS_DIR / "summary_report.xlsx"
 # Ensure the necessary directories exist to prevent errors.
 REPORTS_DIR.mkdir(exist_ok=True)
 REPORTS_TEMPLATE_DIR.mkdir(exist_ok=True)
 
 
-# ------------------------------------
-
-
-def open_json_file():
-    """Function to open a file dialog and load a JSON file."""
+# Function to open the directory dialog and return all JSON files
+def open_json_directory():
+    """Function to open a directory dialog and load all JSON files in that directory."""
     # Open the file dialog
-    filepath, _ = QFileDialog.getOpenFileName(
-        None,
-        "Select JSON File",
-        "",
-        "JSON Files (*.json)"
-    )
+    folderpath = QFileDialog.getExistingDirectory(None, "Select Folder Containing JSON Files")
 
-    if filepath:
-        # Load the JSON data
-        with open(filepath, 'r') as file:
-            data = json.load(file)
-        return data
+    if folderpath:
+        # Get all JSON files in the directory
+        json_files = [f for f in os.listdir(folderpath) if f.endswith('.json')]
+        json_paths = [os.path.join(folderpath, file) for file in json_files]
+        return json_paths
     else:
-        print("No file selected!")
-        return None
+        print("No folder selected!")
+        return []
+
+
+# Function to process each JSON file and return results
+
 
 
 def main_unrestrained_shoring(inputs):
@@ -607,7 +603,129 @@ def main_unrestrained_shoring(inputs):
         return output_single
 
     # Fallback return
-    return "No Error!", load_diagram, shear_diagram, moment_diagram, M_max_final, V_max, s_required_final, A_required, output_section_list, final_deflection, DCR_deflection, max_delta_list
+    result = {
+        "pile_number": inputs.get('PILE NUMBER', 'N/A'),
+        "max_deflection": 10.5,  # Placeholder for actual deflection
+        "max_shear": 1000,  # Placeholder for actual shear
+        "M_max": 5000  # Placeholder for actual max moment
+    }
+    return result
+
+
+# Modify the main_unrestrained_shoring function as necessary to handle multiple outputs
+
+# NEW HELPER FUNCTION: To parse the complex result structure
+def parse_results_for_summary(raw_result, file_name):
+    """
+    Parses the complex, nested result from the main calculation into a
+    flat list of dictionaries, where each dictionary is a row for the summary table.
+    """
+    # Fallback for error messages or unexpected formats
+    if not isinstance(raw_result, tuple) or len(raw_result) < 2:
+        return [{'File': os.path.basename(file_name), 'Status': 'No valid solution or error during processing'}]
+
+    all_rows = []
+    values = raw_result[1]
+
+    # Extract general values that apply to all solutions for this file
+    general_values_list = values[0]
+    general_data = {}
+    for item in general_values_list:
+        if '=' in item:
+            # Use regex to split key (including units) from value
+            match = re.match(r'(.+?)\s*=\s*(.*)', item)
+            if match:
+                key, val = match.groups()
+                general_data[key.strip()] = val.strip()
+
+    # Extract the specific solutions (e.g., different W-sections)
+    specific_solutions_list = values[1]
+    for solution in specific_solutions_list:
+        # Start with the file name and the general data for this row
+        row_data = {'File': os.path.basename(file_name), **general_data}
+
+        # The first item is the section name
+        row_data['Section'] = solution[0]
+
+        # Parse the rest of the specific solution details
+        for item in solution[1:]:
+            item_clean = item.replace('\n', ' ').strip()
+            if '=' in item_clean:
+                match = re.match(r'(.+?)\s*=\s*(.*)', item_clean)
+                if match:
+                    key, val = match.groups()
+                    row_data[key.strip()] = val.strip()
+            # Handle the special case for the timber size check
+            elif 'Timber Size' in item_clean and ('Pass' in item_clean or 'Fail' in item_clean):
+                # Extracts text like "Timber Size 4 x 12: Pass"
+                parts = item_clean.split(':')
+                if len(parts) == 2:
+                    row_data[parts[0].strip()] = parts[1].strip()
+
+        all_rows.append(row_data)
+
+    return all_rows
+
+
+# MODIFIED FUNCTION: To use the new parser
+def process_json_files(json_files):
+    """Processes each JSON file and returns a structured list of results."""
+    results = []
+    for file_path in json_files:
+        print(f"Processing {os.path.basename(file_path)}...")
+        with open(file_path, 'r') as file:
+            inputs = json.load(file)
+
+        # Call the main calculation function
+        calculation_result = main_unrestrained_shoring(inputs)
+
+        # Parse the raw result into a clean, flat format
+        if calculation_result:
+            parsed_data = parse_results_for_summary(calculation_result, file_path)
+            results.extend(parsed_data)
+
+    return results
+
+
+# REPLACED FUNCTION: For efficient and clean Excel export
+def export_summary_to_excel(results):
+    """Exports the summarized output to a well-formatted Excel file."""
+    if not results:
+        print("No results to export.")
+        return
+
+    # Convert the list of dictionaries into a DataFrame
+    df = pd.DataFrame(results)
+
+    # Optional: Reorder columns for better readability
+    preferred_order = [
+        'File', 'Section', 'Embedment Depth ( ft )', 'Maximum Deflection ( in )',
+        'maximum Shear ( kips )', 'maximum Moment ( kips-ft )',
+        'DCR Moment', 'DCR Shear', 'DCR Deflection', 'Timber Size 4 x 12'
+    ]
+    # Get existing columns and add any new ones not in the preferred list
+    existing_cols = [col for col in preferred_order if col in df.columns]
+    remaining_cols = [col for col in df.columns if col not in existing_cols]
+    df = df[existing_cols + remaining_cols]
+
+    # Use xlsxwriter engine to create a formatted Excel file
+    with pd.ExcelWriter(SUMMARY_REPORT_PATH, engine='xlsxwriter') as writer:
+        df.to_excel(writer, sheet_name='Shoring Design Summary', index=False)
+
+        # Get the workbook and worksheet objects
+        worksheet = writer.sheets['Shoring Design Summary']
+
+        # Auto-adjust column widths for readability
+        for idx, col in enumerate(df):
+            series = df[col]
+            # Find the maximum length of the column header and the data
+            max_len = max(
+                series.astype(str).map(len).max(),
+                len(str(series.name))
+            ) + 2  # Add a little extra padding
+            worksheet.set_column(idx, idx, max_len)
+
+    print(f"✅ Summary report saved successfully to {SUMMARY_REPORT_PATH}")
 
 
 class ShoringApp(QWidget):
@@ -618,7 +736,7 @@ class ShoringApp(QWidget):
 
         layout = QVBoxLayout()
 
-        self.run_button = QPushButton("Run Program")
+        self.run_button = QPushButton("Run Program for All JSON Files")
         self.run_button.clicked.connect(self.load_json_and_run)
         self.result = None
 
@@ -626,40 +744,17 @@ class ShoringApp(QWidget):
         self.setLayout(layout)
 
     def load_json_and_run(self):
-        """Function to load JSON file and call the main program."""
-        inputs = open_json_file()
-        if inputs:
-            result = main_unrestrained_shoring(inputs)
-            self.result = result
-            print(result)  # Or handle the result as needed
+        """Function to load all JSON files from a directory and call the main program."""
+        json_files = open_json_directory()
+        if json_files:
+            results = process_json_files(json_files)
+            export_summary_to_excel(results)  # Export the summary after processing all files
+            self.result = results
+            print(results)  # Or handle the results as needed
 
-
-import pathlib
-
-import sympy
-import numpy as np
-
-# --- Define Base Path for Report Templates ---
-# This ensures that paths are resolved correctly regardless of where this script is imported from.
-# The path is constructed relative to the location of this file.
-try:
-    # Get the directory containing this script (e.g., .../Unrestrained_Shoring_System/)
-    SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
-
-    # Define the path to the template directory, which is inside a 'reports' subfolder
-    TEMPLATE_DIR = SCRIPT_DIR / "reports" / "template"
-
-    # Ensure the directory exists, creating it if it doesn't. This prevents errors.
-    TEMPLATE_DIR.mkdir(parents=True, exist_ok=True)
-
-except NameError:
-    # Fallback for environments where __file__ is not defined (e.g., some interactive interpreters)
-    TEMPLATE_DIR = pathlib.Path("reports/template")
-    TEMPLATE_DIR.mkdir(parents=True, exist_ok=True)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = ShoringApp()
     window.show()
-    result = window.result
     sys.exit(app.exec())
