@@ -1,4 +1,22 @@
+import pathlib
+
+
 def output_single_solved(unit_system, general, specific):
+    # --- Define and Create Output Paths ---
+    # Get the directory where this script (Output.py) is located.
+    try:
+        SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
+    except NameError:
+        # Fallback for environments where __file__ is not defined
+        SCRIPT_DIR = pathlib.Path.cwd()
+
+    # Define the path to the plot directory, which is a sub-directory.
+    PLOT_DIR = SCRIPT_DIR / "plot"
+
+    # Create the directory if it doesn't exist to prevent errors.
+    PLOT_DIR.mkdir(parents=True, exist_ok=True)
+    # ------------------------------------
+
     if unit_system == "us":
         deflection_unit = "in"
         length_unit = "ft"
@@ -15,25 +33,24 @@ def output_single_solved(unit_system, general, specific):
         S_unit = "mm^3"
 
     general_plot, general_values = general.values()
-    #  create html for plots
+    # Create html for plots using the robust path
     i = 1
     for plot in general_plot:
-        plot.write_html(f"plot/general_output{i}.html",
-                        full_html=False,
-                        include_plotlyjs='cdn')
-        plot.write_image(f"plot/general_output{i}.png")
-
+        html_path = PLOT_DIR / f"general_output{i}.html"
+        img_path = PLOT_DIR / f"general_output{i}.png"
+        plot.write_html(html_path, full_html=False, include_plotlyjs='cdn')
+        plot.write_image(img_path)
         i += 1
 
     specific_plot, specific_values = specific.values()
     number_of_section = len(specific_plot)
-    #  create html for plots
+    # Create html for plots using the robust path
     i = 1
     for plot in specific_plot:
-        plot.write_html(f"plot/deflection_output{i}.html",
-                        full_html=False,
-                        include_plotlyjs='cdn')
-        plot.write_image(f"plot/deflection_output{i}.png")
+        html_path = PLOT_DIR / f"deflection_output{i}.html"
+        img_path = PLOT_DIR / f"deflection_output{i}.png"
+        plot.write_html(html_path, full_html=False, include_plotlyjs='cdn')
+        plot.write_image(img_path)
         i += 1
 
     otitle = ["Cantilever Soldier Pile - Output Summary",
@@ -74,15 +91,6 @@ def output_single_solved(unit_system, general, specific):
         excel_specific.append("deflection" + str(i + 1))
         report_file.append("Rep_Unrestrained_Shoring" + str(i + 1))
 
-
-    # file_name = []
-    # for i in range(len(values)):
-    #     filename_summary = "p" + str(product_id) + "u" + str(user_id) + "_" + "Solution" + str(
-    #         i + 1) + "_SurchargeLoad_Report"
-    #     filename_detail = "p" + str(product_id) + "u" + str(user_id) + "_" + "Solution" + str(
-    #         i + 1) + "_SurchargeLoad_Report"
-    #     file_name.append(filename_summary)
-    #     file_name.append(filename_detail)
     titles = [otitle, header_general, header_specific, excel_general, excel_specific, report_file]
     values = [output_general_values, output_specific_values]
     output = [otitle, header_general, header_specific, general_plot, output_general_values, specific_plot,

@@ -68,8 +68,16 @@ def deflection_calculator(delta_h, delta_h_decimal, depth, moment, PoF, c, hr, f
     for x in AB:
         x_point = list(AB_copy).index(x)
         if x != 0:
+            area_xb = abs(spi.simpson(moment[x_point_moment_last:PoF_point], depth[x_point_moment_last:PoF_point]))
+            X_xb = abs(spi.simpson(moment[x_point_moment_last:PoF_point] * AB[:x_point],
+                                   depth[x_point_moment_last:PoF_point])) / area_xb
+            print("Area: ", area_xb * (12**3) / (29000000 * 4760))
+            print("X: ", X_xb)
+            print("Final Delta: ", X_xb * area_xb * (12**3) / (29000000 * 4760))
+
             delta_xb = abs(spi.simpson(moment[x_point_moment_last:PoF_point] * AB[:x_point],
                                        depth[x_point_moment_last:PoF_point]))
+            print("Final Delta: ", delta_xb * (12**3) / (29000000 * 4760))
         else:
             delta_xb = 0.
 
@@ -125,4 +133,5 @@ def deflection_calculator(delta_h, delta_h_decimal, depth, moment, PoF, c, hr, f
     # deflection_total = deflection3[::-1] + deflection2 + deflection1
     deflection_total = deflection3[::-1] + [0]
     deflection_depth = AB_list + [final_depth]
+    print(min(deflection_total) * (12**3) / (29000000 * 4760))
     return deflection_depth, deflection_total

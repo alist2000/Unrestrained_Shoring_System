@@ -2,8 +2,8 @@ from sympy import symbols
 from sympy.solvers import solve
 from sympy import diff
 
-from shoring_cantilever import control_solution
-from database import SQL_reader_timber
+from Unrestrained_Shoring_System.soldier_pile.shoring_cantilever import control_solution
+from Unrestrained_Shoring_System.soldier_pile.database import SQL_reader_timber
 
 
 class lagging_design:

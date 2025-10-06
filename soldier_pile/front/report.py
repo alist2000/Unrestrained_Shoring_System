@@ -1,9 +1,29 @@
 from cgi import print_arguments
 import copy
 from operator import le
+import pathlib
 
 import sympy
 import numpy as np
+from Unrestrained_Shoring_System.soldier_pile.path import TEMPLATE_DIR, SCRIPT_DIR
+
+# # --- Define Base Path for Report Templates ---
+# # This ensures that paths are resolved correctly regardless of where this script is imported from.
+# # The path is constructed relative to the location of this file.
+# try:
+#     # Get the directory containing this script (e.g., .../Unrestrained_Shoring_System/)
+#     SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
+#
+#     # Define the path to the template directory, which is inside a 'reports' subfolder
+#     TEMPLATE_DIR = SCRIPT_DIR / "reports" / "template"
+#
+#     # Ensure the directory exists, creating it if it doesn't. This prevents errors.
+#     TEMPLATE_DIR.mkdir(parents=True, exist_ok=True)
+#
+# except NameError:
+#     # Fallback for environments where __file__ is not defined (e.g., some interactive interpreters)
+#     TEMPLATE_DIR = pathlib.Path("reports/template")
+#     TEMPLATE_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def edit_equation(*equations):
@@ -42,15 +62,16 @@ def round_number_equation(equation):
     edited_equation = equation.func(*new_args)
     return edited_equation
 
+
 def edit_power(equation):
     equation_list_index = []
     for i in range(len(equation)):
         if equation[i] == ">":
             equation_list_index.append(i + 2)
-    
+
     first_index = 0
     equation_list = []
-    for i in range(len(equation_list_index)):   
+    for i in range(len(equation_list_index)):
         equation_list.append(equation[first_index:equation_list_index[i]] + "</sup>")
         first_index += equation_list_index[i]
         if i:
@@ -166,7 +187,7 @@ def surcharge_inputs(surcharge_type, q, l1, l2, teta, surcharge_depth, unit_syst
                 <td style="width: 25%;">
                     <t1>There is No Surcharge Load.</t1>
                 </td>
-                
+
             </tr>"""
 
     # SURCHARGE FORMULA
@@ -306,7 +327,7 @@ def surcharge_inputs(surcharge_type, q, l1, l2, teta, surcharge_depth, unit_syst
         <mfrac>
           <mrow>
             <msup>
-              <mi>n</mi>
+              <mi>n</
               <mn>2</mn>
             </msup>
             <msup>
@@ -339,7 +360,7 @@ def surcharge_inputs(surcharge_type, q, l1, l2, teta, surcharge_depth, unit_syst
 </math>
                 </td>
           </tr>
-          
+
         </tbody>
     </table>"""
         elif load == "Line Load":
@@ -533,15 +554,11 @@ def surcharge_inputs(surcharge_type, q, l1, l2, teta, surcharge_depth, unit_syst
     table2 += """</body>
 </html>"""
 
-    file = open("reports/template/surcharge_input.html", "w")
-    file.write(table)
-    file.close()
-    file = open("reports/template/surcharge_formula.html", "w")
-    file.write(table2)
-    file.close()
-
-
-# surcharge_inputs(["Point Load", "Line Load"], [1000, 1500], [5, 3], [5, 3], [2, 3], 10, "us")
+    # Use with statement for safer file handling and constructed paths
+    with open(TEMPLATE_DIR / "surcharge_input.html", "w") as f:
+        f.write(table)
+    with open(TEMPLATE_DIR / "surcharge_formula.html", "w") as f:
+        f.write(table2)
 
 
 def Formula(formula, soil_prop, retaining_height, unit_system):
@@ -598,7 +615,7 @@ def Formula(formula, soil_prop, retaining_height, unit_system):
             <td style="width: 25%;">
                 <t2></t2>
             </td>
-            
+
         </tr>
 
         </tbody>"""
@@ -703,9 +720,9 @@ def Formula(formula, soil_prop, retaining_height, unit_system):
                     <td style="width: 25%;">
                         <t2></t2>
                     </td>
-                    
+
                 </tr>
-        
+
                 </tbody>"""
         table_properties = table_properties1 + table_properties2
 
@@ -798,17 +815,10 @@ def Formula(formula, soil_prop, retaining_height, unit_system):
         </tbody>"""
         table_main = table + table2
 
-    file2 = open("reports/template/soil_properties.html", "w")
-    file2.write(table_properties)
-    file2.close()
-
-    file = open("reports/template/formula.html", "w")
-    file.write(table_main)
-    file.close()
-
-
-# Formula("Rankine", [0.56, 1.23, 135, 30, 0, 0, 0, 0], 10, "us")
-# Formula("User Defined", [70, 190, 0.56, 0], 10, "us")
+    with open(TEMPLATE_DIR / "soil_properties.html", "w") as f:
+        f.write(table_properties)
+    with open(TEMPLATE_DIR / "formula.html", "w") as f:
+        f.write(table_main)
 
 
 def section_deflection(unit_system, fy, section, A, Sx, Ix, V_max, M_max, deflection_max, allowable_deflection, number):
@@ -820,7 +830,6 @@ def section_deflection(unit_system, fy, section, A, Sx, Ix, V_max, M_max, deflec
     section = part1 + "&#215;" + part2
 
     pof = """0.25D <sub> 0 </sub>"""  # in general
-    # pof = """3 ft"""  # in San Marino Project
     if unit_system == "us":
         fb = round(M_max * 12 / (Sx * 1000), 2)
         fb_unit = "ksi"
@@ -843,6 +852,11 @@ def section_deflection(unit_system, fy, section, A, Sx, Ix, V_max, M_max, deflec
         A_unit = "mm<sup>2</sup>"
         s_unit = "mm<sup>3</sup>"
         I_unit = "mm<sup>4</sup>"
+
+    # Corrected relative path for the image source
+    # The HTML is in 'reports/template', the plot is in 'plot'. Path should be '../../plot/'
+    img_src = f"../plot/deflection_output{str(number)}.png"
+
     table = f"""<table border="0" style="border-collapse: collapse; width: 100%;">
             <tbody>
             <tr>
@@ -933,21 +947,18 @@ def section_deflection(unit_system, fy, section, A, Sx, Ix, V_max, M_max, deflec
             <tr>
                 <td style="width: 100%; text-align: center;">
                     <img style="width: auto; height: 370;  margin-top:0px;"
-                         src="../plot/deflection_output{str(number)}.png"
+                         src="{img_src}"
                          alt="shear diagram">
 
             </tr>
             </tbody>
         </table>"""
-    # 0.25D<sub>0</sub>
-    # image in server should be received with below source:
-    # src="https://civision.balafan.com/restrained_shoring/plot/deflection_output{str(number)}"
-    file = open(f"reports/template/section_deflection{number}.html", "w")
-    file.write(table)
-    file.close()
+
+    print("CHECK THIS OUT", TEMPLATE_DIR / f"section_deflection{number}.html")
+    with open(TEMPLATE_DIR / f"section_deflection{number}.html", "w") as f:
+        f.write(table)
 
 
-# section_deflection("us", 36, "W24×45", 12, 333, 1452, 45, 2366, 0.5, 0.6, 1)
 def DCRs(DCR_moment, DCR_shear, DCR_deflection, DCR_lagging, lagging_status, number):
     DCR_moment = round(DCR_moment, 3)
     DCR_shear = round(DCR_shear, 3)
@@ -1024,12 +1035,8 @@ def DCRs(DCR_moment, DCR_shear, DCR_deflection, DCR_lagging, lagging_status, num
             <td style="width: 5%; text-align: center;"></td>
         </tr>"""
 
-    file = open(f"reports/template/DCRs{number}.html", "w")
-    file.write(table)
-    file.close()
-
-
-# DCRs(0.56, 0.36, 0.98, 0.69, "PASSSSS")
+    with open(TEMPLATE_DIR / f"DCRs{number}.html", "w") as f:
+        f.write(table)
 
 
 def deflection_output(deflection_max, unit_system, number):
@@ -1047,16 +1054,8 @@ def deflection_output(deflection_max, unit_system, number):
                 </t2>
             </td>"""
 
-    # file = open("reports/template/deflection_dcr.html", "w")
-    # file.write(deflection_table1)
-    # file.close()
-
-    file = open(f"reports/template/deflection_max{number}.html", "w")
-    file.write(deflection_table2)
-    file.close()
-
-
-# deflection_output(0.5, 0.89, "us")
+    with open(TEMPLATE_DIR / f"deflection_max{number}.html", "w") as f:
+        f.write(deflection_table2)
 
 
 def lagging_output(unit_system, spacing, d_pile, lc, ph, R, M_max, S_req, timber_size, S_sup, lagging_status, number):
@@ -1072,7 +1071,6 @@ def lagging_output(unit_system, spacing, d_pile, lc, ph, R, M_max, S_req, timber
         force_unit = "lb"
         Sx_unit = "in<sup>3</sup>"
         moment_unit = "kip-ft"
-
     else:
         length_unit = "m"
         density_unit = "N/m<sup>3</sup>"
@@ -1162,9 +1160,8 @@ def lagging_output(unit_system, spacing, d_pile, lc, ph, R, M_max, S_req, timber
         </tr>
         </tbody>
     </table>"""
-    file = open(f"reports/template/lagging_output{number}.html", "w")
-    file.write(table)
-    file.close()
+    with open(TEMPLATE_DIR / f"lagging_output{number}.html", "w") as f:
+        f.write(table)
 
 
 def pressure_table(active_pressure, passive_pressure, h_active, h_passive, unit_system):
@@ -1252,16 +1249,13 @@ def pressure_table(active_pressure, passive_pressure, h_active, h_passive, unit_
                 </tr>"""
         i += 1
 
-    file = open(f"reports/template/active_pressure_table.html", "w")
-    file.write(table1)
-    file.close()
-
-    file = open(f"reports/template/passive_pressure_table.html", "w")
-    file.write(table2)
-    file.close()
+    with open(TEMPLATE_DIR / "active_pressure_table.html", "w") as f:
+        f.write(table1)
+    with open(TEMPLATE_DIR / "passive_pressure_table.html", "w") as f:
+        f.write(table2)
 
 
-def force_arm(active_force, active_arm, passive_force , passive_arm, unit_system):
+def force_arm(active_force, active_arm, passive_force, passive_arm, unit_system):
     if unit_system == "us":
         force_unit = "lb"
         arm_unit = "ft"
@@ -1288,10 +1282,7 @@ def force_arm(active_force, active_arm, passive_force , passive_arm, unit_system
 
             </tr>
         """
-    file = open(f"reports/template/force_active_table.html", "w")
-    file.write(active_table)
-    file.close()
-
-    file = open(f"reports/template/force_passive_table.html", "w")
-    file.write(passive_table)
-    file.close()
+    with open(TEMPLATE_DIR / "force_active_table.html", "w") as f:
+        f.write(active_table)
+    with open(TEMPLATE_DIR / "force_passive_table.html", "w") as f:
+        f.write(passive_table)

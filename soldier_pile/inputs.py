@@ -3,7 +3,7 @@ import copy
 from sympy import symbols
 import json
 
-from site_input import input2
+from Unrestrained_Shoring_System.soldier_pile.site_input import input2
 
 
 # *** ATTENTION :  all input controls must be checked here.

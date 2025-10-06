@@ -15,14 +15,12 @@ from sympy import symbols
 from sympy.solvers import solve
 import numpy as np
 
-from shear_moment_diagram import diagram
-from surchargeLoad import surcharge
+sys.path.append(r"E:/Git/Shoring/Lateral_pressure")
+sys.path.append(r"/LateralPressure")
+sys.path.append(r"F:/Cvision/Lateral_pressure")
 
-sys.path.append(r"D:/git/Shoring/Lateral-pressure-")
-sys.path.append(r"F:/Cvision/Lateral-pressure-")
-
-from Passive_Active.active_passive import active_passive
-from Force.force import moment_calculator
+from LateralPressure.Passive_Active.active_passive import active_passive
+from LateralPressure.Force.force import moment_calculator
 
 D = symbols("D")
 

@@ -3,34 +3,53 @@ import json
 import copy
 import math
 import shutil
-from inputs import input_single
+from Unrestrained_Shoring_System.soldier_pile.inputs import input_single
 
 import numpy as np
+import pathlib
 from sympy import symbols
 from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QFileDialog
 
-from shoring_cantilever import calculate_force_and_arm, control_solution, cantilever_soldier_pile, put_D_in_list, \
+from Unrestrained_Shoring_System.soldier_pile.shoring_cantilever import calculate_force_and_arm, control_solution, \
+    cantilever_soldier_pile, put_D_in_list, \
     multiple_pressure_pile_spacing, calculate_D_and_control
-from surchargeLoad import surcharge
-from shear_moment_diagram import diagram
-from database import SQL_reader
-from deflection import deflection_calculator
-from Lagging import lagging_design
-from shear_moment_diagram import plotter_deflection
-from report import create_feather, report_final, create_pdf_report, report_force_arm
-from Output import output_single_solved, output_single_no_solution
+from Unrestrained_Shoring_System.soldier_pile.surchargeLoad import surcharge
+from Unrestrained_Shoring_System.soldier_pile.shear_moment_diagram import diagram
+from Unrestrained_Shoring_System.soldier_pile.database import SQL_reader
+from Unrestrained_Shoring_System.soldier_pile.deflection import deflection_calculator
+from Unrestrained_Shoring_System.soldier_pile.Lagging import lagging_design
+from Unrestrained_Shoring_System.soldier_pile.shear_moment_diagram import plotter_deflection
+from Unrestrained_Shoring_System.soldier_pile.report import create_feather, report_final, create_pdf_report, \
+    report_force_arm
+from Unrestrained_Shoring_System.soldier_pile.Output import output_single_solved, output_single_no_solution
 
-# sys.path.append(r"D:/git/Shoring/Lateral-pressure-")
+# sys.path.append(r"D:/git/Shoring/LateralPressure")
 # sys.path.append(r"D:/git/Shoring/Unrestrained_Shoring_System")
 # sys.path.append(r"D:/git/Shoring/Restrained_Shoring_System")
 #
-# sys.path.append(r"F:/Cvision/Lateral-pressure-")
+# sys.path.append(r"F:/Cvision/LateralPressure")
 # sys.path.append(r"F:/Cvision/Unrestrained_Shoring_System")
 
-from Passive_Active.active_passive import active_passive
-from Force.force import moment_calculator
-from Surcharge.result import result_surcharge
-from front.report import section_deflection, deflection_output, DCRs, lagging_output, pressure_table
+from LateralPressure.Passive_Active.active_passive import active_passive
+from LateralPressure.Force.force import moment_calculator
+from LateralPressure.Surcharge.result import result_surcharge
+from Unrestrained_Shoring_System.soldier_pile.front.report import section_deflection, deflection_output, DCRs, \
+    lagging_output, pressure_table
+
+# --- Define and Create Output Paths ---
+# Get the directory where this script is located.
+SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
+
+# Define the path to the reports directory, which is a sub-directory.
+REPORTS_DIR = SCRIPT_DIR / "reports"
+REPORTS_TEMPLATE_DIR = REPORTS_DIR / "template"
+
+# Ensure the necessary directories exist to prevent errors.
+REPORTS_DIR.mkdir(exist_ok=True)
+REPORTS_TEMPLATE_DIR.mkdir(exist_ok=True)
+
+
+# ------------------------------------
 
 
 def open_json_file():
@@ -430,11 +449,12 @@ def main_unrestrained_shoring(inputs):
 
             # export appropriate section
             output_section_list = []
+            print(selected_design_sections)
             for w in selected_design_sections:
                 w = w[1:]  # section has sent : w + number
                 output_section = SQL_reader(w, A_required, s_required_final, Ix_min, unit_system)
                 output_section_list.append(output_section)
-
+            print(output_section_list)
             #  divide deflections by EI of every section
             # + control lagging
             status_lagging = []
@@ -529,43 +549,50 @@ def main_unrestrained_shoring(inputs):
                 DCR_deflection.append(DCR_def)
                 i += 1
 
-            #  check error for available sections according to S and A.
-            #  deflection ratio don't be checked when export sections.(Ix not control)
-            if not final_deflection:
-                section_error = ["No answer! No section is appropriate for your situation!"]
-                project_error.append(section_error)
-            else:
-                report_values = report_final(Inputs, s_required_final, A_required, M_max_final, V_max,
-                                             round(Y_zero_shear, 2),
-                                             Ka_or_EFPa, Kp_or_EFPp,
-                                             equations_report,
-                                             embedment_depth_dfinal, hr + hd
-                                             )
-                for i in range(len(final_sections)):
-                    DCRs(DCR_moment[i], DCR_shear[i], DCR_deflection[i], DCR_lagging[i], status_lagging[i], i + 1)
-                    section_deflection(unit_system, Fy, final_sections[i], A_list[i], Sx_list[i], Ix_list[i], V_max,
-                                       M_max_final,
-                                       max_delta_list[i], allowable_deflection, i + 1)
-                    deflection_output(max_delta_list[i], unit_system, i + 1)
-                    lagging_output(unit_system, Pile_spacing, d_concrete_list[i], lc_list[i], ph, R_list[i],
-                                   M_max_lagging_list[i], s_req_lagging_list[i], timber_size, s_sup_lagging_list[i],
-                                   status_lagging[i],
-                                   i + 1)
+        if not final_deflection:
+            section_error = ["No answer! No section is appropriate for your situation!"]
+            project_error.append(section_error)
+        else:
+            report_values = report_final(Inputs, s_required_final, A_required, M_max_final, V_max,
+                                         round(Y_zero_shear, 2),
+                                         Ka_or_EFPa, Kp_or_EFPp,
+                                         equations_report,
+                                         embedment_depth_dfinal, hr + hd
+                                         )
+            for i in range(len(final_sections)):
+                DCRs(DCR_moment[i], DCR_shear[i], DCR_deflection[i], DCR_lagging[i], status_lagging[i], i + 1)
+                section_deflection(unit_system, Fy, final_sections[i], A_list[i], Sx_list[i], Ix_list[i], V_max,
+                                   M_max_final,
+                                   max_delta_list[i], allowable_deflection, i + 1)
+                deflection_output(max_delta_list[i], unit_system, i + 1)
+                lagging_output(unit_system, Pile_spacing, d_concrete_list[i], lc_list[i], ph, R_list[i],
+                               M_max_lagging_list[i], s_req_lagging_list[i], timber_size, s_sup_lagging_list[i],
+                               status_lagging[i],
+                               i + 1)
 
-                    report_values["DCR_file"] = f"template/DCRs{i + 1}.html"
-                    report_values["def_max_file"] = f"template/deflection_max{i + 1}.html"
-                    report_values["section_file"] = f"template/section_deflection{i + 1}.html"
-                    report_values["lagging_file"] = f"template/lagging_output{i + 1}.html"
+                report_values["DCR_file"] = f"template/DCRs{i + 1}.html"
+                report_values["def_max_file"] = f"template/deflection_max{i + 1}.html"
+                report_values["section_file"] = f"template/section_deflection{i + 1}.html"
+                report_values["lagging_file"] = f"template/lagging_output{i + 1}.html"
 
-                    create_pdf_report("reports/template/Rep_Unrestrained.html", report_values)
+                # --- FIX: Pass the RELATIVE path to the template ---
+                # The loader in report.py is already based in the script's directory,
+                # so we provide the path from there.
+                create_pdf_report("reports/template/Rep_Unrestrained.html", report_values)
+                # ---------------------------------------------------
 
-                    shutil.copyfile("reports/template/Rep_Unrestrained_Filled.html",
-                                    f"reports/Rep_Unrestrained_Shoring{i + 1}.html")
-                continue
+                source_path = REPORTS_TEMPLATE_DIR / "Rep_Unrestrained_Filled.html"
+                destination_path = REPORTS_DIR / f"Rep_Unrestrained_Shoring{i + 1}.html"
+                if source_path.exists():
+                    shutil.copyfile(source_path, destination_path)
+                else:
+                    print(f"Warning: Source report file not found at {source_path}")
+            continue
 
     if number_of_project == 1 and not project_error:
         general_plot = [load_diagram, shear_diagram, moment_diagram]
-        general_values = [math.ceil(embedment_depth_dfinal), round(V_max / 1000, 2), round(M_max_final / 1000, 2),
+        general_values = [math.ceil(embedment_depth_dfinal), round(V_max / 1000, 2),
+                          round(M_max_final / 1000, 2),
                           Y_zero_shear, A_required, s_required_final]
         general_output = {"plot": general_plot, "value": general_values}
         specific_plot = deflection_plot
@@ -574,10 +601,12 @@ def main_unrestrained_shoring(inputs):
         specific_output = {"plot": specific_plot, "value": specific_values}
         output_single = output_single_solved(unit_system, general_output, specific_output)
         return output_single
+
     if number_of_project == 1 and project_error:
         output_single = output_single_no_solution(project_error)
         return output_single
 
+    # Fallback return
     return "No Error!", load_diagram, shear_diagram, moment_diagram, M_max_final, V_max, s_required_final, A_required, output_section_list, final_deflection, DCR_deflection, max_delta_list
 
 
@@ -605,10 +634,32 @@ class ShoringApp(QWidget):
             print(result)  # Or handle the result as needed
 
 
+import pathlib
+
+import sympy
+import numpy as np
+
+# --- Define Base Path for Report Templates ---
+# This ensures that paths are resolved correctly regardless of where this script is imported from.
+# The path is constructed relative to the location of this file.
+try:
+    # Get the directory containing this script (e.g., .../Unrestrained_Shoring_System/)
+    SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
+
+    # Define the path to the template directory, which is inside a 'reports' subfolder
+    TEMPLATE_DIR = SCRIPT_DIR / "reports" / "template"
+
+    # Ensure the directory exists, creating it if it doesn't. This prevents errors.
+    TEMPLATE_DIR.mkdir(parents=True, exist_ok=True)
+
+except NameError:
+    # Fallback for environments where __file__ is not defined (e.g., some interactive interpreters)
+    TEMPLATE_DIR = pathlib.Path("reports/template")
+    TEMPLATE_DIR.mkdir(parents=True, exist_ok=True)
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = ShoringApp()
     window.show()
     result = window.result
     sys.exit(app.exec())
-
